@@ -2,7 +2,8 @@
 
 import { nanoid } from 'nanoid'
 import React, { useState, useEffect } from 'react'
-import Bar from '../components/Bar';
+import ProgressBar from '../components/ProgressBar';
+import Results from './Results';
 
 const data = [
     {
@@ -123,6 +124,7 @@ export default function Home() {
     const [questionSelected, setQuestionSelected] = useState<string | null>(null);
     const [questionSubmitted, setQuestionSubmitted ] = useState(false);
     const [currentCorrect, setCurrentCorrect] = useState<boolean | null>(null);
+    const [score, setScore] = useState<number>(0);
 
     
 
@@ -131,15 +133,15 @@ export default function Home() {
     const progressPercentage = Math.round((questionIndex / answersArray.length) * 100)
 
     const answerClasses = {
-        correct: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border border-green-500',
-        incorrect: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border border-red-500',
+        correct: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border-2 border-green-500',
+        incorrect: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border-2 border-red-500',
         default: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border border-slate-300 hover:border-blue-700',
         defaultAfter: 'flex flex-row justify-between w-full p-4 items-center bg-gray-100 mt-4 border border-slate-300'
     }
 
-    const remarkClasses = {
-        submitted: 'text-base text-semibold mt-4 mb-8 duration-1000 ease-in-out transition-all fade-in justify-right',
-        default: 'hidden text-semibold mt-4 mb-8 transition-all duration-500 ease-in-out fade-in justify-right'
+    const feedbackClasses = {
+        submitted: 'text-base font-semibold mt-4 mb-7 duration-1000 ease-in-out transition-all fade-in justify-right',
+        default: 'hidden font-semibold mt-4 mb-6 transition-all duration-500 ease-in-out fade-in justify-right'
     }
 
     useEffect(() => {
@@ -153,6 +155,7 @@ export default function Home() {
     
         if (item.isCorrect) {
             setCurrentCorrect(true)
+            setScore(prevScore => prevScore += 1)
         } else {
             setCurrentCorrect(false)
         }
@@ -160,23 +163,32 @@ export default function Home() {
 
     const handleNext = () => {
 
-    if (questionSubmitted && questionIndex < randomArray.length - 1)
+    if (questionSubmitted && questionIndex < randomArray.length - 1) {
     setQuestionIndex(prevIndex => prevIndex += 1)
     setQuestionSubmitted(false);
     setQuestionSelected(null);
     setCurrentCorrect(null)
     console.log(progressPercentage);
+    } else {
+    
+        setQuizSubmitted(true);
     }
-    
-    
+}
 
+if (QuizSubmitted) {
+    return (
+<Results correctAnswers={score} incorrectAnswers={answersArray.length - score} totalQuestions={answersArray.length}/>
+    )
+
+} else {
+    
   return (
     <main className='flex flex-col w-full justify-center mt-8'>
         <div>
-            <Bar progressPercentage={progressPercentage}/>
+            <ProgressBar progressPercentage={progressPercentage}/>
 
-            <div className='mt-8'>
-                <p className='text-lg'>{data[questionIndex].questionText}</p>
+            <div className='mt-6'>
+                <p className='text-lg font-bold mb-6'>{data[questionIndex].questionText}</p>
             </div>
 
             {answersArray.map((answer) => {
@@ -188,20 +200,21 @@ export default function Home() {
                <p>
                 {answer.answerText}
                </p>
-               <p className='text-sm font-semibold text-green-400'>{questionSubmitted? (currentCorrect ? "" : (answer.isCorrect ? 'respuesta correcta' : '')): ''}</p>
+               <p className='text-sm font-semibold text-green-500'>{questionSubmitted? (currentCorrect ? "" : (answer.isCorrect ? 'respuesta correcta' : '')): ''}</p>
                </button>
 
-{questionSelected === answer.id ? (<p className={questionSubmitted ? remarkClasses.submitted : remarkClasses.default}>{questionSubmitted ? (currentCorrect ? 'Correcto! 👏' : 'Incorrecto 😥') : ''}</p>) : ''}
+{questionSelected === answer.id ? (<p className={questionSubmitted ? feedbackClasses.submitted : feedbackClasses.default}>{questionSubmitted ? (currentCorrect ? 'Correcto! 👏' : 'Incorrecto 😥') : ''}</p>) : ''}
 </>
                );
             })}
 
-            <div className='mt-8 flex flex-row items-center w-full justify-between'>
+            <div className='mt-8 flex flex-row items-center w-full text-sm justify-between'>
             <p>Pregunta <span className='font-bold'>{questionIndex + 1}</span> de {answersArray.length}</p>
 
-            <button onClick={() => handleNext()} className='text-gray-900 py-2 px-4 bg-slate-200' disabled={questionSubmitted? false: true}>Next</button>
+            <button onClick={() => handleNext()} className='text-gray-900 py-2 px-4 bg-slate-200' disabled={questionSubmitted? false: true}>{questionIndex === answersArray.length -1 ? 'Submit' : 'Next'}</button>
             </div>
         </div>
     </main>
   )
+}
 }

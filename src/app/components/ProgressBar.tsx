@@ -4,7 +4,7 @@ type Props = {
     progressPercentage: number
 }
 
-function Bar(props:Props) {
+function ProgressBar(props:Props) {
 
     const { progressPercentage } = props;
 
@@ -15,4 +15,4 @@ function Bar(props:Props) {
   )
 }
 
-export default Bar
+export default ProgressBar
