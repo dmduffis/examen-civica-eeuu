@@ -2,6 +2,7 @@
 
 import { nanoid } from 'nanoid'
 import React, { useState, useEffect } from 'react'
+import Bar from '../components/Bar';
 
 const data = [
     {
@@ -117,16 +118,28 @@ export default function Home() {
 
     const [started, setStarted] = useState<boolean>(false);
     const [questionIndex, setQuestionIndex] = useState<number>(0);
-    const [submitted, setSubmitted] = useState<boolean>(false);
+    const [QuizSubmitted, setQuizSubmitted] = useState<boolean>(false);
     const [randomArray, setRandomArray] = useState([]);
-    const [questionSelected, setQuestionSelected] = useState<boolean>(false);
+    const [questionSelected, setQuestionSelected] = useState<string | null>(null);
+    const [questionSubmitted, setQuestionSubmitted ] = useState(false);
+    const [currentCorrect, setCurrentCorrect] = useState<boolean | null>(null);
+
+    
 
     const answersArray = data[questionIndex].answers
 
+    const progressPercentage = Math.round((questionIndex / answersArray.length) * 100)
+
     const answerClasses = {
         correct: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border border-green-500',
-        incorrect: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border border-red-200',
-        default: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border border-slate-300 hover:border-blue-700'
+        incorrect: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border border-red-500',
+        default: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border border-slate-300 hover:border-blue-700',
+        defaultAfter: 'flex flex-row justify-between w-full p-4 items-center bg-gray-100 mt-4 border border-slate-300'
+    }
+
+    const remarkClasses = {
+        submitted: 'text-base text-semibold mt-4 mb-8 duration-1000 ease-in-out transition-all fade-in justify-right',
+        default: 'hidden text-semibold mt-4 mb-8 transition-all duration-500 ease-in-out fade-in justify-right'
     }
 
     useEffect(() => {
@@ -134,29 +147,60 @@ export default function Home() {
         setRandomArray(shuffledAnswersArray);
     }, []);
 
-    const handleSelect = () => {
-        setQuestionSelected(true);
-    }
+    const handleSelect = (item) => {
+        setQuestionSubmitted(true);
+        setQuestionSelected(item.id);
+    
+        if (item.isCorrect) {
+            setCurrentCorrect(true)
+        } else {
+            setCurrentCorrect(false)
+        }
+    } 
 
+    const handleNext = () => {
+
+    if (questionSubmitted && questionIndex < randomArray.length - 1)
+    setQuestionIndex(prevIndex => prevIndex += 1)
+    setQuestionSubmitted(false);
+    setQuestionSelected(null);
+    setCurrentCorrect(null)
+    console.log(progressPercentage);
+    }
+    
     
 
   return (
-    <main className='flex flex-col w-full justify-center mt-16'>
+    <main className='flex flex-col w-full justify-center mt-8'>
         <div>
-            <div>
+            <Bar progressPercentage={progressPercentage}/>
+
+            <div className='mt-8'>
                 <p className='text-lg'>{data[questionIndex].questionText}</p>
             </div>
 
-            {randomArray.map((answer) => {
+            {answersArray.map((answer) => {
                return (
-                <div onClick={handleSelect} key={answer.id} className={questionSelected ? (answer.isCorrect ? answerClasses.correct : answerClasses.incorrect) : answerClasses.default }>
+                <>
+                <button 
+                onClick={() => handleSelect(answer)} key={answer.id}
+                className={questionSelected === answer.id ? (answer.isCorrect ? answerClasses.correct : answerClasses.incorrect) : (questionSubmitted ? answerClasses.defaultAfter : answerClasses.default)} disabled={questionSubmitted ? true : false}>
                <p>
                 {answer.answerText}
                </p>
-               <p className='text-sm text-green-400'>{questionSelected ? (answer.isCorrect ? 'respuesta correcta' : '') : ''}</p>
-               </div>
+               <p className='text-sm font-semibold text-green-400'>{questionSubmitted? (currentCorrect ? "" : (answer.isCorrect ? 'respuesta correcta' : '')): ''}</p>
+               </button>
+
+{questionSelected === answer.id ? (<p className={questionSubmitted ? remarkClasses.submitted : remarkClasses.default}>{questionSubmitted ? (currentCorrect ? 'Correcto! 👏' : 'Incorrecto 😥') : ''}</p>) : ''}
+</>
                );
             })}
+
+            <div className='mt-8 flex flex-row items-center w-full justify-between'>
+            <p>Pregunta <span className='font-bold'>{questionIndex + 1}</span> de {answersArray.length}</p>
+
+            <button onClick={() => handleNext()} className='text-gray-900 py-2 px-4 bg-slate-200' disabled={questionSubmitted? false: true}>Next</button>
+            </div>
         </div>
     </main>
   )
