@@ -7,20 +7,21 @@ import boyReading from '../assets/images/quiz_start.png'
 import Image from 'next/image';
 import { data } from '../data/data'
 
-
+export const dynamic = 'force-dynamic'
 
 export default function Home() {
+
 
     const [started, setStarted] = useState<boolean>(false);
     const [questionIndex, setQuestionIndex] = useState<number>(0);
     const [QuizSubmitted, setQuizSubmitted] = useState<boolean>(false);
-    const [answersArray, setAnswerArray] = useState([]);
     const [questionSelected, setQuestionSelected] = useState<string | null>(null);
     const [questionSubmitted, setQuestionSubmitted ] = useState(false);
     const [currentCorrect, setCurrentCorrect] = useState<boolean | null>(null);
     const [score, setScore] = useState<number>(0);
 
     
+    const answersArray = data[questionIndex].answers;
 
     const progressPercentage = Math.round((questionIndex / answersArray.length) * 100)
 
@@ -75,20 +76,14 @@ export default function Home() {
     }
 }
 
-useEffect(() => {
-    setAnswerArray(data[questionIndex].answers);
-}, [data]);
-
-
 if (QuizSubmitted) {
     return (
-<Results 
-correctAnswers={score} 
-incorrectAnswers={answersArray.length - score} 
-totalQuestions={answersArray.length}
-restartQuiz={restartQuiz}/>
- )
-
+    <Results 
+        correctAnswers={score} 
+        incorrectAnswers={answersArray.length - score} 
+        totalQuestions={answersArray.length}
+        restartQuiz={restartQuiz}/>
+    )
 } else {
     
   return (
