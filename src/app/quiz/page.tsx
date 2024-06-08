@@ -12,18 +12,15 @@ import { data } from '../data/data'
 export default function Home() {
 
     const [started, setStarted] = useState<boolean>(false);
-    const [mainArray, setMainArray] = useState<Array<[]>>([])
     const [questionIndex, setQuestionIndex] = useState<number>(0);
     const [QuizSubmitted, setQuizSubmitted] = useState<boolean>(false);
-    // const [randomArray, setRandomArray] = useState([]);
+    const [answersArray, setAnswerArray] = useState([]);
     const [questionSelected, setQuestionSelected] = useState<string | null>(null);
     const [questionSubmitted, setQuestionSubmitted ] = useState(false);
     const [currentCorrect, setCurrentCorrect] = useState<boolean | null>(null);
     const [score, setScore] = useState<number>(0);
 
     
-
-    const answersArray = data[questionIndex].answers
 
     const progressPercentage = Math.round((questionIndex / answersArray.length) * 100)
 
@@ -38,11 +35,6 @@ export default function Home() {
         submitted: 'text-base font-semibold mt-4 mb-7 duration-1000 ease-in-out transition-all fade-in justify-right',
         default: 'hidden font-semibold mt-4 mb-6 transition-all duration-500 ease-in-out fade-in justify-right'
     }
-
-    // useEffect(() => {
-    //     const shuffledAnswersArray = [...answersArray].sort(() => 0.5 - Math.random());
-    //     setRandomArray(shuffledAnswersArray);
-    // }, []);
 
 
     const handleSelect = (item:any) => {
@@ -82,6 +74,11 @@ export default function Home() {
         setQuizSubmitted(true);
     }
 }
+
+useEffect(() => {
+    setAnswerArray(data[questionIndex].answers);
+}, [data]);
+
 
 if (QuizSubmitted) {
     return (
