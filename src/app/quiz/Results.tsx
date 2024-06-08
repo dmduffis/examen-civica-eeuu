@@ -9,12 +9,13 @@ import { useReward } from 'react-rewards';
 type Props = {
     correctAnswers: number;
     incorrectAnswers: number;
-    totalQuestions: number
+    totalQuestions: number;
+    restartQuiz: Function;
 }
 
 function Results(props: Props) {
 
-const {correctAnswers, incorrectAnswers, totalQuestions} = props;
+const {correctAnswers, incorrectAnswers, totalQuestions, restartQuiz} = props;
 
 const correctPercentage = Math.round((correctAnswers/totalQuestions) * 100)
 const incorrectPercentage = Math.round((incorrectAnswers/totalQuestions) * 100)
@@ -44,7 +45,7 @@ if (correctPercentage === 100) {
 
   return (
     <main className='flex flex-col text-center w-full justify-center mt-24'>
-        <h1 className='text-2xl font-semibold text-gray-800'>Resultados</h1>
+        <h1 className='text-2xl font-semibold text-gray-800'>Tu Resultado:</h1>
 
         <div className='flex text-3xl text-center w-full justify-center'>
             <p className='text-4xl mt-2 text-center font-bold'>{correctPercentage}%</p>
@@ -56,6 +57,11 @@ if (correctPercentage === 100) {
             <p>Correcto: <span className='font-bold'>{correctAnswers}</span></p>
             <p>Incorrecto: <span className='font-bold'>{incorrectAnswers}</span></p>
         </div>
+
+        <div className='flex justify-center mt-16'>
+        <button onClick={() => restartQuiz()} className='text-gray-900 py-2 px-4 bg-slate-200 border border-slate-300 text-underline hover:border-blue-400'>Retome el Examen</button>
+        </div>
+
   
     </main>
   )

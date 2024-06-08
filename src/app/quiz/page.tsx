@@ -4,116 +4,11 @@ import { nanoid } from 'nanoid'
 import React, { useState, useEffect } from 'react'
 import ProgressBar from '../components/ProgressBar';
 import Results from './Results';
+import boyReading from '../assets/images/quiz_start.png'
+import Image from 'next/image';
+import { data } from '../data/data'
 
-const data = [
-    {
-        id: nanoid(),
-        questionText: '¿Cuál es la ley suprema de la nación?',
-        answers: [
-            {
-                id: nanoid(),
-                answerText: 'El Código Penal',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'La Constitución',
-                isCorrect: true,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Las Leyes Municipales',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'El Reglamento Interno',
-                isCorrect: false,
-            }
-        ]
 
-    },
-    {
-        id: nanoid(),
-        questionText: 'Las primeras tres palabras de la Constitución contienen la idea del autogobierno (de que el pueblo se gobierna a sí mismo). ¿Cuáles son estas palabras?',
-        answers: [
-            {
-                id: nanoid(),
-                answerText: 'El pueblo unido',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Libertad y justicia',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Nosotros, el pueblo',
-                isCorrect: true,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Poder del pueblo',
-                isCorrect: false,
-            }
-        ]
-
-    },
-    {
-        id: nanoid(),
-        questionText: 'Las primeras tres palabras de la Constitución contienen la idea del autogobierno (de que el pueblo se gobierna a sí mismo). ¿Cuáles son estas palabras?',
-        answers: [
-            {
-                id: nanoid(),
-                answerText: 'La Carta de Derechos',
-                isCorrect: true,
-            },
-            {
-                id: nanoid(),
-                answerText: 'La Declaración de Independencia',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Los Artículos Confederados',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Las Resoluciones Federales',
-                isCorrect: false,
-            }
-        ]
-
-    },
-    {
-        id: nanoid(),
-        questionText: '¿Cuántas enmiendas tiene la Constitución?',
-        answers: [
-            {
-                id: nanoid(),
-                answerText: 'Diez (10)',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Veintisiete (27)',
-                isCorrect: true,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Cincuenta (50)',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Cuarenta y dos (42)',
-                isCorrect: false,
-            }
-        ]
-    }
-]
 
 export default function Home() {
 
@@ -161,6 +56,19 @@ export default function Home() {
         }
     } 
 
+    const handleStart = () => {
+        setStarted(true);
+    }
+
+    const restartQuiz = () => {
+        setQuestionIndex(0);
+        setScore(0);
+        setQuizSubmitted(false);
+        setQuestionSubmitted(false);
+        setQuestionSelected(null);
+        setCurrentCorrect(null)
+    }
+
     const handleNext = () => {
 
     if (questionSubmitted && questionIndex < randomArray.length - 1) {
@@ -177,12 +85,28 @@ export default function Home() {
 
 if (QuizSubmitted) {
     return (
-<Results correctAnswers={score} incorrectAnswers={answersArray.length - score} totalQuestions={answersArray.length}/>
+<Results correctAnswers={score} incorrectAnswers={answersArray.length - score} totalQuestions={answersArray.length} restartQuiz={restartQuiz}/>
     )
 
 } else {
     
   return (
+
+    !started ? 
+    <main className='flex flex-col w-full justify-center mt-8'>
+
+        <div className='flex justify-center mt-16'>
+        <Image src={boyReading} width={400} alt='boy reading book'/>
+        </div>
+
+        <h1 className='text-3xl font-semibold text-gray-800 text-center mt-16'>Listo para el Quiz?</h1>
+
+        <div className='flex justify-center mt-8'>
+        <button onClick={() => handleStart()} className='text-gray-900 py-2 px-4 bg-slate-200 border border-slate-300 text-underline hover:border-blue-400'>Abra el Quiz</button>
+        </div>
+
+    </main>
+    :
     <main className='flex flex-col w-full justify-center mt-8'>
         <div>
             <ProgressBar progressPercentage={progressPercentage}/>
