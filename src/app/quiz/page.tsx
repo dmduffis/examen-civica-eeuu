@@ -1,6 +1,5 @@
 'use client'
 
-import { nanoid } from 'nanoid'
 import React, { useState, useEffect } from 'react'
 import ProgressBar from '../components/ProgressBar';
 import Results from './Results';
@@ -13,9 +12,10 @@ import { data } from '../data/data'
 export default function Home() {
 
     const [started, setStarted] = useState<boolean>(false);
+    const [mainArray, setMainArray] = useState<Array<[]>>([])
     const [questionIndex, setQuestionIndex] = useState<number>(0);
     const [QuizSubmitted, setQuizSubmitted] = useState<boolean>(false);
-    const [randomArray, setRandomArray] = useState([]);
+    // const [randomArray, setRandomArray] = useState([]);
     const [questionSelected, setQuestionSelected] = useState<string | null>(null);
     const [questionSubmitted, setQuestionSubmitted ] = useState(false);
     const [currentCorrect, setCurrentCorrect] = useState<boolean | null>(null);
@@ -39,12 +39,13 @@ export default function Home() {
         default: 'hidden font-semibold mt-4 mb-6 transition-all duration-500 ease-in-out fade-in justify-right'
     }
 
-    useEffect(() => {
-        const shuffledAnswersArray = [...answersArray].sort(() => 0.5 - Math.random());
-        setRandomArray(shuffledAnswersArray);
-    }, []);
+    // useEffect(() => {
+    //     const shuffledAnswersArray = [...answersArray].sort(() => 0.5 - Math.random());
+    //     setRandomArray(shuffledAnswersArray);
+    // }, []);
 
-    const handleSelect = (item) => {
+
+    const handleSelect = (item:any) => {
         setQuestionSubmitted(true);
         setQuestionSelected(item.id);
     
@@ -71,22 +72,25 @@ export default function Home() {
 
     const handleNext = () => {
 
-    if (questionSubmitted && questionIndex < randomArray.length - 1) {
+    if (questionSubmitted && questionIndex < answersArray.length - 1) {
     setQuestionIndex(prevIndex => prevIndex += 1)
     setQuestionSubmitted(false);
     setQuestionSelected(null);
     setCurrentCorrect(null)
     console.log(progressPercentage);
     } else {
-    
         setQuizSubmitted(true);
     }
 }
 
 if (QuizSubmitted) {
     return (
-<Results correctAnswers={score} incorrectAnswers={answersArray.length - score} totalQuestions={answersArray.length} restartQuiz={restartQuiz}/>
-    )
+<Results 
+correctAnswers={score} 
+incorrectAnswers={answersArray.length - score} 
+totalQuestions={answersArray.length}
+restartQuiz={restartQuiz}/>
+ )
 
 } else {
     
@@ -119,16 +123,24 @@ if (QuizSubmitted) {
                return (
                 <>
                 <button 
-                onClick={() => handleSelect(answer)} key={answer.id}
+                onClick={() => handleSelect(answer)}
+                key={answer.id}
                 className={questionSelected === answer.id ? (answer.isCorrect ? answerClasses.correct : answerClasses.incorrect) : (questionSubmitted ? answerClasses.defaultAfter : answerClasses.default)} disabled={questionSubmitted ? true : false}>
+               
                <p>
                 {answer.answerText}
                </p>
-               <p className='text-sm font-semibold text-green-500'>{questionSubmitted? (currentCorrect ? "" : (answer.isCorrect ? 'respuesta correcta' : '')): ''}</p>
+
+               <p className='text-sm font-semibold text-green-500'>
+                {questionSubmitted? (currentCorrect ? "" : (answer.isCorrect ? 'respuesta correcta' : '')): ''}
+               </p>
                </button>
 
-{questionSelected === answer.id ? (<p className={questionSubmitted ? feedbackClasses.submitted : feedbackClasses.default}>{questionSubmitted ? (currentCorrect ? 'Correcto! 👏' : 'Incorrecto 😥') : ''}</p>) : ''}
-</>
+                {questionSelected === answer.id ? 
+                (<p className={questionSubmitted ? feedbackClasses.submitted 
+                : feedbackClasses.default}>{questionSubmitted ? 
+                (currentCorrect ? 'Correcto! 👏' : 'Incorrecto 😥') : ''}</p>) : ''}
+                </>
                );
             })}
 

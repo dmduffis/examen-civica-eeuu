@@ -119,7 +119,7 @@ export const data = [
             },
             {
                 id: nanoid(),
-                answerText: ' La capacidad de expresar opiniones políticas libremente.',
+                answerText: 'La capacidad de expresar opiniones políticas libremente.',
                 isCorrect: false,
             },
             {
@@ -129,7 +129,33 @@ export const data = [
             },
             {
                 id: nanoid(),
-                answerText: ' La necesidad de asistir a servicios religiosos regularmente.',
+                answerText: 'La necesidad de asistir a servicios religiosos regularmente.',
+                isCorrect: false,
+            }
+        ]
+    },
+    {
+        id: nanoid(),
+        questionText: '¿Quién está a cargo de la rama ejecutiva?',
+        answers: [
+            {
+                id: nanoid(),
+                answerText: 'El Congreso',
+                isCorrect: false,
+            },
+            {
+                id: nanoid(),
+                answerText: 'El Presidente',
+                isCorrect: true,
+            },
+            {
+                id: nanoid(),
+                answerText: 'La Corte Suprema',
+                isCorrect: true,
+            },
+            {
+                id: nanoid(),
+                answerText: 'El Gobernador',
                 isCorrect: false,
             }
         ]
