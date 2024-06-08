@@ -57,7 +57,7 @@ export const data = [
     },
     {
         id: nanoid(),
-        questionText: 'Las primeras tres palabras de la Constitución contienen la idea del autogobierno (de que el pueblo se gobierna a sí mismo). ¿Cuáles son estas palabras?',
+        questionText: '¿Con qué nombre se conocen las primeras diez enmiendas a la Constitución?',
         answers: [
             {
                 id: nanoid(),

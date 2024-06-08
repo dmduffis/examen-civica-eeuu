@@ -64,7 +64,6 @@ export default function Home() {
     }
 
     const handleNext = () => {
-
     if (questionSubmitted && questionIndex < answersArray.length - 1) {
     setQuestionIndex(prevIndex => prevIndex += 1)
     setQuestionSubmitted(false);
@@ -111,14 +110,13 @@ if (QuizSubmitted) {
                 <p className='text-lg font-bold mb-6'>{data[questionIndex].questionText}</p>
             </div>
 
-            {answersArray.map((answer) => {
+            {answersArray.map((answer, idx) => {
                return (
-                <>
+                <div key={answer.id}>
                 <button 
                 onClick={() => handleSelect(answer)}
-                key={answer.id}
+                key={idx}
                 className={questionSelected === answer.id ? (answer.isCorrect ? answerClasses.correct : answerClasses.incorrect) : (questionSubmitted ? answerClasses.defaultAfter : answerClasses.default)} disabled={questionSubmitted ? true : false}>
-               
                <p>
                 {answer.answerText}
                </p>
@@ -132,7 +130,7 @@ if (QuizSubmitted) {
                 (<p className={questionSubmitted ? feedbackClasses.submitted 
                 : feedbackClasses.default}>{questionSubmitted ? 
                 (currentCorrect ? 'Correcto! 👏' : 'Incorrecto 😥') : ''}</p>) : ''}
-                </>
+                </div>
                );
             })}
 
