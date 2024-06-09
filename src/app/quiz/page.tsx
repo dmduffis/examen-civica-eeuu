@@ -2,8 +2,10 @@
 
 import { nanoid } from 'nanoid'
 import React, { useState, useEffect } from 'react'
+import Image from 'next/image';
 import ProgressBar from '../components/ProgressBar';
 import Results from './Results';
+import boyReading from '../assets/images/quiz_start.png';
 
 const data = [
     {
@@ -169,9 +171,10 @@ const data = [
 
 export default function Home() {
 
+    
     const [started, setStarted] = useState<boolean>(false);
     const [questionIndex, setQuestionIndex] = useState<number>(0);
-    const [QuizSubmitted, setQuizSubmitted] = useState<boolean>(false);
+    const [quizSubmitted, setQuizSubmitted] = useState<boolean>(false);
     const [randomArray, setRandomArray] = useState([]);
     const [questionSelected, setQuestionSelected] = useState<string | null>(null);
     const [questionSubmitted, setQuestionSubmitted ] = useState(false);
@@ -196,11 +199,10 @@ export default function Home() {
         default: 'hidden font-semibold mt-4 mb-6 transition-all duration-500 ease-in-out fade-in justify-right'
     }
 
-    // useEffect(() => {
-    //     const shuffledAnswersArray = [...answersArray].sort(() => 0.5 - Math.random());
-    //     setRandomArray(shuffledAnswersArray);
-    // }, []);
-
+    const handleStart = () => {
+        setStarted(true);
+    }
+    
     const handleSelect = (item:any) => {
         setQuestionSubmitted(true);
         setQuestionSelected(item.id);
@@ -215,16 +217,14 @@ export default function Home() {
 
     const handleNext = () => {
 
-    if (questionSubmitted && questionIndex < randomArray.length - 1) {
-    setQuestionIndex(prevIndex => prevIndex += 1)
-    setQuestionSubmitted(false);
-    setQuestionSelected(null);
-    setCurrentCorrect(null)
-    console.log(progressPercentage);
+    if (questionIndex === answersArray.length -1) {
+        setQuizSubmitted(true) 
     } else {
-    
-        setQuizSubmitted(true);
-    }
+        setQuestionIndex(prevIndex => prevIndex += 1)
+        setQuestionSubmitted(false);
+        setQuestionSelected(null);
+        setCurrentCorrect(null)
+    }  
 }
 
 const restartQuiz = () => {
@@ -236,14 +236,33 @@ const restartQuiz = () => {
     setCurrentCorrect(null)
 }
 
-if (QuizSubmitted) {
+if (quizSubmitted) {
     return (
-<Results correctAnswers={score} incorrectAnswers={answersArray.length - score} totalQuestions={answersArray.length} restartQuiz={restartQuiz}/>
+    <Results 
+        correctAnswers={score} 
+        incorrectAnswers={answersArray.length - score} 
+        totalQuestions={answersArray.length}
+        restartQuiz={restartQuiz}/>
     )
-
 } else {
     
   return (
+
+    !started ? 
+    <main className='flex flex-col w-full justify-center mt-8'>
+
+        <div className='flex justify-center mt-16'>
+        <Image src={boyReading} width={400} alt='boy reading book'/>
+        </div>
+
+        <h1 className='text-3xl font-semibold text-gray-800 text-center mt-16'>Listo para el Quiz?</h1>
+
+        <div className='flex justify-center mt-8'>
+        <button onClick={() => handleStart()} className='text-gray-900 py-2 px-4 bg-slate-200 border border-slate-300 text-underline hover:border-blue-400'>Abra el Quiz</button>
+        </div>
+
+    </main>
+    : 
     <main className='flex flex-col w-full justify-center mt-8'>
         <div>
             <ProgressBar progressPercentage={progressPercentage}/>
@@ -264,7 +283,7 @@ if (QuizSubmitted) {
                <p className='text-sm font-semibold text-green-500'>{questionSubmitted? (currentCorrect ? "" : (answer.isCorrect ? 'respuesta correcta' : '')): ''}</p>
                </button>
 
-{questionSelected === answer.id ? (<p className={questionSubmitted ? feedbackClasses.submitted : feedbackClasses.default}>{questionSubmitted ? (currentCorrect ? 'Correcto! 👏' : 'Incorrecto 😥') : ''}</p>) : ''}
+               {questionSelected === answer.id ? (<p className={questionSubmitted ? feedbackClasses.submitted : feedbackClasses.default}>{questionSubmitted ? (currentCorrect ? 'Correcto! 👏' : 'Incorrecto 😥') : ''}</p>) : ''}
 </>
                );
             })}
@@ -272,7 +291,7 @@ if (QuizSubmitted) {
             <div className='mt-8 flex flex-row items-center w-full text-sm justify-between'>
             <p>Pregunta <span className='font-bold'>{questionIndex + 1}</span> de {answersArray.length}</p>
 
-            <button onClick={() => handleNext()} className='text-gray-900 py-2 px-4 bg-slate-200' disabled={questionSubmitted? false: true}>{questionIndex === answersArray.length -1 ? 'Submit' : 'Next'}</button>
+            <button onClick={() => handleNext()} className='text-gray-900 py-2 px-4 bg-slate-200' disabled={questionSubmitted? false : true}>{questionIndex === answersArray.length -1 ? 'Submit' : 'Next'}</button>
             </div>
         </div>
     </main>
