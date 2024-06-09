@@ -21,7 +21,7 @@ export default function Home() {
 
 
     useEffect(() => {
-        axios.get('http://localhost:8000/api/question/')
+        axios.get('https://examencivicabackend-production.up.railway.app/api/question/')
         .then(response => {
             setData(response.data);
             setAnswersArray(response.data[questionIndex].answers)
@@ -29,7 +29,7 @@ export default function Home() {
         )
         .catch(error => console.error(error))
         
-      }, [data])
+      }, [data, questionIndex])
 
     const progressPercentage = Math.round((questionIndex / answersArray.length) * 100)
 
