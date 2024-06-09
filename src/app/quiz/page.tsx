@@ -5,13 +5,12 @@ import ProgressBar from '../components/ProgressBar';
 import Results from './Results';
 import boyReading from '../assets/images/quiz_start.png'
 import Image from 'next/image';
-import { data } from '../data/data'
-
-export const dynamic = 'force-dynamic'
+import axios from 'axios';
 
 export default function Home() {
 
-
+    const [data, setData] = useState([]);
+    const [answersArray, setAnswersArray] = useState([]);
     const [started, setStarted] = useState<boolean>(false);
     const [questionIndex, setQuestionIndex] = useState<number>(0);
     const [QuizSubmitted, setQuizSubmitted] = useState<boolean>(false);
@@ -20,8 +19,17 @@ export default function Home() {
     const [currentCorrect, setCurrentCorrect] = useState<boolean | null>(null);
     const [score, setScore] = useState<number>(0);
 
-    
-    const answersArray = data[questionIndex].answers;
+
+    useEffect(() => {
+        axios.get('http://localhost:8000/api/question/')
+        .then(response => {
+            setData(response.data);
+            setAnswersArray(response.data[questionIndex].answers)
+        }
+        )
+        .catch(error => console.error(error))
+        
+      }, [data])
 
     const progressPercentage = Math.round((questionIndex / answersArray.length) * 100)
 
@@ -40,7 +48,7 @@ export default function Home() {
 
     const handleSelect = (item:any) => {
         setQuestionSubmitted(true);
-        setQuestionSelected(item.id);
+        setQuestionSelected(item._id);
     
         if (item.isCorrect) {
             setCurrentCorrect(true)
@@ -64,6 +72,7 @@ export default function Home() {
     }
 
     const handleNext = () => {
+
     if (questionSubmitted && questionIndex < answersArray.length - 1) {
     setQuestionIndex(prevIndex => prevIndex += 1)
     setQuestionSubmitted(false);
@@ -110,13 +119,13 @@ if (QuizSubmitted) {
                 <p className='text-lg font-bold mb-6'>{data[questionIndex].questionText}</p>
             </div>
 
-            {answersArray.map((answer, idx) => {
+            {answersArray.map((answer) => {
                return (
-                <div key={answer.id}>
+                <div key={answer._id}>
                 <button 
                 onClick={() => handleSelect(answer)}
-                key={idx}
-                className={questionSelected === answer.id ? (answer.isCorrect ? answerClasses.correct : answerClasses.incorrect) : (questionSubmitted ? answerClasses.defaultAfter : answerClasses.default)} disabled={questionSubmitted ? true : false}>
+                key={answer._id}
+                className={questionSelected === answer._id ? (answer.isCorrect ? answerClasses.correct : answerClasses.incorrect) : (questionSubmitted ? answerClasses.defaultAfter : answerClasses.default)} disabled={questionSubmitted ? true : false}>
                <p>
                 {answer.answerText}
                </p>
@@ -126,7 +135,7 @@ if (QuizSubmitted) {
                </p>
                </button>
 
-                {questionSelected === answer.id ? 
+                {questionSelected === answer._id ? 
                 (<p className={questionSubmitted ? feedbackClasses.submitted 
                 : feedbackClasses.default}>{questionSubmitted ? 
                 (currentCorrect ? 'Correcto! 👏' : 'Incorrecto 😥') : ''}</p>) : ''}
