@@ -7,6 +7,8 @@ import ProgressBar from '../components/ProgressBar';
 import Results from './Results';
 import boyReading from '../assets/images/quiz_start.png';
 
+export const dynamic = 'static';
+
 const data = [
     {
         id: nanoid(),
@@ -171,27 +173,27 @@ const data = [
 
 export default function Home() {
 
-    
     const [started, setStarted] = useState<boolean>(false);
     const [questionIndex, setQuestionIndex] = useState<number>(0);
+    // const [currentQuestionText, setCurrentQuestionText] = useState<string>('');
     const [quizSubmitted, setQuizSubmitted] = useState<boolean>(false);
-    const [randomArray, setRandomArray] = useState([]);
+    // const [answersArray, setAnswersArray] = useState([]);
     const [questionSelected, setQuestionSelected] = useState<string | null>(null);
     const [questionSubmitted, setQuestionSubmitted ] = useState(false);
     const [currentCorrect, setCurrentCorrect] = useState<boolean | null>(null);
     const [score, setScore] = useState<number>(0);
 
-    
-
-    const answersArray = data[questionIndex].answers
+    const question = data[questionIndex]
+    const answersArray = question.answers;
+    const currentQuestionText = question.questionText;
 
     const progressPercentage = Math.round((questionIndex / answersArray.length) * 100)
 
     const answerClasses = {
-        correct: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border-2 border-green-500',
-        incorrect: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border-2 border-red-500',
-        default: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border border-slate-300 hover:border-blue-700',
-        defaultAfter: 'flex flex-row justify-between w-full p-4 items-center bg-gray-100 mt-4 border border-slate-300'
+        correct: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border-2 border-green-500 rounded-lg',
+        incorrect: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border-2 border-red-500 rounded-lg',
+        default: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border border-slate-300 hover:border-blue-700 rounded-lg',
+        defaultAfter: 'flex flex-row justify-between w-full p-4 items-center bg-gray-100 mt-4 border border-slate-300 rounded-lg'
     }
 
     const feedbackClasses = {
@@ -202,7 +204,7 @@ export default function Home() {
     const handleStart = () => {
         setStarted(true);
     }
-    
+
     const handleSelect = (item:any) => {
         setQuestionSubmitted(true);
         setQuestionSelected(item.id);
@@ -258,7 +260,7 @@ if (quizSubmitted) {
         <h1 className='text-3xl font-semibold text-gray-800 text-center mt-16'>Listo para el Quiz?</h1>
 
         <div className='flex justify-center mt-8'>
-        <button onClick={() => handleStart()} className='text-gray-900 py-2 px-4 bg-slate-200 border border-slate-300 text-underline hover:border-blue-400'>Abra el Quiz</button>
+        <button onClick={() => handleStart()} className='rounded-lg text-gray-900 py-2 px-4 bg-slate-200 border border-slate-300 text-underline hover:bg-yellow-500'>Abra el Quiz</button>
         </div>
 
     </main>
@@ -268,14 +270,15 @@ if (quizSubmitted) {
             <ProgressBar progressPercentage={progressPercentage}/>
 
             <div className='mt-6'>
-                <p className='text-lg font-bold mb-6'>{data[questionIndex].questionText}</p>
+                <p className='text-lg font-bold mb-6'>{currentQuestionText}</p>
             </div>
 
-            {answersArray.map((answer) => {
+            {answersArray.map((answer, idx) => {
                return (
-                <>
+                <div key={answer.id}>
                 <button 
-                onClick={() => handleSelect(answer)} key={answer.id}
+                onClick={() => handleSelect(answer)} 
+                key={idx}
                 className={questionSelected === answer.id ? (answer.isCorrect ? answerClasses.correct : answerClasses.incorrect) : (questionSubmitted ? answerClasses.defaultAfter : answerClasses.default)} disabled={questionSubmitted ? true : false}>
                <p>
                 {answer.answerText}
@@ -284,14 +287,14 @@ if (quizSubmitted) {
                </button>
 
                {questionSelected === answer.id ? (<p className={questionSubmitted ? feedbackClasses.submitted : feedbackClasses.default}>{questionSubmitted ? (currentCorrect ? 'Correcto! 👏' : 'Incorrecto 😥') : ''}</p>) : ''}
-</>
+</div>
                );
             })}
 
-            <div className='mt-8 flex flex-row items-center w-full text-sm justify-between'>
+            <div className='mt-6 flex flex-row items-center w-full text-sm justify-between'>
             <p>Pregunta <span className='font-bold'>{questionIndex + 1}</span> de {answersArray.length}</p>
 
-            <button onClick={() => handleNext()} className='text-gray-900 py-2 px-4 bg-slate-200' disabled={questionSubmitted? false : true}>{questionIndex === answersArray.length -1 ? 'Submit' : 'Next'}</button>
+            <button onClick={() => handleNext()} className={questionSubmitted ? 'text-gray-900 py-2 px-4 bg-slate-200 rounded-lg hover:bg-yellow-500' : 'text-gray-400 py-2 px-4 bg-slate-200 rounded-lg'} disabled={questionSubmitted? false : true}>{questionIndex === answersArray.length -1 ? 'Submit' : 'Next'}</button>
             </div>
         </div>
     </main>

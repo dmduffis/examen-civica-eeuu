@@ -10,7 +10,7 @@ function ProgressBar(props:Props) {
 
   return (
     <div className='w-full h-2 bg-gray-300 mb-4'>
-    <div className='h-2 bg-green-300 mb-4' style={{width:`${progressPercentage}%`}}></div>
+    <div className='h-2 bg-yellow-500 mb-4' style={{width:`${progressPercentage}%`}}></div>
     </div>
   )
 }

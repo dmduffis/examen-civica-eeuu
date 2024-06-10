@@ -59,7 +59,7 @@ if (correctPercentage === 100) {
         </div>
 
         <div className='flex justify-center mt-16'>
-        <button onClick={() => restartQuiz()} className='text-gray-900 py-2 px-4 bg-slate-200 border border-slate-300 text-underline hover:border-blue-400'>Retome el Examen</button>
+        <button onClick={() => restartQuiz()} className='text-gray-900 py-2 px-4 bg-slate-200 border border-slate-300 text-underline hover:bg-yellow-500 rounded-lg'>Retome el Examen</button>
         </div>
 
   
