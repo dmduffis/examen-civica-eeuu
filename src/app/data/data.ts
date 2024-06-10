@@ -2,60 +2,6 @@ import { nanoid } from "nanoid"
 
 export const data = [
     {
-        id: 'qst01',
-        questionText: '¿Cuál es la ley suprema de la nación?',
-        answers: [
-            {
-                id: "answ001",
-                answerText: 'El Código Penal',
-                isCorrect: false,
-            },
-            {
-                id: "answ011",
-                answerText: 'La Constitución',
-                isCorrect: true,
-            },
-            {
-                id: "answ111",
-                answerText: 'Las Leyes Municipales',
-                isCorrect: false,
-            },
-            {
-                id: "ans1111",
-                answerText: 'El Reglamento Interno',
-                isCorrect: false,
-            }
-        ]
-
-    },
-    {
-        id: "qst02",
-        questionText: 'Las primeras tres palabras de la Constitución contienen la idea del autogobierno (de que el pueblo se gobierna a sí mismo). ¿Cuáles son estas palabras?',
-        answers: [
-            {
-                id: "answ002",
-                answerText: 'El pueblo unido',
-                isCorrect: false,
-            },
-            {
-                id: "answ022",
-                answerText: 'Libertad y justicia',
-                isCorrect: false,
-            },
-            {
-                id: "answ222",
-                answerText: 'Nosotros, el pueblo',
-                isCorrect: true,
-            },
-            {
-                id: "ans2222",
-                answerText: 'Poder del pueblo',
-                isCorrect: false,
-            }
-        ]
-
-    },
-    {
         id: "qst03",
         questionText: '¿Con qué nombre se conocen las primeras diez enmiendas a la Constitución?',
         answers: [
@@ -159,5 +105,59 @@ export const data = [
                 isCorrect: false,
             }
         ]
+    },
+    {
+        id: 'qst01',
+        questionText: '¿Cuál es la ley suprema de la nación?',
+        answers: [
+            {
+                id: "answ001",
+                answerText: 'El Código Penal',
+                isCorrect: false,
+            },
+            {
+                id: "answ011",
+                answerText: 'La Constitución',
+                isCorrect: true,
+            },
+            {
+                id: "answ111",
+                answerText: 'Las Leyes Municipales',
+                isCorrect: false,
+            },
+            {
+                id: "ans1111",
+                answerText: 'El Reglamento Interno',
+                isCorrect: false,
+            }
+        ]
+
+    },
+    {
+        id: "qst02",
+        questionText: 'Las primeras tres palabras de la Constitución contienen la idea del autogobierno (de que el pueblo se gobierna a sí mismo). ¿Cuáles son estas palabras?',
+        answers: [
+            {
+                id: "answ002",
+                answerText: 'El pueblo unido',
+                isCorrect: false,
+            },
+            {
+                id: "answ022",
+                answerText: 'Libertad y justicia',
+                isCorrect: false,
+            },
+            {
+                id: "answ222",
+                answerText: 'Nosotros, el pueblo',
+                isCorrect: true,
+            },
+            {
+                id: "ans2222",
+                answerText: 'Poder del pueblo',
+                isCorrect: false,
+            }
+        ]
+
     }
 ]

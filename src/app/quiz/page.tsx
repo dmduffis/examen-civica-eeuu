@@ -20,9 +20,10 @@ export default function Home() {
 
     const question = data[questionIndex]
     const answersArray = question.answers;
+
     const currentQuestionText = question.questionText;
 
-    const progressPercentage = Math.round((questionIndex / answersArray.length) * 100)
+    const progressPercentage = Math.round((questionIndex / data.length) * 100)
 
     const answerClasses = {
         correct: 'flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border-2 border-green-500 rounded-lg',
@@ -54,7 +55,7 @@ export default function Home() {
 
     const handleNext = () => {
 
-    if (questionIndex === answersArray.length -1) {
+    if (questionIndex === data.length - 1) {
         setQuizSubmitted(true) 
     } else {
         setQuestionIndex(prevIndex => prevIndex += 1)
@@ -77,8 +78,8 @@ if (quizSubmitted) {
     return (
     <Results 
         correctAnswers={score} 
-        incorrectAnswers={answersArray.length - score} 
-        totalQuestions={answersArray.length}
+        incorrectAnswers={data.length - score} 
+        totalQuestions={data.length}
         restartQuiz={restartQuiz}/>
     )
 } else {
@@ -122,9 +123,9 @@ if (quizSubmitted) {
             })}
 
             <div className='mt-6 flex flex-row items-center w-full text-sm justify-between'>
-            <p>Pregunta <span className='font-bold'>{questionIndex + 1}</span> de {answersArray.length}</p>
+            <p>Pregunta <span className='font-bold'>{questionIndex + 1}</span> de {data.length}</p>
 
-            <button onClick={() => handleNext()} className={questionSubmitted ? 'text-gray-900 py-2 px-4 bg-slate-200 rounded-lg hover:bg-yellow-500' : 'text-gray-400 py-2 px-4 bg-slate-200 rounded-lg'} disabled={questionSubmitted? false : true}>{questionIndex === answersArray.length -1 ? 'Submit' : 'Next'}</button>
+            <button onClick={() => handleNext()} className={questionSubmitted ? 'text-gray-900 py-2 px-4 bg-slate-200 rounded-lg hover:bg-yellow-500' : 'text-gray-400 py-2 px-4 bg-slate-200 rounded-lg'} disabled={questionSubmitted? false : true}>{questionIndex === data.length - 1 ? 'Submit' : 'Next'}</button>
             </div>
         </div>
     </main>
