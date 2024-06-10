@@ -14,7 +14,7 @@ export default function Home() {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState<boolean>(false)
     const [started, setStarted] = useState<boolean>(false);
-    const [answersArray, setAnswersArray] = useState([]);
+    const [sortedAnswersArray, setSortedAnswersArray] = useState([]);
     const [currentQuestionText, setCurrentQuestionText] = useState<string>('');
     const [questionIndex, setQuestionIndex] = useState<number>(0);
     const [quizSubmitted, setQuizSubmitted] = useState<boolean>(false);
@@ -37,8 +37,8 @@ export default function Home() {
           
           setData(response.data)
           setCurrentQuestionText(response.data[questionIndex].questionText)
-          const initialAnswerArray = response.data[questionIndex].answers
-          setAnswersArray(initialAnswerArray.sort(() => Math.random() - 0.5))
+          const unsortedAnswerArray = response.data[questionIndex].answers
+          setSortedAnswersArray(unsortedAnswerArray.sort(() => Math.random() - 0.5))
 
           setLoading(false);
       
@@ -154,7 +154,7 @@ if (quizSubmitted) {
                 <p className='text-lg font-bold mb-6'>{currentQuestionText}</p>
             </div>
 
-            { answersArray.map((answer:{ _id:string, isCorrect:boolean, answerText:string }, idx) => {
+            { sortedAnswersArray.map((answer:{ _id:string, isCorrect:boolean, answerText:string }, idx) => {
                return (
                <Question
                key={answer._id}
