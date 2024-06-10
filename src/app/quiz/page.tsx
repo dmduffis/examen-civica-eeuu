@@ -1,13 +1,13 @@
 'use client'
 
 import { nanoid } from 'nanoid'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image';
 import ProgressBar from '../components/ProgressBar';
 import Results from './Results';
 import boyReading from '../assets/images/quiz_start.png';
 
-export const dynamic = 'static';
+export const dynamic = 'force-dynamic';
 
 const data = [
     {
@@ -273,23 +273,22 @@ if (quizSubmitted) {
                 <p className='text-lg font-bold mb-6'>{currentQuestionText}</p>
             </div>
 
+        <ul>
             {answersArray.map((answer, idx) => {
                return (
-                <div key={answer.id}>
+                <li key={answer.id}>
                 <button 
                 onClick={() => handleSelect(answer)} 
-                key={idx}
                 className={questionSelected === answer.id ? (answer.isCorrect ? answerClasses.correct : answerClasses.incorrect) : (questionSubmitted ? answerClasses.defaultAfter : answerClasses.default)} disabled={questionSubmitted ? true : false}>
-               <p>
                 {answer.answerText}
-               </p>
                <p className='text-sm font-semibold text-green-500'>{questionSubmitted? (currentCorrect ? "" : (answer.isCorrect ? 'respuesta correcta' : '')): ''}</p>
                </button>
 
                {questionSelected === answer.id ? (<p className={questionSubmitted ? feedbackClasses.submitted : feedbackClasses.default}>{questionSubmitted ? (currentCorrect ? 'Correcto! 👏' : 'Incorrecto 😥') : ''}</p>) : ''}
-</div>
+                </li>
                );
             })}
+        </ul>
 
             <div className='mt-6 flex flex-row items-center w-full text-sm justify-between'>
             <p>Pregunta <span className='font-bold'>{questionIndex + 1}</span> de {answersArray.length}</p>
