@@ -37,7 +37,8 @@ export default function Home() {
           
           setData(response.data)
           setCurrentQuestionText(response.data[questionIndex].questionText)
-          setAnswersArray(response.data[questionIndex].answers)
+          const initialAnswerArray = response.data[questionIndex].answers
+          setAnswersArray(initialAnswerArray.sort(() => Math.random() - 0.5))
 
           setLoading(false);
       
@@ -50,6 +51,8 @@ export default function Home() {
       useEffect(()=> {
       fetchQuestions();
       },[questionIndex]);
+
+      
 
 
     const progressPercentage = Math.round((questionIndex / data.length) * 100)
