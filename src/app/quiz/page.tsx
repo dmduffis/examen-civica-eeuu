@@ -1,16 +1,21 @@
 'use client'
 
-import React, { useState } from 'react'
-import { data } from '../data/data'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios';
 import Image from 'next/image';
 import ProgressBar from '../components/ProgressBar';
 import Results from './Results';
 import Question from '../components/Question';
 import boyReading from '../assets/images/quiz_start.png';
+import { BeatLoader } from 'react-spinners';
 
 export default function Home() {
 
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState<boolean>(false)
     const [started, setStarted] = useState<boolean>(false);
+    const [answersArray, setAnswersArray] = useState([]);
+    const [currentQuestionText, setCurrentQuestionText] = useState<string>('');
     const [questionIndex, setQuestionIndex] = useState<number>(0);
     const [quizSubmitted, setQuizSubmitted] = useState<boolean>(false);
     const [questionSelected, setQuestionSelected] = useState<string | null>(null);
@@ -18,10 +23,34 @@ export default function Home() {
     const [currentCorrect, setCurrentCorrect] = useState<boolean | null>(null);
     const [score, setScore] = useState<number>(0);
 
-    const question = data[questionIndex]
-    const answersArray = question.answers;
+    
+    const fetchQuestions = async () => {
 
-    const currentQuestionText = question.questionText;
+        setLoading(true);
+
+        try {
+          const endpoint = "https://examencivicabackend-production.up.railway.app/api/question/";
+          const headers = {
+            'Content-Type': 'application/json'
+          }
+          const response = await axios.get(endpoint, { headers });
+          
+          setData(response.data)
+          setCurrentQuestionText(response.data[questionIndex].questionText)
+          setAnswersArray(response.data[questionIndex].answers)
+
+          setLoading(false);
+      
+        } catch (error) {
+          console.log(error)
+          setLoading(false);
+        }
+      };
+      
+      useEffect(()=> {
+      fetchQuestions();
+      },[questionIndex]);
+
 
     const progressPercentage = Math.round((questionIndex / data.length) * 100)
 
@@ -43,7 +72,7 @@ export default function Home() {
 
     const handleSelect = (item:any) => {
         setQuestionSubmitted(true);
-        setQuestionSelected(item.id);
+        setQuestionSelected(item._id);
     
         if (item.isCorrect) {
             setCurrentCorrect(true)
@@ -58,10 +87,12 @@ export default function Home() {
     if (questionIndex === data.length - 1) {
         setQuizSubmitted(true) 
     } else {
+        setLoading(true)
         setQuestionIndex(prevIndex => prevIndex += 1)
         setQuestionSubmitted(false);
         setQuestionSelected(null);
         setCurrentCorrect(null)
+        setLoading(false)
     }  
 }
 
@@ -101,6 +132,17 @@ if (quizSubmitted) {
 
     </main>
     : 
+
+    (  loading? 
+    
+        (<div className='flex mt-[50%] flex-1 flex-row justify-center items-center'>
+            <BeatLoader
+  color="rgba(214, 169, 54, 0.6)"
+  speedMultiplier={0.5}
+/>
+        </div>) 
+
+        :
     <main className='flex flex-col w-full justify-center mt-8'>
         <div>
             <ProgressBar progressPercentage={progressPercentage}/>
@@ -109,9 +151,10 @@ if (quizSubmitted) {
                 <p className='text-lg font-bold mb-6'>{currentQuestionText}</p>
             </div>
 
-            {answersArray.map((answer:{ id:string, isCorrect:boolean, answerText:string }) => {
-               return (<Question
-               key={answer.id} 
+            { answersArray.map((answer:{ _id:string, isCorrect:boolean, answerText:string }, idx) => {
+               return (
+               <Question
+               key={answer._id}
                answer={answer} 
                handleSelect={handleSelect} 
                questionSelected={questionSelected}
@@ -119,6 +162,7 @@ if (quizSubmitted) {
                questionSubmitted={questionSubmitted}
                currentCorrect={currentCorrect}
                feedbackClasses={feedbackClasses}
+               loading={loading}
                />)
             })}
 
@@ -129,6 +173,7 @@ if (quizSubmitted) {
             </div>
         </div>
     </main>
+ )
   )
 }
 }
