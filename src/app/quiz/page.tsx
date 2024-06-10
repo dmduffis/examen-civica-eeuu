@@ -1,183 +1,18 @@
 'use client'
 
-import { nanoid } from 'nanoid'
 import React, { useState } from 'react'
+import { data } from '../data/data'
 import Image from 'next/image';
 import ProgressBar from '../components/ProgressBar';
 import Results from './Results';
+import Question from '../components/Question';
 import boyReading from '../assets/images/quiz_start.png';
-
-export const dynamic = 'force-dynamic';
-
-const data = [
-    {
-        id: nanoid(),
-        questionText: '¿Cuál es la ley suprema de la nación?',
-        answers: [
-            {
-                id: nanoid(),
-                answerText: 'El Código Penal',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'La Constitución',
-                isCorrect: true,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Las Leyes Municipales',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'El Reglamento Interno',
-                isCorrect: false,
-            }
-        ]
-
-    },
-    {
-        id: nanoid(),
-        questionText: 'Las primeras tres palabras de la Constitución contienen la idea del autogobierno (de que el pueblo se gobierna a sí mismo). ¿Cuáles son estas palabras?',
-        answers: [
-            {
-                id: nanoid(),
-                answerText: 'El pueblo unido',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Libertad y justicia',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Nosotros, el pueblo',
-                isCorrect: true,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Poder del pueblo',
-                isCorrect: false,
-            }
-        ]
-
-    },
-    {
-        id: nanoid(),
-        questionText: 'Las primeras tres palabras de la Constitución contienen la idea del autogobierno (de que el pueblo se gobierna a sí mismo). ¿Cuáles son estas palabras?',
-        answers: [
-            {
-                id: nanoid(),
-                answerText: 'La Carta de Derechos',
-                isCorrect: true,
-            },
-            {
-                id: nanoid(),
-                answerText: 'La Declaración de Independencia',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Los Artículos Confederados',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Las Resoluciones Federales',
-                isCorrect: false,
-            }
-        ]
-
-    },
-    {
-        id: nanoid(),
-        questionText: '¿Cuántas enmiendas tiene la Constitución?',
-        answers: [
-            {
-                id: nanoid(),
-                answerText: 'Diez (10)',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Veintisiete (27)',
-                isCorrect: true,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Cincuenta (50)',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Cuarenta y dos (42)',
-                isCorrect: false,
-            }
-        ]
-    },
-    {
-        id: nanoid(),
-        questionText: '¿En qué consiste la libertad de religión?',
-        answers: [
-            {
-                id: nanoid(),
-                answerText: 'La obligación de seguir una religión específica.',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'La capacidad de expresar opiniones políticas libremente.',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'Se puede practicar cualquier religión o no practicar ninguna.',
-                isCorrect: true,
-            },
-            {
-                id: nanoid(),
-                answerText: 'La necesidad de asistir a servicios religiosos regularmente.',
-                isCorrect: false,
-            }
-        ]
-    },
-    {
-        id: nanoid(),
-        questionText: '¿Quién está a cargo de la rama ejecutiva?',
-        answers: [
-            {
-                id: nanoid(),
-                answerText: 'El Congreso',
-                isCorrect: false,
-            },
-            {
-                id: nanoid(),
-                answerText: 'El Presidente',
-                isCorrect: true,
-            },
-            {
-                id: nanoid(),
-                answerText: 'La Corte Suprema',
-                isCorrect: true,
-            },
-            {
-                id: nanoid(),
-                answerText: 'El Gobernador',
-                isCorrect: false,
-            }
-        ]
-    }
-]
 
 export default function Home() {
 
     const [started, setStarted] = useState<boolean>(false);
     const [questionIndex, setQuestionIndex] = useState<number>(0);
-    // const [currentQuestionText, setCurrentQuestionText] = useState<string>('');
     const [quizSubmitted, setQuizSubmitted] = useState<boolean>(false);
-    // const [answersArray, setAnswersArray] = useState([]);
     const [questionSelected, setQuestionSelected] = useState<string | null>(null);
     const [questionSubmitted, setQuestionSubmitted ] = useState(false);
     const [currentCorrect, setCurrentCorrect] = useState<boolean | null>(null);
@@ -273,22 +108,18 @@ if (quizSubmitted) {
                 <p className='text-lg font-bold mb-6'>{currentQuestionText}</p>
             </div>
 
-        <ul>
-            {answersArray.map((answer, idx) => {
-               return (
-                <li key={answer.id}>
-                <button 
-                onClick={() => handleSelect(answer)} 
-                className={questionSelected === answer.id ? (answer.isCorrect ? answerClasses.correct : answerClasses.incorrect) : (questionSubmitted ? answerClasses.defaultAfter : answerClasses.default)} disabled={questionSubmitted ? true : false}>
-                {answer.answerText}
-               <p className='text-sm font-semibold text-green-500'>{questionSubmitted? (currentCorrect ? "" : (answer.isCorrect ? 'respuesta correcta' : '')): ''}</p>
-               </button>
-
-               {questionSelected === answer.id ? (<p className={questionSubmitted ? feedbackClasses.submitted : feedbackClasses.default}>{questionSubmitted ? (currentCorrect ? 'Correcto! 👏' : 'Incorrecto 😥') : ''}</p>) : ''}
-                </li>
-               );
+            {answersArray.map((answer:{ id:string, isCorrect:boolean, answerText:string }) => {
+               return (<Question
+               key={answer.id} 
+               answer={answer} 
+               handleSelect={handleSelect} 
+               questionSelected={questionSelected}
+               answerClasses={answerClasses}
+               questionSubmitted={questionSubmitted}
+               currentCorrect={currentCorrect}
+               feedbackClasses={feedbackClasses}
+               />)
             })}
-        </ul>
 
             <div className='mt-6 flex flex-row items-center w-full text-sm justify-between'>
             <p>Pregunta <span className='font-bold'>{questionIndex + 1}</span> de {answersArray.length}</p>
