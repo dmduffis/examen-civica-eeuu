@@ -71,7 +71,12 @@ export default function Home() {
   return (
     <main className="flex flex-col w-full justify-center pt-16 mt-8 pb-16">
       <div className="flex justify-center mb-8">
-        <Image src={boyReading} width={280} alt="Person studying" />
+        <Image
+          src={boyReading}
+          width={280}
+          alt="Person studying"
+          className="w-[140px] sm:w-[280px] h-auto"
+        />
       </div>
       <h1 className="text-3xl font-semibold text-gray-800 text-center mb-3">
         Examen de Educación Cívica
