@@ -194,6 +194,14 @@ export default function QuizPage() {
           </div>
         ) : (
           <>
+            <div className="w-full flex justify-start mb-4">
+              <Link
+                href="/"
+                className="text-sm text-gray-500 hover:text-gray-800 hover:underline"
+              >
+                ← Inicio
+              </Link>
+            </div>
             <div className="flex justify-center mt-8">
               <Image src={girlExam} width={280} alt="Person studying" />
             </div>
@@ -235,15 +243,6 @@ export default function QuizPage() {
               <p className="text-center text-xs text-gray-400">
                 Test al azar con 10, 20 o 50 preguntas
               </p>
-            </div>
-
-            <div className="flex justify-center mt-8">
-              <Link
-                href="/"
-                className="text-sm text-gray-500 hover:text-gray-800 hover:underline"
-              >
-                ← Inicio
-              </Link>
             </div>
           </>
         )}

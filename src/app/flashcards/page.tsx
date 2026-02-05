@@ -213,14 +213,14 @@ export default function FlashcardsPage() {
 
     return (
       <main className="flex flex-col w-full justify-center mt-8 pb-16">
-        <div className="flex justify-between items-center w-full mb-6">
-          <h1 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-10 sm:gap-4 w-full mb-8 sm:mb-6">
+          <Link href="/" className="text-sm text-gray-500 hover:text-gray-800 hover:underline shrink-0 order-1 sm:order-2">
+            ← Inicio
+          </Link>
+          <h1 className="text-2xl font-semibold text-gray-800 flex items-center gap-2 order-2 sm:order-1">
             <FlashcardIcon />
             Revisar
           </h1>
-          <Link href="/" className="text-sm text-gray-500 hover:text-gray-800 hover:underline">
-            ← Inicio
-          </Link>
         </div>
         <div className="flex justify-between items-center mb-4">
           <span className="text-sm text-gray-500">
@@ -358,16 +358,16 @@ export default function FlashcardsPage() {
 
   return (
     <main className="flex flex-col w-full justify-center mt-8 pb-16">
-      <div className="flex justify-between items-center w-full mb-4">
-        <h1 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-10 sm:gap-4 w-full mb-4">
+        <Link href="/" className="text-sm text-gray-500 hover:text-gray-800 hover:underline shrink-0 order-1 sm:order-2">
+          ← Inicio
+        </Link>
+        <h1 className="text-xl font-semibold text-gray-800 flex items-center gap-2 order-2 sm:order-1">
           <FlashcardIcon />
           Revisar
         </h1>
-        <Link href="/" className="text-sm text-gray-500 hover:text-gray-800 hover:underline shrink-0">
-          ← Inicio
-        </Link>
       </div>
-      <p className="text-gray-500 text-sm mb-6">
+      <p className="text-gray-500 text-sm mt-1 mb-6">
         Elige las preguntas que quieres repasar y estudia con tarjetas.
       </p>
 

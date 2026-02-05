@@ -116,23 +116,23 @@ export default function ReviewPage() {
 
   return (
     <main className="flex flex-col w-full justify-center mt-8 pb-16">
-      <div className="flex justify-between items-start mb-6">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-10 sm:gap-4 mb-8 sm:mb-6">
+        <Link
+          href="/"
+          className="text-sm text-gray-600 hover:text-gray-900 hover:underline shrink-0 order-1 sm:order-2"
+        >
+          ← Inicio
+        </Link>
+        <div className="order-2 sm:order-1">
           <h1 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
             <ReviewIcon />
             Lista de preguntas
           </h1>
-          <p className="text-gray-500 text-sm mt-3 max-w-md">
+          <p className="text-gray-500 text-sm mt-1 max-w-md">
             Hay 100 preguntas en total; en la entrevista te harán 20 de forma
             oral. Aquí puedes estudiarlas todas con sus respuestas correctas.
           </p>
         </div>
-        <Link
-          href="/"
-          className="text-sm text-gray-600 hover:text-gray-900 hover:underline shrink-0"
-        >
-          ← Inicio
-        </Link>
       </div>
 
       <div className="w-full max-w-sm mb-8">
