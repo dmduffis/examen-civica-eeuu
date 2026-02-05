@@ -75,7 +75,7 @@ export default function Home() {
           src={boyReading}
           width={280}
           alt="Person studying"
-          className="w-[140px] sm:w-[280px] h-auto"
+          className="w-[210px] sm:w-[280px] h-auto"
         />
       </div>
       <h1 className="text-3xl font-semibold text-gray-800 text-center mb-3">
