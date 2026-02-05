@@ -3,7 +3,6 @@
 import React, { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useReward } from "react-rewards";
 import celebration from "../assets/images/quiz_100.png";
 
 type Props = {
@@ -26,19 +25,39 @@ export default function Results({
   totalQuestions,
   restartQuiz,
 }: Props) {
-  const correctPercentage = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+  const correctPercentage =
+    totalQuestions > 0
+      ? Math.round((correctAnswers / totalQuestions) * 100)
+      : 0;
   const incorrectPercentage = totalQuestions > 0 ? 100 - correctPercentage : 0;
   const message = getMessage(correctPercentage);
 
-  const { reward } = useReward("rewardId", "confetti");
   useEffect(() => {
-    if (correctPercentage === 100) reward();
-  }, [correctPercentage, reward]);
+    if (correctPercentage !== 100) return;
+    import("canvas-confetti").then(({ default: confetti }) => {
+      const duration = 2000;
+      const end = Date.now() + duration;
+      const frame = () => {
+        confetti({
+          particleCount: 3,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+        });
+        confetti({
+          particleCount: 3,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+        });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      };
+      frame();
+    });
+  }, [correctPercentage]);
 
   return (
     <main className="flex flex-col w-full justify-center pt-12 pb-16">
-      <span id="rewardId" />
-
       {correctPercentage === 100 && (
         <div className="flex justify-center mb-6">
           <Image

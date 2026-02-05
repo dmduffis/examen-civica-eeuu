@@ -69,7 +69,7 @@ const FlashcardIcon = () => (
 
 export default function Home() {
   return (
-    <main className="flex flex-col w-full justify-center pt-16 mt-8">
+    <main className="flex flex-col w-full justify-center pt-16 mt-8 pb-16">
       <div className="flex justify-center mb-8">
         <Image src={boyReading} width={280} alt="Person studying" />
       </div>
@@ -80,27 +80,27 @@ export default function Home() {
         Practica para la entrevista de naturalización de Estados Unidos.
       </p>
 
-      <div className="flex flex-col sm:flex-row flex-wrap gap-6 justify-center">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 justify-center items-stretch sm:items-center w-full max-w-sm sm:max-w-none mx-auto sm:mx-0">
         <Link
           href="/quiz"
-          className="rounded-xl text-gray-800 py-8 px-10 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 w-44 sm:w-52 text-center inline-flex flex-col items-center justify-center gap-4 transition-colors"
+          className="rounded-xl text-gray-800 py-6 px-6 sm:py-8 sm:px-10 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 w-full sm:w-52 text-center inline-flex flex-col items-center justify-center gap-3 sm:gap-4 transition-colors min-h-[120px] sm:min-h-0"
         >
           <QuizIcon />
-          <span className="text-xl font-semibold">Tomar Quiz</span>
+          <span className="text-lg sm:text-xl font-semibold">Tomar Quiz</span>
         </Link>
         <Link
           href="/review"
-          className="rounded-xl text-gray-800 py-8 px-10 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 w-44 sm:w-52 text-center inline-flex flex-col items-center justify-center gap-4 transition-colors"
+          className="rounded-xl text-gray-800 py-6 px-6 sm:py-8 sm:px-10 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 w-full sm:w-52 text-center inline-flex flex-col items-center justify-center gap-3 sm:gap-4 transition-colors min-h-[120px] sm:min-h-0"
         >
           <ReviewIcon />
-          <span className="text-xl font-semibold">Preguntas</span>
+          <span className="text-lg sm:text-xl font-semibold">Preguntas</span>
         </Link>
         <Link
           href="/flashcards"
-          className="rounded-xl text-gray-800 py-8 px-10 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 w-44 sm:w-52 text-center inline-flex flex-col items-center justify-center gap-4 transition-colors"
+          className="rounded-xl text-gray-800 py-6 px-6 sm:py-8 sm:px-10 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 w-full sm:w-52 text-center inline-flex flex-col items-center justify-center gap-3 sm:gap-4 transition-colors min-h-[120px] sm:min-h-0"
         >
           <FlashcardIcon />
-          <span className="text-xl font-semibold">Revisar</span>
+          <span className="text-lg sm:text-xl font-semibold">Revisar</span>
         </Link>
       </div>
     </main>
