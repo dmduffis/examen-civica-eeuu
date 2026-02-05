@@ -497,7 +497,7 @@ export default function FlashcardsPage() {
         {questions.map((q, index) => (
           <label
             key={q._id}
-            className="flex items-center gap-3 min-h-[52px] py-3 px-3 pb-6 border-2 border-slate-200 rounded-xl bg-white cursor-pointer hover:bg-amber-50/50 hover:border-amber-200 transition-colors"
+            className="flex items-center gap-3 min-h-[52px] w-full min-w-0 py-3 px-3 pb-6 border-2 border-slate-200 rounded-xl bg-white cursor-pointer hover:bg-amber-50/50 hover:border-amber-200 transition-colors"
           >
             <span className="relative shrink-0 flex items-center justify-center w-[22px] h-[22px]">
               <input
@@ -517,7 +517,7 @@ export default function FlashcardsPage() {
                 {selectedIds.has(q._id) && <CheckIcon />}
               </span>
             </span>
-            <span className="text-gray-800 text-sm text-left break-words min-w-0 flex-1 py-0.5">
+            <span className="text-gray-800 text-sm text-left min-w-0 flex-1 py-0.5 break-words">
               {index + 1}. {q.questionText}
             </span>
           </label>
