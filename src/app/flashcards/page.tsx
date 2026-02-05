@@ -493,13 +493,13 @@ export default function FlashcardsPage() {
       <p className="text-xs text-gray-500 mb-2">
         {selectedIds.size} de {questions.length} seleccionadas
       </p>
-      <div className="flex flex-col gap-2 max-h-[45vh] overflow-y-auto mb-6 pr-1">
+      <div className="flex flex-col gap-2 max-h-[60vh] sm:max-h-[45vh] overflow-x-hidden overflow-y-auto mb-6 pr-1 min-w-0 w-full">
         {questions.map((q, index) => (
           <label
             key={q._id}
-            className="flex items-center gap-3 min-h-[52px] w-full min-w-0 py-3 px-3 pb-6 border-2 border-slate-200 rounded-xl bg-white cursor-pointer hover:bg-amber-50/50 hover:border-amber-200 transition-colors"
+            className="flex items-start gap-3 w-full max-w-full min-w-0 py-4 px-3 border-2 border-slate-200 rounded-xl bg-white cursor-pointer hover:bg-amber-50/50 hover:border-amber-200 transition-colors"
           >
-            <span className="relative shrink-0 flex items-center justify-center w-[22px] h-[22px]">
+            <span className="relative shrink-0 flex items-center justify-center w-[22px] h-[22px] flex-shrink-0">
               <input
                 type="checkbox"
                 checked={selectedIds.has(q._id)}
@@ -517,7 +517,7 @@ export default function FlashcardsPage() {
                 {selectedIds.has(q._id) && <CheckIcon />}
               </span>
             </span>
-            <span className="text-gray-800 text-sm text-left min-w-0 flex-1 py-0.5 break-words">
+            <span className="block min-w-0 flex-1 py-0.5 text-gray-800 text-sm text-left break-words [overflow-wrap:anywhere]">
               {index + 1}. {q.questionText}
             </span>
           </label>
