@@ -1,70 +1,98 @@
-'use client'
+"use client";
 
-import React, {useEffect} from 'react'
-import GradeBars from '../components/GradeBars';
-import celebration from '../assets/images/quiz_100.png'
-import Image from 'next/image';
-import { useReward } from 'react-rewards';
+import React, { useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useReward } from "react-rewards";
+import celebration from "../assets/images/quiz_100.png";
 
 type Props = {
-    correctAnswers: number;
-    incorrectAnswers: number;
-    totalQuestions: number;
-    restartQuiz: Function;
+  correctAnswers: number;
+  incorrectAnswers: number;
+  totalQuestions: number;
+  restartQuiz: () => void;
+};
+
+function getMessage(percentage: number): string {
+  if (percentage === 100) return "¡Magnífico!";
+  if (percentage >= 80) return "¡Bien hecho!";
+  if (percentage >= 60) return "Casi.";
+  return "Sigue practicando.";
 }
 
-function Results(props: Props) {
+export default function Results({
+  correctAnswers,
+  incorrectAnswers,
+  totalQuestions,
+  restartQuiz,
+}: Props) {
+  const correctPercentage = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+  const incorrectPercentage = totalQuestions > 0 ? 100 - correctPercentage : 0;
+  const message = getMessage(correctPercentage);
 
-const {correctAnswers, incorrectAnswers, totalQuestions, restartQuiz} = props;
-
-const correctPercentage = Math.round((correctAnswers/totalQuestions) * 100)
-const incorrectPercentage = Math.round((incorrectAnswers/totalQuestions) * 100)
-
-const {reward} = useReward('rewardId', 'confetti')
-useEffect(() => {
-    if (correctPercentage === 100) {
-        reward();
-    }
-}, [correctPercentage, reward])
-
-if (correctPercentage === 100) {
-    return (
-        <main className='flex flex-col text-center w-full justify-center mt-24'>
-        <h1 className='text-2xl font-semibold text-gray-800'>Magnifico!</h1>
-
-        <div className='flex text-3xl text-center w-full justify-center'>
-            <p className='text-4xl mt-2 text-center font-bold'>{correctPercentage}%</p>
-        </div>
-        <div className='flex justify-center mt-16'>
-        <Image  src={celebration} width={400} alt='couple raising american flag and celebrating'/>
-        </div>
-        <span id='rewardId' />
-    </main>
-    )
-}
+  const { reward } = useReward("rewardId", "confetti");
+  useEffect(() => {
+    if (correctPercentage === 100) reward();
+  }, [correctPercentage, reward]);
 
   return (
-    <main className='flex flex-col text-center w-full justify-center mt-24'>
-        <h1 className='text-2xl font-semibold text-gray-800'>Tu Resultado:</h1>
+    <main className="flex flex-col w-full justify-center pt-12 pb-16">
+      <span id="rewardId" />
 
-        <div className='flex text-3xl text-center w-full justify-center'>
-            <p className='text-4xl mt-2 text-center font-bold'>{correctPercentage}%</p>
+      {correctPercentage === 100 && (
+        <div className="flex justify-center mb-6">
+          <Image
+            src={celebration}
+            width={240}
+            height={160}
+            alt="Celebrando"
+            className="object-contain"
+          />
         </div>
+      )}
 
-        <GradeBars correctPercentage={correctPercentage} incorrectPercentage={incorrectPercentage} />
-        
-        <div className='flex flex-row gap-6 mt-8 justify-center text-center text-lg'>
-            <p>Correcto: <span className='font-bold'>{correctAnswers}</span></p>
-            <p>Incorrecto: <span className='font-bold'>{incorrectAnswers}</span></p>
+      <p className="text-5xl font-bold text-gray-800 text-center">
+        {correctPercentage}%
+      </p>
+      <p className="text-gray-500 text-center text-sm mt-3">
+        {correctAnswers} de {totalQuestions} correctas
+      </p>
+
+      <div className="w-full max-w-xs mx-auto mt-8">
+        <div className="flex h-2 overflow-hidden bg-slate-200">
+          <div
+            className="bg-green-500 transition-all duration-500"
+            style={{ width: `${correctPercentage}%` }}
+          />
+          <div
+            className="bg-red-400 transition-all duration-500"
+            style={{ width: `${incorrectPercentage}%` }}
+          />
         </div>
-
-        <div className='flex justify-center mt-16'>
-        <button onClick={() => restartQuiz()} className='text-gray-900 py-2 px-4 bg-slate-200 border border-slate-300 text-underline hover:bg-yellow-500 rounded-lg'>Retome el Examen</button>
+        <div className="flex justify-between mt-2 text-sm text-gray-500">
+          <span>{correctAnswers} correctas</span>
+          <span>{incorrectAnswers} incorrectas</span>
         </div>
+      </div>
 
-  
+      <h1 className="text-2xl font-semibold text-gray-800 text-center mt-6">
+        {message}
+      </h1>
+
+      <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12 max-w-sm mx-auto w-full">
+        <Link
+          href="/"
+          className="rounded-xl text-gray-800 py-4 px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 text-center font-semibold transition-colors"
+        >
+          Volver al inicio
+        </Link>
+        <button
+          onClick={() => restartQuiz()}
+          className="rounded-xl text-gray-800 py-4 px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 font-semibold transition-colors"
+        >
+          Hacer otro quiz
+        </button>
+      </div>
     </main>
-  )
+  );
 }
-
-export default Results

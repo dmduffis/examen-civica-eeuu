@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import { Manrope } from 'next/font/google'
+import { Manrope } from "next/font/google";
 
 const manrope = Manrope({
-  subsets: ['latin'],
-  display: 'swap',
-})
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Examen de Educación Cívica",
@@ -20,7 +20,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${manrope.className} flex justify-center mx-8`}>{children}</body>
+      <body className={`${manrope.className} flex justify-center mx-8`}>
+        <div className="flex flex-1 justify-center max-w-[800px] w-full">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }
