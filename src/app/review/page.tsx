@@ -12,6 +12,8 @@ import {
   type StateOption,
   type StateDetails,
 } from "../lib/state-api";
+import { useAuth } from "../lib/auth-context";
+import { fetchProfile, updateProfileState } from "../lib/profile-api";
 
 type Answer = { _id: string; isCorrect: boolean; answerText: string };
 type QuestionItem = {
@@ -30,17 +32,30 @@ export default function ReviewPage() {
     null,
   );
   const [stateDetails, setStateDetails] = useState<StateDetails | null>(null);
+  const { user, isAuthEnabled } = useAuth();
 
   useEffect(() => {
     setSelectedStateCode(getStoredStateCode());
   }, []);
 
   useEffect(() => {
+    if (!isAuthEnabled || !user) return;
+    let cancelled = false;
+    fetchProfile()
+      .then((profile) => {
+        if (!cancelled && profile?.stateCode != null) {
+          setSelectedStateCode(profile.stateCode);
+          setStoredStateCode(profile.stateCode);
+        }
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [isAuthEnabled, user]);
+
+  useEffect(() => {
     const load = async () => {
       try {
-        const endpoint =
-          "https://examencivicabackend-production.up.railway.app/api/question/";
-        const response = await axios.get(endpoint, {
+        const response = await axios.get("/api/questions", {
           headers: { "Content-Type": "application/json" },
         });
         setQuestions(response.data);
@@ -98,6 +113,9 @@ export default function ReviewPage() {
   const handleStateChange = (stateCode: string | null) => {
     setSelectedStateCode(stateCode);
     setStoredStateCode(stateCode);
+    if (isAuthEnabled && user) {
+      updateProfileState(stateCode).catch(() => {});
+    }
   };
 
   return (

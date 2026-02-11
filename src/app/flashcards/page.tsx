@@ -12,6 +12,8 @@ import {
   type StateOption,
   type StateDetails,
 } from "../lib/state-api";
+import { useAuth } from "../lib/auth-context";
+import { fetchProfile, updateProfileState } from "../lib/profile-api";
 
 type Answer = { _id: string; isCorrect: boolean; answerText: string };
 type QuestionItem = {
@@ -21,8 +23,7 @@ type QuestionItem = {
   isStateSpecific?: boolean;
 };
 
-const API_ENDPOINT =
-  "https://examencivicabackend-production.up.railway.app/api/question/";
+const QUESTIONS_API = "/api/questions";
 
 const CheckAllIcon = () => (
   <svg
@@ -85,10 +86,25 @@ export default function FlashcardsPage() {
   const [marks, setMarks] = useState<Record<string, "right" | "wrong">>({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const { user, isAuthEnabled } = useAuth();
 
   useEffect(() => {
     setSelectedStateCode(getStoredStateCode());
   }, []);
+
+  useEffect(() => {
+    if (!isAuthEnabled || !user) return;
+    let cancelled = false;
+    fetchProfile()
+      .then((profile) => {
+        if (!cancelled && profile?.stateCode != null) {
+          setSelectedStateCode(profile.stateCode);
+          setStoredStateCode(profile.stateCode);
+        }
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [isAuthEnabled, user]);
 
   useEffect(() => {
     if (!selectedStateCode) {
@@ -112,7 +128,7 @@ export default function FlashcardsPage() {
     const load = async () => {
       try {
         const [response, statesList] = await Promise.all([
-          axios.get(API_ENDPOINT, {
+          axios.get(QUESTIONS_API, {
             headers: { "Content-Type": "application/json" },
           }),
           fetchStates().catch(() => []),
@@ -437,6 +453,7 @@ export default function FlashcardsPage() {
               const code = e.target.value || null;
               setSelectedStateCode(code);
               setStoredStateCode(code);
+              if (isAuthEnabled && user) updateProfileState(code).catch(() => {});
             }}
             className="w-full max-w-xs h-11 rounded-xl border-2 border-slate-200 bg-white py-2.5 px-3 text-gray-800 shadow-sm sm:ml-auto"
           >

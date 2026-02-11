@@ -1,5 +1,3 @@
-const API_BASE = "https://examencivicabackend-production.up.railway.app/api";
-
 export type StateOption = { stateCode: string; name: string };
 
 export type StateDetails = {
@@ -13,7 +11,7 @@ export type StateDetails = {
 export const STATE_STORAGE_KEY = "civic-exam-state";
 
 export async function fetchStates(): Promise<StateOption[]> {
-  const res = await fetch(`${API_BASE}/state`, {
+  const res = await fetch("/api/state", {
     headers: { "Content-Type": "application/json" },
   });
   if (!res.ok) throw new Error("Failed to fetch states");
@@ -21,7 +19,7 @@ export async function fetchStates(): Promise<StateOption[]> {
 }
 
 export async function fetchStateDetails(stateCode: string): Promise<StateDetails> {
-  const res = await fetch(`${API_BASE}/state/${encodeURIComponent(stateCode)}`, {
+  const res = await fetch(`/api/state/${encodeURIComponent(stateCode)}`, {
     headers: { "Content-Type": "application/json" },
   });
   if (!res.ok) throw new Error("Failed to fetch state details");
