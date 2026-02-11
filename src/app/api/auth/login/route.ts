@@ -7,6 +7,13 @@ export async function POST(request: NextRequest) {
   if (!BASE) {
     return NextResponse.json({ message: "Auth API not configured" }, { status: 503 });
   }
+  const selfOrigin = request.nextUrl.origin;
+  if (BASE.startsWith(selfOrigin) || BASE.replace(/^https?:\/\//, "").split("/")[0] === selfOrigin.replace(/^https?:\/\//, "").split("/")[0]) {
+    return NextResponse.json(
+      { message: "NEXT_PUBLIC_AUTH_API_URL must point to your auth backend, not this app." },
+      { status: 503 }
+    );
+  }
   try {
     const body = await request.json();
     const res = await fetch(`${BASE}/api/auth/login`, {
