@@ -28,16 +28,22 @@ export function setStoredToken(token: string | null): void {
   else localStorage.setItem(TOKEN_KEY, token);
 }
 
+function authFetch(path: string, body: object) {
+  const base = getAuthApiUrl();
+  if (!base) throw new Error("Auth API not configured");
+  const url = `${base.replace(/\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
+  return fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
 export async function login(
   email: string,
   password: string
 ): Promise<AuthResponse> {
-  if (!getAuthApiUrl()) throw new Error("Auth API not configured");
-  const res = await fetch("/api/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
+  const res = await authFetch("/api/auth/login", { email, password });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.message || "Error al iniciar sesión");
   return data as AuthResponse;
@@ -47,13 +53,11 @@ export async function register(
   email: string,
   password: string
 ): Promise<AuthResponse> {
-  if (!getAuthApiUrl()) throw new Error("Auth API not configured");
-  const res = await fetch("/api/auth/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
+  const res = await authFetch("/api/auth/register", { email, password });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.message || "Error al registrarse");
+  if (!res.ok) {
+    const msg = data.message || "Error al registrarse";
+    throw new Error(msg);
+  }
   return data as AuthResponse;
 }
