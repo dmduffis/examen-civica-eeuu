@@ -33,22 +33,16 @@ export function setStoredToken(token: string | null): void {
   else localStorage.setItem(TOKEN_KEY, token);
 }
 
-function authFetch(path: string, body: object) {
-  const base = getAuthApiUrl();
-  if (!base) throw new Error("Auth API not configured");
-  const url = `${base.replace(/\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
-  return fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-}
-
 export async function login(
   email: string,
   password: string
 ): Promise<AuthResponse> {
-  const res = await authFetch("/api/auth/login", { email, password });
+  if (!getAuthApiUrl()) throw new Error("Auth API not configured");
+  const res = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.message || "Error al iniciar sesión");
   return data as AuthResponse;
@@ -58,13 +52,18 @@ export async function register(
   email: string,
   password: string
 ): Promise<AuthResponse> {
-  const res = await authFetch("/api/auth/register", { email, password });
+  if (!getAuthApiUrl()) throw new Error("Auth API not configured");
+  const res = await fetch("/api/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     const msg =
       data.message ||
       (res.status === 401
-        ? "El servidor rechazó el registro (401). Comprueba que NEXT_PUBLIC_AUTH_API_URL apunte al backend de auth, no a examencivica.com."
+        ? "El servidor rechazó el registro (401). Revisa la configuración del backend."
         : "Error al registrarse");
     throw new Error(msg);
   }
