@@ -55,9 +55,7 @@ export default function ReviewPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const endpoint =
-          "https://examencivicabackend-production.up.railway.app/api/question/";
-        const response = await axios.get(endpoint, {
+        const response = await axios.get("/api/questions", {
           headers: { "Content-Type": "application/json" },
         });
         setQuestions(response.data);

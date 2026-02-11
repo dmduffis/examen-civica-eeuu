@@ -23,8 +23,7 @@ type QuestionItem = {
   isStateSpecific?: boolean;
 };
 
-const API_ENDPOINT =
-  "https://examencivicabackend-production.up.railway.app/api/question/";
+const QUESTIONS_API = "/api/questions";
 
 const CheckAllIcon = () => (
   <svg
@@ -129,7 +128,7 @@ export default function FlashcardsPage() {
     const load = async () => {
       try {
         const [response, statesList] = await Promise.all([
-          axios.get(API_ENDPOINT, {
+          axios.get(QUESTIONS_API, {
             headers: { "Content-Type": "application/json" },
           }),
           fetchStates().catch(() => []),

@@ -28,8 +28,7 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 const QUIZ_SIZES = [10, 20, 50];
-const ENDPOINT =
-  "https://examencivicabackend-production.up.railway.app/api/question/";
+const QUESTIONS_API = "/api/questions";
 
 const QuizIcon = () => (
   <svg
@@ -87,7 +86,7 @@ export default function QuizPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const questionsRes = await axios.get(ENDPOINT, {
+        const questionsRes = await axios.get(QUESTIONS_API, {
           headers: { "Content-Type": "application/json" },
         });
         setAllQuestions(questionsRes.data);
