@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { useAuth } from "../lib/auth-context";
+import { addQuizResult } from "../lib/profile-api";
 import Image from "next/image";
 import Link from "next/link";
 import ProgressBar from "../components/ProgressBar";
@@ -79,6 +81,8 @@ export default function QuizPage() {
   const [questionSubmitted, setQuestionSubmitted] = useState(false);
   const [currentCorrect, setCurrentCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState<number>(0);
+  const { user, isAuthEnabled } = useAuth();
+  const savedResultRef = useRef(false);
 
   useEffect(() => {
     const load = async () => {
@@ -174,7 +178,15 @@ export default function QuizPage() {
     setQuestionSelected(null);
     setCurrentCorrect(null);
     setStarted(false);
+    savedResultRef.current = false;
   };
+
+  useEffect(() => {
+    if (!quizSubmitted || !isAuthEnabled || !user || data.length === 0 || savedResultRef.current) return;
+    savedResultRef.current = true;
+    const incorrect = data.length - score;
+    addQuizResult(score, incorrect, data.length).catch(() => {});
+  }, [quizSubmitted, isAuthEnabled, user, score, data.length]);
 
   if (quizSubmitted) {
     return (

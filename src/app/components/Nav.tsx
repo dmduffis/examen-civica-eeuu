@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useAuth } from "../lib/auth-context";
+import { UserDropdown } from "./ui/user-dropdown";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 
 const MenuIcon = () => (
   <svg
@@ -37,8 +40,27 @@ const CloseIcon = () => (
   </svg>
 );
 
+const UserIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden
+  >
+    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+);
+
 export default function Nav() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { user, isAuthEnabled, logout } = useAuth();
 
   const closeDrawer = () => setDrawerOpen(false);
 
@@ -70,6 +92,9 @@ export default function Nav() {
 
         {/* Desktop: full nav */}
         <div className="hidden sm:flex items-center gap-6 sm:gap-8">
+          <Link href="/quiz" className={linkClass}>
+            Quiz
+          </Link>
           <Link href="/review" className={linkClass}>
             Preguntas
           </Link>
@@ -80,12 +105,19 @@ export default function Nav() {
             className="h-5 w-px bg-slate-200 shrink-0 self-center"
             aria-hidden
           />
-          <Link
-            href="/quiz"
-            className="inline-flex items-center rounded-lg bg-amber-500 text-white text-sm font-semibold px-4 py-2 hover:bg-amber-600 transition-colors"
-          >
-            Tomar Quiz
-          </Link>
+          {isAuthEnabled && user ? (
+            <UserDropdown email={user.email} onLogout={logout} />
+          ) : null}
+          {(!isAuthEnabled || !user) && (
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-amber-500 text-white text-sm font-semibold px-4 py-2 hover:bg-amber-600 transition-colors"
+              aria-label="Iniciar sesión / Registrarse"
+            >
+              <UserIcon />
+              Sign up / In
+            </Link>
+          )}
         </div>
 
         {/* Mobile: hamburger */}
@@ -127,6 +159,13 @@ export default function Nav() {
             </div>
             <div className="flex flex-col gap-1">
               <Link
+                href="/quiz"
+                className={drawerLinkClass}
+                onClick={closeDrawer}
+              >
+                Quiz
+              </Link>
+              <Link
                 href="/review"
                 className={drawerLinkClass}
                 onClick={closeDrawer}
@@ -142,13 +181,42 @@ export default function Nav() {
               </Link>
             </div>
             <span className="h-px bg-slate-200 my-4" aria-hidden />
-            <Link
-              href="/quiz"
-              onClick={closeDrawer}
-              className="inline-flex items-center justify-center rounded-lg bg-amber-500 text-white text-sm font-semibold py-3 px-4 hover:bg-amber-600 transition-colors"
-            >
-              Tomar Quiz
-            </Link>
+            {isAuthEnabled && user ? (
+              <div className="flex flex-col gap-2 mb-4">
+                <div className="flex items-center gap-3 px-1">
+                  <Avatar className="h-9 w-9 border-2 border-slate-200 shrink-0">
+                    <AvatarFallback className="bg-amber-100 text-amber-800 text-sm font-semibold">
+                      {user.email.slice(0, 1).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm text-gray-600 truncate">{user.email}</span>
+                </div>
+                <Link
+                  href="/progress"
+                  className={drawerLinkClass}
+                  onClick={closeDrawer}
+                >
+                  Mi progreso
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => { logout(); closeDrawer(); }}
+                  className="text-left py-3 text-base font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                >
+                  Cerrar sesión
+                </button>
+              </div>
+            ) : null}
+            {(!isAuthEnabled || !user) && (
+              <Link
+                href="/login"
+                onClick={closeDrawer}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-amber-500 text-white text-sm font-semibold py-3 px-4 hover:bg-amber-600 transition-colors"
+              >
+                <UserIcon />
+                Sign up / In
+              </Link>
+            )}
           </div>
         </div>
       )}
