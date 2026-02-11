@@ -414,14 +414,14 @@ export default function FlashcardsPage() {
         <div className="flex gap-2 shrink-0 order-2 sm:order-1">
           <button
             onClick={selectAll}
-            className="rounded-xl py-2 px-3 text-sm bg-white border-2 border-slate-200 shadow-sm hover:bg-amber-50 hover:border-amber-200 inline-flex items-center gap-1.5 transition-colors font-medium text-gray-700"
+            className="h-11 rounded-xl px-3 text-sm bg-white border-2 border-slate-200 shadow-sm hover:bg-amber-50 hover:border-amber-200 inline-flex items-center gap-1.5 transition-colors font-medium text-gray-700"
           >
             <CheckAllIcon />
             Todas
           </button>
           <button
             onClick={deselectAll}
-            className="rounded-xl py-2 px-3 text-sm bg-white border-2 border-slate-200 shadow-sm hover:bg-amber-50 hover:border-amber-200 inline-flex items-center gap-1.5 transition-colors font-medium text-gray-700"
+            className="h-11 rounded-xl px-3 text-sm bg-white border-2 border-slate-200 shadow-sm hover:bg-amber-50 hover:border-amber-200 inline-flex items-center gap-1.5 transition-colors font-medium text-gray-700"
           >
             <ClearAllIcon />
             Quitar todas
@@ -438,7 +438,7 @@ export default function FlashcardsPage() {
               setSelectedStateCode(code);
               setStoredStateCode(code);
             }}
-            className="w-full max-w-xs rounded-xl border-2 border-slate-200 bg-white py-2.5 px-3 text-gray-800 shadow-sm sm:ml-auto"
+            className="w-full max-w-xs h-11 rounded-xl border-2 border-slate-200 bg-white py-2.5 px-3 text-gray-800 shadow-sm sm:ml-auto"
           >
             <option value="">— Seleccionar estado —</option>
             {states.map((s) => (

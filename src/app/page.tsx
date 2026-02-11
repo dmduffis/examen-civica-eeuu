@@ -68,7 +68,7 @@ const FlashcardIcon = () => (
 );
 
 const linkClass =
-  "rounded-xl text-gray-800 py-4 px-5 sm:py-5 sm:px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 inline-flex flex-row items-center justify-start gap-4 sm:gap-5 transition-colors min-h-[72px] sm:min-h-0 w-full";
+  "rounded-xl text-gray-800 py-4 px-5 sm:py-5 sm:px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 inline-flex flex-row items-center justify-start gap-4 sm:gap-5 transition-colors min-h-[72px] sm:min-h-0 w-full hover:text-amber-700 transition-colors";
 
 export default function Home() {
   return (
@@ -99,15 +99,21 @@ export default function Home() {
             <div className="flex flex-col gap-4 sm:gap-6 w-full">
               <Link href="/quiz" className={linkClass}>
                 <QuizIcon />
-                <span className="text-lg sm:text-xl font-semibold">Tomar Quiz</span>
+                <span className="text-lg sm:text-xl font-semibold hover:text-amber-700 transition-colors">
+                  Tomar Quiz
+                </span>
               </Link>
               <Link href="/review" className={linkClass}>
                 <ReviewIcon />
-                <span className="text-lg sm:text-xl font-semibold">Preguntas</span>
+                <span className="text-lg sm:text-xl font-semibold">
+                  Preguntas
+                </span>
               </Link>
               <Link href="/flashcards" className={linkClass}>
                 <FlashcardIcon />
-                <span className="text-lg sm:text-xl font-semibold">Revisar</span>
+                <span className="text-lg sm:text-xl font-semibold">
+                  Revisar
+                </span>
               </Link>
             </div>
           </div>

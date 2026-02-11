@@ -54,7 +54,7 @@ export default function Nav() {
   }, [drawerOpen]);
 
   const linkClass =
-    "inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors";
+    "inline-flex items-center text-sm font-medium text-gray-600 hover:text-amber-700 transition-colors";
   const drawerLinkClass =
     "block py-3 text-base font-medium text-gray-700 hover:text-gray-900 transition-colors";
 
@@ -76,7 +76,10 @@ export default function Nav() {
           <Link href="/flashcards" className={linkClass}>
             Revisar
           </Link>
-          <span className="h-5 w-px bg-slate-200 shrink-0 self-center" aria-hidden />
+          <span
+            className="h-5 w-px bg-slate-200 shrink-0 self-center"
+            aria-hidden
+          />
           <Link
             href="/quiz"
             className="inline-flex items-center rounded-lg bg-amber-500 text-white text-sm font-semibold px-4 py-2 hover:bg-amber-600 transition-colors"
@@ -123,10 +126,18 @@ export default function Nav() {
               </button>
             </div>
             <div className="flex flex-col gap-1">
-              <Link href="/review" className={drawerLinkClass} onClick={closeDrawer}>
+              <Link
+                href="/review"
+                className={drawerLinkClass}
+                onClick={closeDrawer}
+              >
                 Preguntas
               </Link>
-              <Link href="/flashcards" className={drawerLinkClass} onClick={closeDrawer}>
+              <Link
+                href="/flashcards"
+                className={drawerLinkClass}
+                onClick={closeDrawer}
+              >
                 Revisar
               </Link>
             </div>

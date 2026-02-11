@@ -26,7 +26,9 @@ export default function ReviewPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [states, setStates] = useState<StateOption[]>([]);
-  const [selectedStateCode, setSelectedStateCode] = useState<string | null>(null);
+  const [selectedStateCode, setSelectedStateCode] = useState<string | null>(
+    null,
+  );
   const [stateDetails, setStateDetails] = useState<StateDetails | null>(null);
 
   useEffect(() => {
@@ -110,104 +112,129 @@ export default function ReviewPage() {
             oral. Aquí puedes estudiarlas todas con sus respuestas correctas.
           </p>
         </div>
+        <div className="flex flex-col sm:flex-row gap-8 justify-between items-end w-full mb-10">
+          <section className="min-w-0 w-full max-w-xs">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Tu estado (para las 4 preguntas específicas de tu estado)
+            </label>
+            <select
+              value={selectedStateCode ?? ""}
+              onChange={(e) => handleStateChange(e.target.value || null)}
+              className="w-full h-11 rounded-xl border-2 border-slate-200 bg-white py-2.5 px-3 text-gray-800 shadow-sm"
+            >
+              <option value="">— Seleccionar estado —</option>
+              {states.map((s) => (
+                <option key={s.stateCode} value={s.stateCode}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          </section>
+          <div className="w-full sm:w-auto shrink-0">
+            <button
+              type="button"
+              className="flex items-center gap-2 rounded-xl border-2 border-slate-200 bg-white py-2.5 px-4 text-gray-800 shadow-sm font-medium hover:bg-amber-50 hover:border-amber-200 transition-colors"
+              aria-label="Descargar PDF"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Descargar PDF
+            </button>
+          </div>
+        </div>
 
-      <div className="w-full max-w-sm mb-8">
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
-          Tu estado (para las 4 preguntas específicas de tu estado)
-        </label>
-        <select
-          value={selectedStateCode ?? ""}
-          onChange={(e) => handleStateChange(e.target.value || null)}
-          className="w-full rounded-lg border-2 border-slate-300 bg-white py-2.5 px-3 text-gray-800"
-        >
-          <option value="">— Seleccionar estado —</option>
-          {states.map((s) => (
-            <option key={s.stateCode} value={s.stateCode}>
-              {s.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="flex flex-col gap-8">
-        {questions.map((q, index) => (
-          <article
-            key={q._id}
-            className="border border-slate-200 rounded-lg p-4 bg-white shadow-sm"
-          >
-            <p className="font-semibold text-gray-800 mb-3">
-              {index + 1}. {q.questionText}
-            </p>
-            {q.isStateSpecific && (
-              <div className="mb-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
-                <p className="text-sm text-amber-800 font-medium mb-1">
-                  Pregunta de tu estado — busca la respuesta según donde vives.
-                </p>
-                {stateDetails ? (
-                  <ul className="text-sm text-gray-700 space-y-0.5">
-                    {stateDetails.senators.length > 0 ? (
-                      <li>
-                        Senadores: {stateDetails.senators.join(", ")}
-                      </li>
-                    ) : (
-                      <li>
-                        {stateDetails.stateCode === "DC"
-                          ? "D.C. no tiene senadores."
-                          : "—"}
-                      </li>
-                    )}
-                    {stateDetails.governor != null ? (
-                      <li>Gobernador(a): {stateDetails.governor}</li>
-                    ) : (
-                      <li>
-                        {stateDetails.stateCode === "DC"
-                          ? "D.C. no tiene gobernador."
-                          : "—"}
-                      </li>
-                    )}
-                    {stateDetails.capital != null ? (
-                      <li>Capital: {stateDetails.capital}</li>
-                    ) : (
-                      <li>
-                        {stateDetails.stateCode === "DC"
-                          ? "D.C. no es un estado; no aplica capital."
-                          : "—"}
-                      </li>
-                    )}
-                    <li>Representante: busca por distrito.</li>
-                  </ul>
-                ) : (
-                  <p className="text-xs text-gray-500">
-                    Elige tu estado arriba para ver las respuestas de tu estado
-                    aquí.
+        <div className="flex flex-col gap-8">
+          {questions.map((q, index) => (
+            <article
+              key={q._id}
+              className="border border-slate-200 rounded-lg p-4 bg-white shadow-sm"
+            >
+              <p className="font-semibold text-gray-800 mb-3">
+                {index + 1}. {q.questionText}
+              </p>
+              {q.isStateSpecific && (
+                <div className="mb-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
+                  <p className="text-sm text-amber-800 font-medium mb-1">
+                    Pregunta de tu estado — busca la respuesta según donde
+                    vives.
                   </p>
-                )}
-              </div>
-            )}
-            <ul className="space-y-2">
-              {q.answers
-                .filter((answer) => answer.isCorrect)
-                .map((answer) => (
-                  <li
-                    key={answer._id}
-                    className="pl-3 py-1 rounded text-gray-800"
-                  >
-                    {answer.answerText}
-                  </li>
-                ))}
-            </ul>
-          </article>
-        ))}
-      </div>
+                  {stateDetails ? (
+                    <ul className="text-sm text-gray-700 space-y-0.5">
+                      {stateDetails.senators.length > 0 ? (
+                        <li>Senadores: {stateDetails.senators.join(", ")}</li>
+                      ) : (
+                        <li>
+                          {stateDetails.stateCode === "DC"
+                            ? "D.C. no tiene senadores."
+                            : "—"}
+                        </li>
+                      )}
+                      {stateDetails.governor != null ? (
+                        <li>Gobernador(a): {stateDetails.governor}</li>
+                      ) : (
+                        <li>
+                          {stateDetails.stateCode === "DC"
+                            ? "D.C. no tiene gobernador."
+                            : "—"}
+                        </li>
+                      )}
+                      {stateDetails.capital != null ? (
+                        <li>Capital: {stateDetails.capital}</li>
+                      ) : (
+                        <li>
+                          {stateDetails.stateCode === "DC"
+                            ? "D.C. no es un estado; no aplica capital."
+                            : "—"}
+                        </li>
+                      )}
+                      <li>Representante: busca por distrito.</li>
+                    </ul>
+                  ) : (
+                    <p className="text-xs text-gray-500">
+                      Elige tu estado arriba para ver las respuestas de tu
+                      estado aquí.
+                    </p>
+                  )}
+                </div>
+              )}
+              <ul className="space-y-2">
+                {q.answers
+                  .filter((answer) => answer.isCorrect)
+                  .map((answer) => (
+                    <li
+                      key={answer._id}
+                      className="pl-3 py-1 rounded text-gray-800"
+                    >
+                      {answer.answerText}
+                    </li>
+                  ))}
+              </ul>
+            </article>
+          ))}
+        </div>
 
-      <div className="flex justify-center mt-8">
-        <Link
-          href="/quiz"
-          className="rounded-lg text-gray-900 py-2 px-4 bg-slate-200 border border-slate-300 hover:bg-yellow-500"
-        >
-          Tomar el Quiz
-        </Link>
-      </div>
+        <div className="flex justify-center mt-8">
+          <Link
+            href="/quiz"
+            className="rounded-lg text-gray-900 py-2 px-4 bg-slate-200 border border-slate-300 hover:bg-yellow-500"
+          >
+            Tomar el Quiz
+          </Link>
+        </div>
       </div>
     </main>
   );
