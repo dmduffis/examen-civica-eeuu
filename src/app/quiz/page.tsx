@@ -187,64 +187,73 @@ export default function QuizPage() {
     );
   } else {
     return !started ? (
-      <main className="flex flex-col w-full justify-center mt-8">
+      <main className="flex flex-col w-full justify-center pt-16 mt-8 pb-16">
         {loading ? (
           <div className="flex min-h-[70vh] w-full flex-col items-center justify-center">
             <BeatLoader color="rgba(214, 169, 54, 0.6)" speedMultiplier={0.5} />
           </div>
         ) : (
-          <>
-            <div className="w-full flex justify-start mb-4">
-              <Link
-                href="/"
-                className="text-sm text-gray-500 hover:text-gray-800 hover:underline"
-              >
-                ← Inicio
-              </Link>
-            </div>
-            <div className="flex justify-center mt-8">
-              <Image src={girlExam} width={280} alt="Person studying" />
+          <div className="w-full px-6 sm:px-8">
+            <div className="text-center sm:text-left mb-8 sm:mb-10">
+              <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
+                ¿Cuántas preguntas?
+              </h1>
+              <p className="text-gray-600">Quiz completo o un test al azar</p>
             </div>
 
-            <h1 className="text-2xl font-semibold text-gray-800 text-center mt-8 mb-1">
-              ¿Cuántas preguntas?
-            </h1>
-            <p className="text-gray-500 text-center text-sm mb-8">
-              Quiz completo o un test al azar
-            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-[5rem] items-center w-full">
+              {/* Mobile: image first. Desktop: right column */}
+              <div className="order-1 sm:order-2 flex justify-center items-center">
+                <Image
+                  src={girlExam}
+                  width={560}
+                  alt="Person studying"
+                  className="w-[min(100%,290px)] sm:w-[min(100%,400px)] h-auto"
+                />
+              </div>
 
-            <div className="flex flex-col gap-4 w-full max-w-sm mx-auto">
-              {(() => {
-                const scorableCount = allQuestions.filter(
-                  (q) => !q.isStateSpecific,
-                ).length;
-                return (
-                  <>
-                    <button
-                      onClick={() => handleStart(null)}
-                      className="rounded-xl text-gray-800 py-5 px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 text-lg font-semibold w-full transition-colors"
-                    >
-                      Todas — {scorableCount} preguntas
-                    </button>
-                    <div className="flex gap-3">
-                      {QUIZ_SIZES.filter((n) => n <= scorableCount).map((n) => (
-                        <button
-                          key={n}
-                          onClick={() => handleStart(n)}
-                          className="rounded-xl text-gray-800 py-5 px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 text-lg font-semibold flex-1 transition-colors"
-                        >
-                          {n}
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                );
-              })()}
-              <p className="text-center text-xs text-gray-400">
-                Test al azar con 10, 20 o 50 preguntas
-              </p>
+              {/* Mobile: options second. Desktop: left column */}
+              <div className="order-2 sm:order-1 flex flex-col items-start w-full">
+                <div className="flex flex-col gap-4 sm:gap-6 w-full">
+                  {(() => {
+                    const scorableCount = allQuestions.filter(
+                      (q) => !q.isStateSpecific,
+                    ).length;
+                    const rowClass =
+                      "rounded-xl text-gray-800 py-4 px-5 sm:py-5 sm:px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 text-left text-lg sm:text-xl font-semibold transition-colors min-w-0";
+                    return (
+                      <>
+                        <div className="w-full flex">
+                          <button
+                            onClick={() => handleStart(null)}
+                            className={`${rowClass} flex-1`}
+                          >
+                            Todas las preguntas
+                          </button>
+                        </div>
+                        <div className="flex gap-3 w-full">
+                          {QUIZ_SIZES.filter((n) => n <= scorableCount).map(
+                            (n) => (
+                              <button
+                                key={n}
+                                onClick={() => handleStart(n)}
+                                className={`${rowClass} flex-1`}
+                              >
+                                {n} preguntas
+                              </button>
+                            ),
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-500">
+                          Test al azar con 10, 20 o 50 preguntas
+                        </p>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
             </div>
-          </>
+          </div>
         )}
       </main>
     ) : (

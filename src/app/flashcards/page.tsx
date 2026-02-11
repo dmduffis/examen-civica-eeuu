@@ -70,36 +70,6 @@ const CheckIcon = () => (
   </svg>
 );
 
-const FlashcardIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="-2 -2 28 28"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="w-8 h-8 shrink-0 text-gray-700"
-  >
-    <rect
-      x="2"
-      y="4"
-      width="14"
-      height="18"
-      rx="1.5"
-      transform="rotate(-8 9 13)"
-    />
-    <rect
-      x="8"
-      y="0"
-      width="14"
-      height="18"
-      rx="1.5"
-      transform="rotate(8 15 9)"
-    />
-  </svg>
-);
-
 export default function FlashcardsPage() {
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -269,19 +239,13 @@ export default function FlashcardsPage() {
     };
 
     return (
-      <main className="flex flex-col w-full justify-center mt-8 pb-16">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-10 sm:gap-4 w-full mb-8 sm:mb-6">
-          <Link
-            href="/"
-            className="text-sm text-gray-500 hover:text-gray-800 hover:underline shrink-0 order-1 sm:order-2"
-          >
-            ← Inicio
-          </Link>
-          <h1 className="text-2xl font-semibold text-gray-800 flex items-center gap-2 order-2 sm:order-1">
-            <FlashcardIcon />
-            Revisar
-          </h1>
-        </div>
+      <main className="flex flex-col w-full justify-center pt-16 mt-8 pb-16">
+        <div className="w-full px-6 sm:px-8">
+          <div className="text-center sm:text-left mb-8 sm:mb-10">
+            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
+              Revisar
+            </h1>
+          </div>
         <div className="flex justify-between items-center mb-4">
           <span className="text-sm text-gray-500">
             {currentIndex + 1} / {studyQueue.length}
@@ -429,65 +393,61 @@ export default function FlashcardsPage() {
             </button>
           )}
         </div>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="flex flex-col w-full justify-center mt-8 pb-16">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-10 sm:gap-4 w-full mb-4">
-        <Link
-          href="/"
-          className="text-sm text-gray-500 hover:text-gray-800 hover:underline shrink-0 order-1 sm:order-2"
-        >
-          ← Inicio
-        </Link>
-        <h1 className="text-xl font-semibold text-gray-800 flex items-center gap-2 order-2 sm:order-1">
-          <FlashcardIcon />
-          Revisar
-        </h1>
-      </div>
-      <p className="text-gray-500 text-sm mt-1 mb-6">
-        Elige las preguntas que quieres repasar y estudia con tarjetas.
-      </p>
+    <main className="flex flex-col w-full justify-center pt-16 mt-8 pb-16">
+      <div className="w-full px-6 sm:px-8">
+        <div className="text-center sm:text-left mb-8 sm:mb-10">
+          <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
+            Revisar
+          </h1>
+          <p className="text-gray-600">
+            Elige las preguntas que quieres repasar y estudia con tarjetas.
+          </p>
+        </div>
 
-      <section className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
-          Tu estado (para las 4 preguntas de tu estado)
-        </label>
-        <select
-          value={selectedStateCode ?? ""}
-          onChange={(e) => {
-            const code = e.target.value || null;
-            setSelectedStateCode(code);
-            setStoredStateCode(code);
-          }}
-          className="w-full max-w-xs rounded-xl border-2 border-slate-200 bg-white py-2.5 px-3 text-gray-800 shadow-sm"
-        >
-          <option value="">— Seleccionar estado —</option>
-          {states.map((s) => (
-            <option key={s.stateCode} value={s.stateCode}>
-              {s.name}
-            </option>
-          ))}
-        </select>
-      </section>
-
-      <div className="flex gap-2 mb-3">
-        <button
-          onClick={selectAll}
-          className="rounded-xl py-2 px-3 text-sm bg-white border-2 border-slate-200 shadow-sm hover:bg-amber-50 hover:border-amber-200 inline-flex items-center gap-1.5 transition-colors font-medium text-gray-700"
-        >
-          <CheckAllIcon />
-          Todas
-        </button>
-        <button
-          onClick={deselectAll}
-          className="rounded-xl py-2 px-3 text-sm bg-white border-2 border-slate-200 shadow-sm hover:bg-amber-50 hover:border-amber-200 inline-flex items-center gap-1.5 transition-colors font-medium text-gray-700"
-        >
-          <ClearAllIcon />
-          Quitar todas
-        </button>
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
+        <div className="flex gap-2 shrink-0 order-2 sm:order-1">
+          <button
+            onClick={selectAll}
+            className="rounded-xl py-2 px-3 text-sm bg-white border-2 border-slate-200 shadow-sm hover:bg-amber-50 hover:border-amber-200 inline-flex items-center gap-1.5 transition-colors font-medium text-gray-700"
+          >
+            <CheckAllIcon />
+            Todas
+          </button>
+          <button
+            onClick={deselectAll}
+            className="rounded-xl py-2 px-3 text-sm bg-white border-2 border-slate-200 shadow-sm hover:bg-amber-50 hover:border-amber-200 inline-flex items-center gap-1.5 transition-colors font-medium text-gray-700"
+          >
+            <ClearAllIcon />
+            Quitar todas
+          </button>
+        </div>
+        <section className="min-w-0 order-1 sm:order-2 sm:text-right">
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            Tu estado (para las 4 preguntas de tu estado)
+          </label>
+          <select
+            value={selectedStateCode ?? ""}
+            onChange={(e) => {
+              const code = e.target.value || null;
+              setSelectedStateCode(code);
+              setStoredStateCode(code);
+            }}
+            className="w-full max-w-xs rounded-xl border-2 border-slate-200 bg-white py-2.5 px-3 text-gray-800 shadow-sm sm:ml-auto"
+          >
+            <option value="">— Seleccionar estado —</option>
+            {states.map((s) => (
+              <option key={s.stateCode} value={s.stateCode}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        </section>
       </div>
 
       <p className="text-xs text-gray-500 mb-2">
@@ -532,6 +492,7 @@ export default function FlashcardsPage() {
         >
           Revisar {selectedIds.size} tarjeta{selectedIds.size !== 1 ? "s" : ""}
         </button>
+      </div>
       </div>
     </main>
   );

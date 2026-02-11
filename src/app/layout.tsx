@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import { Manrope } from "next/font/google";
+import { Spline_Sans } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import Nav from "./components/Nav";
 
-const manrope = Manrope({
+const splineSans = Spline_Sans({
   subsets: ["latin"],
   display: "swap",
+  variable: "--font-heading",
 });
+
+const geistSans = GeistSans;
 
 export const metadata: Metadata = {
   title: "Examen de Educación Cívica",
@@ -20,9 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${manrope.className} flex justify-center mx-8`}>
-        <div className="flex flex-1 justify-center max-w-[800px] w-full">
-          {children}
+      <body className={`${splineSans.variable} ${geistSans.variable} ${geistSans.className} flex flex-col min-h-screen`}>
+        <Nav />
+        <div className="flex flex-1 justify-center w-full">
+          <div className="max-w-[1067px] w-full mx-auto">{children}</div>
         </div>
       </body>
     </html>

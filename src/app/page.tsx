@@ -67,46 +67,51 @@ const FlashcardIcon = () => (
   </svg>
 );
 
+const linkClass =
+  "rounded-xl text-gray-800 py-4 px-5 sm:py-5 sm:px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 inline-flex flex-row items-center justify-start gap-4 sm:gap-5 transition-colors min-h-[72px] sm:min-h-0 w-full";
+
 export default function Home() {
   return (
     <main className="flex flex-col w-full justify-center pt-16 mt-8 pb-16">
-      <div className="flex justify-center mb-8">
-        <Image
-          src={boyReading}
-          width={280}
-          alt="Person studying"
-          className="w-[210px] sm:w-[280px] h-auto"
-        />
-      </div>
-      <h1 className="text-3xl font-semibold text-gray-800 text-center mb-3">
-        Examen de Educación Cívica
-      </h1>
-      <p className="text-gray-600 text-center mb-10 max-w-lg mx-auto">
-        Practica para la entrevista de naturalización de Estados Unidos.
-      </p>
+      <div className="w-full px-6 sm:px-8">
+        <div className="text-center sm:text-left mb-8 sm:mb-10">
+          <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
+            Examen de Educación Cívica
+          </h1>
+          <p className="text-gray-600">
+            Practica para la entrevista de naturalización de Estados Unidos.
+          </p>
+        </div>
 
-      <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 justify-center items-stretch sm:items-center w-full max-w-sm sm:max-w-none mx-auto sm:mx-0">
-        <Link
-          href="/quiz"
-          className="rounded-xl text-gray-800 py-6 px-6 sm:py-8 sm:px-10 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 w-full sm:w-52 text-center inline-flex flex-col items-center justify-center gap-3 sm:gap-4 transition-colors min-h-[120px] sm:min-h-0"
-        >
-          <QuizIcon />
-          <span className="text-lg sm:text-xl font-semibold">Tomar Quiz</span>
-        </Link>
-        <Link
-          href="/review"
-          className="rounded-xl text-gray-800 py-6 px-6 sm:py-8 sm:px-10 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 w-full sm:w-52 text-center inline-flex flex-col items-center justify-center gap-3 sm:gap-4 transition-colors min-h-[120px] sm:min-h-0"
-        >
-          <ReviewIcon />
-          <span className="text-lg sm:text-xl font-semibold">Preguntas</span>
-        </Link>
-        <Link
-          href="/flashcards"
-          className="rounded-xl text-gray-800 py-6 px-6 sm:py-8 sm:px-10 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 w-full sm:w-52 text-center inline-flex flex-col items-center justify-center gap-3 sm:gap-4 transition-colors min-h-[120px] sm:min-h-0"
-        >
-          <FlashcardIcon />
-          <span className="text-lg sm:text-xl font-semibold">Revisar</span>
-        </Link>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-[5rem] items-center w-full">
+          {/* Mobile: image first. Desktop: right column — image ~2x larger */}
+          <div className="order-1 sm:order-2 flex justify-center items-center">
+            <Image
+              src={boyReading}
+              width={560}
+              alt="Person studying"
+              className="w-[min(100%,290px)] sm:w-[min(100%,400px)] h-auto"
+            />
+          </div>
+
+          {/* Mobile: buttons second. Desktop: left column — left-aligned with title */}
+          <div className="order-2 sm:order-1 flex flex-col items-start w-full">
+            <div className="flex flex-col gap-4 sm:gap-6 w-full">
+              <Link href="/quiz" className={linkClass}>
+                <QuizIcon />
+                <span className="text-lg sm:text-xl font-semibold">Tomar Quiz</span>
+              </Link>
+              <Link href="/review" className={linkClass}>
+                <ReviewIcon />
+                <span className="text-lg sm:text-xl font-semibold">Preguntas</span>
+              </Link>
+              <Link href="/flashcards" className={linkClass}>
+                <FlashcardIcon />
+                <span className="text-lg sm:text-xl font-semibold">Revisar</span>
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   );

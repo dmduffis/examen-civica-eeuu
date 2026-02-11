@@ -21,22 +21,6 @@ type QuestionItem = {
   isStateSpecific?: boolean;
 };
 
-const ReviewIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="w-8 h-8 shrink-0 text-gray-700"
-  >
-    <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
-    <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
-  </svg>
-);
-
 export default function ReviewPage() {
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -115,25 +99,17 @@ export default function ReviewPage() {
   };
 
   return (
-    <main className="flex flex-col w-full justify-center mt-8 pb-16">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-10 sm:gap-4 mb-8 sm:mb-6">
-        <Link
-          href="/"
-          className="text-sm text-gray-600 hover:text-gray-900 hover:underline shrink-0 order-1 sm:order-2"
-        >
-          ← Inicio
-        </Link>
-        <div className="order-2 sm:order-1">
-          <h1 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
-            <ReviewIcon />
+    <main className="flex flex-col w-full justify-center pt-16 mt-8 pb-16">
+      <div className="w-full px-6 sm:px-8">
+        <div className="text-center sm:text-left mb-8 sm:mb-10">
+          <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
             Lista de preguntas
           </h1>
-          <p className="text-gray-500 text-sm mt-1 max-w-md">
+          <p className="text-gray-600">
             Hay 100 preguntas en total; en la entrevista te harán 20 de forma
             oral. Aquí puedes estudiarlas todas con sus respuestas correctas.
           </p>
         </div>
-      </div>
 
       <div className="w-full max-w-sm mb-8">
         <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -231,6 +207,7 @@ export default function ReviewPage() {
         >
           Tomar el Quiz
         </Link>
+      </div>
       </div>
     </main>
   );
