@@ -196,9 +196,12 @@ export default function QuizPage() {
           <div className="w-full px-6 sm:px-8">
             <div className="text-center sm:text-left mb-8 sm:mb-10">
               <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
-                ¿Cuántas preguntas?
+                Practica el Quiz
               </h1>
-              <p className="text-gray-600">Quiz completo o un test al azar</p>
+              <p className="text-gray-600">
+                Elige todas las preguntas o un test al azar para prepararte para
+                la entrevista de naturalización.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-[5rem] items-center w-full">

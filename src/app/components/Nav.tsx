@@ -70,9 +70,6 @@ export default function Nav() {
 
         {/* Desktop: full nav */}
         <div className="hidden sm:flex items-center gap-6 sm:gap-8">
-          <Link href="/quiz" className={linkClass}>
-            Quiz
-          </Link>
           <Link href="/review" className={linkClass}>
             Preguntas
           </Link>
@@ -80,14 +77,11 @@ export default function Nav() {
             Revisar
           </Link>
           <span className="h-5 w-px bg-slate-200 shrink-0 self-center" aria-hidden />
-          <Link href="/login" className={linkClass}>
-            Login
-          </Link>
           <Link
-            href="/signup"
+            href="/quiz"
             className="inline-flex items-center rounded-lg bg-amber-500 text-white text-sm font-semibold px-4 py-2 hover:bg-amber-600 transition-colors"
           >
-            Sign up
+            Tomar Quiz
           </Link>
         </div>
 
@@ -129,9 +123,6 @@ export default function Nav() {
               </button>
             </div>
             <div className="flex flex-col gap-1">
-              <Link href="/quiz" className={drawerLinkClass} onClick={closeDrawer}>
-                Quiz
-              </Link>
               <Link href="/review" className={drawerLinkClass} onClick={closeDrawer}>
                 Preguntas
               </Link>
@@ -140,18 +131,13 @@ export default function Nav() {
               </Link>
             </div>
             <span className="h-px bg-slate-200 my-4" aria-hidden />
-            <div className="flex flex-col gap-1">
-              <Link href="/login" className={drawerLinkClass} onClick={closeDrawer}>
-                Login
-              </Link>
-              <Link
-                href="/signup"
-                onClick={closeDrawer}
-                className="inline-flex items-center justify-center rounded-lg bg-amber-500 text-white text-sm font-semibold py-3 px-4 hover:bg-amber-600 transition-colors mt-2"
-              >
-                Sign up
-              </Link>
-            </div>
+            <Link
+              href="/quiz"
+              onClick={closeDrawer}
+              className="inline-flex items-center justify-center rounded-lg bg-amber-500 text-white text-sm font-semibold py-3 px-4 hover:bg-amber-600 transition-colors"
+            >
+              Tomar Quiz
+            </Link>
           </div>
         </div>
       )}
