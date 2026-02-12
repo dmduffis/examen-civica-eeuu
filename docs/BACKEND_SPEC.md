@@ -15,11 +15,13 @@ To support **user profiles and quiz history across devices**, the backend (e.g. 
 ### POST `/api/auth/register`
 
 **Request body:**
+
 ```json
 { "email": "user@example.com", "password": "secret" }
 ```
 
 **Success (201):**
+
 ```json
 { "user": { "id": "uuid", "email": "user@example.com" }, "token": "jwt..." }
 ```
@@ -31,11 +33,13 @@ To support **user profiles and quiz history across devices**, the backend (e.g. 
 ### POST `/api/auth/login`
 
 **Request body:**
+
 ```json
 { "email": "user@example.com", "password": "secret" }
 ```
 
 **Success (200):**
+
 ```json
 { "user": { "id": "uuid", "email": "user@example.com" }, "token": "jwt..." }
 ```
@@ -47,6 +51,7 @@ To support **user profiles and quiz history across devices**, the backend (e.g. 
 ## Profile and quiz history
 
 All profile/history requests must send the JWT in the `Authorization` header:
+
 ```
 Authorization: Bearer <token>
 ```
@@ -54,6 +59,7 @@ Authorization: Bearer <token>
 ### GET `/api/profile`
 
 **Success (200):**
+
 ```json
 {
   "id": "uuid",
@@ -80,6 +86,7 @@ Authorization: Bearer <token>
 ### PATCH `/api/profile`
 
 **Request body (all fields optional):**
+
 ```json
 { "stateCode": "CA" }
 ```
@@ -91,6 +98,7 @@ Authorization: Bearer <token>
 ### POST `/api/profile/quiz-history`
 
 **Request body:**
+
 ```json
 {
   "correct": 18,
@@ -103,6 +111,7 @@ Authorization: Bearer <token>
 - `date` is optional; server can default to "now".
 
 **Success (201):**
+
 ```json
 {
   "id": "entry-uuid",
