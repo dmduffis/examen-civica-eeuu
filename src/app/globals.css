@@ -51,6 +51,11 @@ h1, h2, h3, h4, h5, h6 {
   animation: voice-breathe 1.8s ease-in-out infinite;
 }
 
+@keyframes voice-bar-wave {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}
+
 
 
 
