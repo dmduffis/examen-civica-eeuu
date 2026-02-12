@@ -120,7 +120,14 @@ export default function InterviewPage() {
         return;
       }
       if (!res.ok) {
-        setError(data.message ?? "No se pudo iniciar la entrevista.");
+        const msg = data.message ?? "No se pudo iniciar la entrevista.";
+        setError(
+          res.status === 502
+            ? msg
+            : msg === "Network error"
+              ? "Error de conexión con el servidor. Comprueba que el backend esté en marcha y que NEXT_PUBLIC_AUTH_API_URL apunte al backend (no al frontend)."
+              : msg
+        );
         setStatus("error");
         return;
       }
@@ -142,7 +149,9 @@ export default function InterviewPage() {
         setStatus("idle");
       }
     } catch (e) {
-      setError("Error de conexión.");
+      setError(
+        "Error de conexión. Comprueba tu conexión a internet y que el backend esté desplegado y configurado (NEXT_PUBLIC_AUTH_API_URL en el servidor)."
+      );
       setStatus("error");
     }
   }, [userName, playBase64]);
@@ -197,7 +206,8 @@ export default function InterviewPage() {
         return;
       }
       if (!res.ok) {
-        setError(data.message ?? "Error al enviar la respuesta.");
+        const msg = data.message ?? "Error al enviar la respuesta.";
+        setError(msg === "Network error" ? "Error de conexión con el servidor." : msg);
         setStatus("error");
         return;
       }
@@ -222,7 +232,7 @@ export default function InterviewPage() {
         setStatus("idle");
       }
     } catch (e) {
-      setError("Error al enviar la respuesta.");
+      setError("Error de conexión. Comprueba tu conexión.");
       setStatus("error");
     }
   }, [sessionId, questionIndex, questions?.length, playBase64]);
@@ -248,7 +258,8 @@ export default function InterviewPage() {
         return;
       }
       if (!res.ok) {
-        setError(data.message ?? "Error al saltar la pregunta.");
+        const msg = data.message ?? "Error al saltar la pregunta.";
+        setError(msg === "Network error" ? "Error de conexión con el servidor." : msg);
         setStatus("error");
         return;
       }
@@ -273,7 +284,7 @@ export default function InterviewPage() {
         setStatus("idle");
       }
     } catch (e) {
-      setError("Error al saltar la pregunta.");
+      setError("Error de conexión. Comprueba tu conexión.");
       setStatus("error");
     }
   }, [sessionId, questionIndex, questions?.length, playBase64, stop]);

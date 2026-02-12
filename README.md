@@ -35,6 +35,15 @@ All API traffic is proxied through Next.js API routes to this backend:
 
 **Language:** Quiz, Review, and Flashcards offer an **ES | EN** toggle to show questions and answers in Spanish (default) or English using `questionText`/`questionTextEn` and `answerText`/`answerTextEn`. The voice interview uses English; the review screen shows both languages (English column uses `questionText`, Spanish column uses `questionTextEs` when present).
 
+### Troubleshooting: "Error de conexión" / network error / 502
+
+The browser calls **this app** (e.g. `examencivica.com` or `localhost:3000`); the **Next.js server** then calls the backend. A network error usually means the server cannot reach the backend.
+
+1. **`NEXT_PUBLIC_AUTH_API_URL`** must be the **backend** base URL only (where `examen_civica_backend` runs), e.g. `https://your-backend.onrender.com` or `http://localhost:8000`. Do **not** use the frontend URL (e.g. `examencivica.com` or a Vercel frontend deployment).
+2. **Backend must be running and reachable** from wherever Next.js runs. If the frontend is on Vercel, the backend must be a **public** URL (Render, Railway, Fly.io, etc.). Test from your machine: `curl -v "https://YOUR_BACKEND_BASE_URL/api/question"`.
+3. **Voice** can take 10–60 seconds; the proxy waits up to 60s. If you see "El backend no respondió a tiempo", the backend is too slow or not responding at that URL.
+4. **CORS** is not involved for these errors: the browser only talks to the frontend; the frontend server talks to the backend server-to-server.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

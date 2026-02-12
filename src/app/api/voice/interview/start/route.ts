@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getBackendBaseUrl } from "../../../lib/backend-url";
+import { getBackendBaseUrl, fetchBackend } from "../../../lib/backend-url";
+
+function networkErrorMessage(e: unknown): string {
+  if (e instanceof Error && e.name === "AbortError") {
+    return "El backend no respondió a tiempo. Comprueba que el backend esté en marcha y que NEXT_PUBLIC_AUTH_API_URL sea correcto.";
+  }
+  return "No se pudo conectar al backend. Comprueba NEXT_PUBLIC_AUTH_API_URL (debe ser la URL del backend, no del frontend) y que el backend esté desplegado y accesible.";
+}
 
 export async function POST(request: NextRequest) {
   const BACKEND = getBackendBaseUrl();
@@ -8,7 +15,7 @@ export async function POST(request: NextRequest) {
   }
   try {
     const body = await request.json().catch(() => ({}));
-    const res = await fetch(`${BACKEND}/api/voice/interview/start`, {
+    const res = await fetchBackend(`${BACKEND}/api/voice/interview/start`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -22,6 +29,6 @@ export async function POST(request: NextRequest) {
     }
     return NextResponse.json(data, { status: res.status });
   } catch (e) {
-    return NextResponse.json({ message: "Network error" }, { status: 502 });
+    return NextResponse.json({ message: networkErrorMessage(e) }, { status: 502 });
   }
 }
