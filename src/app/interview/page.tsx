@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useCallback, useRef, useState } from "react";
-import Link from "next/link";
 import { BeatLoader } from "react-spinners";
 import { VoiceBars } from "../components/VoiceBars";
 import { backendUrl } from "../lib/backend-url";
@@ -362,11 +361,17 @@ export default function InterviewPage() {
           </div>
         )}
 
-        {(status === "loading" || status === "greeting" || status === "question") && (
+        {status === "loading" && (
+          <div className="flex flex-col items-center gap-6">
+            <BeatLoader color="rgba(214, 169, 54, 0.6)" speedMultiplier={0.5} />
+            <p className="text-gray-600">Preparando tu entrevista…</p>
+          </div>
+        )}
+
+        {(status === "greeting" || status === "question") && (
           <div className="flex flex-col items-center gap-6">
             <VoiceBars isPlaying={isPlayingAudio} className="flex-shrink-0" />
             <p className="text-gray-600">
-              {status === "loading" && "Preparando tu entrevista…"}
               {status === "greeting" && "Reproduciendo bienvenida…"}
               {status === "question" && "Reproduciendo pregunta…"}
             </p>
@@ -458,12 +463,6 @@ export default function InterviewPage() {
               >
                 Hacer otra entrevista
               </button>
-              <Link
-                href="/"
-                className="rounded-xl border-2 border-slate-300 text-gray-800 font-semibold py-3 px-6 hover:bg-slate-50 transition-colors inline-flex items-center"
-              >
-                Volver al inicio
-              </Link>
             </div>
           </div>
         )}
@@ -482,11 +481,6 @@ export default function InterviewPage() {
           </div>
         )}
 
-        <div className="mt-8">
-          <Link href="/" className="text-amber-700 hover:underline">
-            ← Volver al inicio
-          </Link>
-        </div>
       </div>
     </main>
   );
