@@ -17,8 +17,7 @@ import { fetchProfile, updateProfileState } from "../lib/profile-api";
 import type { QuestionItem } from "../lib/question-types";
 import { questionDisplayText, answerDisplayText } from "../lib/question-types";
 import type { DisplayLang } from "../lib/question-types";
-
-const QUESTIONS_API = "/api/questions";
+import { backendUrl } from "../lib/backend-url";
 
 const CheckAllIcon = () => (
   <svg
@@ -124,7 +123,7 @@ export default function FlashcardsPage() {
     const load = async () => {
       try {
         const [response, statesList] = await Promise.all([
-          axios.get(QUESTIONS_API, {
+          axios.get(backendUrl("/api/question"), {
             headers: { "Content-Type": "application/json" },
           }),
           fetchStates().catch(() => []),

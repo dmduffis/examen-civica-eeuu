@@ -17,6 +17,7 @@ import { fetchProfile, updateProfileState } from "../lib/profile-api";
 import type { QuestionItem } from "../lib/question-types";
 import { questionDisplayText, answerDisplayText } from "../lib/question-types";
 import type { DisplayLang } from "../lib/question-types";
+import { backendUrl } from "../lib/backend-url";
 
 export default function ReviewPage() {
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
@@ -51,7 +52,7 @@ export default function ReviewPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const response = await axios.get("/api/questions", {
+        const response = await axios.get(backendUrl("/api/question"), {
           headers: { "Content-Type": "application/json" },
         });
         setQuestions(response.data);

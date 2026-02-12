@@ -22,27 +22,28 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 
 ## Backend integration (examen_civica_backend)
 
-The frontend talks to a single backend. Set in `.env.local`:
+The frontend calls the **backend directly** from the browser. Set in `.env.local` (and in Vercel/host env when deploying):
 
-- **`NEXT_PUBLIC_AUTH_API_URL`** — Full backend base URL (e.g. `https://your-backend.herokuapp.com` or `http://localhost:8000`). Do **not** set this to the frontend domain.
+- **`NEXT_PUBLIC_AUTH_API_URL`** — Full backend base URL only (e.g. `https://your-backend.onrender.com` or `http://localhost:8000`). No path, no trailing slash. Do **not** set this to the frontend domain (e.g. examencivica.com); that causes 404 or connection errors.
 
-All API traffic is proxied through Next.js API routes to this backend:
+The app uses `getBackendBaseUrl()` / `backendUrl(path)` from `src/app/lib/backend-url.ts` to build all request URLs. All API traffic goes to that backend:
 
-- **Auth:** `/api/auth/login`, `/api/auth/register` → backend auth; token stored and sent as `Authorization: Bearer <token>` on protected calls.
-- **Profile:** GET/PATCH `/api/profile`, POST `/api/profile/quiz-history` (after a quiz).
-- **Data:** GET `/api/questions` → backend `/api/question` (returns `questionText` Spanish, optional `questionTextEn` English; answers with `answerText` and optional `answerTextEn`). GET `/api/state` and `/api/state/[code]` for states.
-- **Voice:** POST `/api/voice/interview/start`, `/api/voice/interview/respond` for the practice interview. The officer speaks in **English**; greeting and questions are in English. On the last answer, the backend returns a **review** with `suggestionEn`, `suggestionEs`, and optional `questionTextEs` for the Spanish column.
+- **Auth:** `backendUrl('/api/auth/login')`, `backendUrl('/api/auth/register')`; token stored and sent as `Authorization: Bearer <token>` on protected calls.
+- **Profile:** GET/PATCH `backendUrl('/api/profile')`, POST `backendUrl('/api/profile/quiz-history')` (after a quiz).
+- **Data:** GET `backendUrl('/api/question')` for questions; GET `backendUrl('/api/state')` and `backendUrl('/api/state/:code')` for states.
+- **Voice:** POST `backendUrl('/api/voice/interview/start')`, `backendUrl('/api/voice/interview/respond')` for the practice interview. Questions and officer are in English; review shows `suggestionEn` and `suggestionEs` (and optional `questionTextEs`).
+
+**CORS:** The backend must allow the frontend’s origin (e.g. `https://examencivica.com` or `http://localhost:3000`). Set `FRONTEND_ORIGIN` on the backend.
 
 **Language:** Quiz, Review, and Flashcards offer an **ES | EN** toggle to show questions and answers in Spanish (default) or English using `questionText`/`questionTextEn` and `answerText`/`answerTextEn`. The voice interview uses English; the review screen shows both languages (English column uses `questionText`, Spanish column uses `questionTextEs` when present).
 
 ### Troubleshooting: "Error de conexión" / network error / 502
 
-The browser calls **this app** (e.g. `examencivica.com` or `localhost:3000`); the **Next.js server** then calls the backend. A network error usually means the server cannot reach the backend.
+The **browser** calls the backend directly (using `NEXT_PUBLIC_AUTH_API_URL`). A connection error usually means the wrong URL or the backend is unreachable.
 
-1. **`NEXT_PUBLIC_AUTH_API_URL`** must be the **backend** base URL only (where `examen_civica_backend` runs), e.g. `https://your-backend.onrender.com` or `http://localhost:8000`. Do **not** use the frontend URL (e.g. `examencivica.com` or a Vercel frontend deployment).
-2. **Backend must be running and reachable** from wherever Next.js runs. If the frontend is on Vercel, the backend must be a **public** URL (Render, Railway, Fly.io, etc.). Test from your machine: `curl -v "https://YOUR_BACKEND_BASE_URL/api/question"`.
-3. **Voice** can take 10–60 seconds; the proxy waits up to 60s. If you see "El backend no respondió a tiempo", the backend is too slow or not responding at that URL.
-4. **CORS** is not involved for these errors: the browser only talks to the frontend; the frontend server talks to the backend server-to-server.
+1. **`NEXT_PUBLIC_AUTH_API_URL`** must be the **backend** base URL only (where `examen_civica_backend` runs), e.g. `https://your-backend.onrender.com` or `http://localhost:8000`. Do **not** use the frontend URL (e.g. `examencivica.com`); that causes 404 or connection errors.
+2. **Backend must be running and reachable** from the user’s browser. Test: `curl -v "https://YOUR_BACKEND_BASE_URL/api/question"`.
+3. **CORS:** The backend must allow your frontend origin (e.g. `https://examencivica.com`, `http://localhost:3000`). Set `FRONTEND_ORIGIN` on the backend.
 
 ## Learn More
 

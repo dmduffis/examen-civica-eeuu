@@ -14,6 +14,7 @@ import { BeatLoader } from "react-spinners";
 import type { QuestionItem } from "../lib/question-types";
 import { questionDisplayText } from "../lib/question-types";
 import type { DisplayLang } from "../lib/question-types";
+import { backendUrl } from "../lib/backend-url";
 
 function shuffle<T>(arr: T[]): T[] {
   const out = [...arr];
@@ -25,7 +26,6 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 const QUIZ_SIZES = [10, 20, 50];
-const QUESTIONS_API = "/api/questions";
 
 const QuizIcon = () => (
   <svg
@@ -82,7 +82,7 @@ export default function QuizPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const questionsRes = await axios.get(QUESTIONS_API, {
+        const questionsRes = await axios.get(backendUrl("/api/question"), {
           headers: { "Content-Type": "application/json" },
         });
         setAllQuestions(questionsRes.data);

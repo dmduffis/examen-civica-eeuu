@@ -3,6 +3,7 @@
 import React, { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import { VoiceCircle } from "../components/VoiceCircle";
+import { backendUrl } from "../lib/backend-url";
 
 type InterviewQuestion = {
   id: string;
@@ -11,9 +12,15 @@ type InterviewQuestion = {
   questionAudio: string;
 };
 
-/** Interview is in English: use questionTextEn only (questionText is Spanish). */
-function hasQuestionTextEn(q: InterviewQuestion): boolean {
-  return Boolean(q.questionTextEn?.trim());
+const CONNECTION_ERROR_ES =
+  "Error de conexión. Comprueba tu conexión a internet y que el backend esté desplegado y configurado (NEXT_PUBLIC_AUTH_API_URL en el servidor).";
+const CONNECTION_ERROR_EN =
+  "Connection error. Check your internet connection and that the backend is deployed and configured (NEXT_PUBLIC_AUTH_API_URL on the server).";
+
+/** Interview is in English only: backend questionText is Spanish, so we show questionTextEn when present. */
+function interviewQuestionLabel(q: InterviewQuestion): string | null {
+  const en = q.questionTextEn?.trim();
+  return en || null;
 }
 
 type ReviewItem = {
@@ -108,7 +115,7 @@ export default function InterviewPage() {
     setError(null);
     setStatus("loading");
     try {
-      const res = await fetch("/api/voice/interview/start", {
+      const res = await fetch(backendUrl("/api/voice/interview/start"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userName ? { userName } : {}),
@@ -123,9 +130,9 @@ export default function InterviewPage() {
         const msg = data.message ?? "No se pudo iniciar la entrevista.";
         setError(
           res.status === 502
-            ? msg
+            ? CONNECTION_ERROR_ES
             : msg === "Network error"
-              ? "Error de conexión con el servidor. Comprueba que el backend esté en marcha y que NEXT_PUBLIC_AUTH_API_URL apunte al backend (no al frontend)."
+              ? CONNECTION_ERROR_ES
               : msg
         );
         setStatus("error");
@@ -149,9 +156,7 @@ export default function InterviewPage() {
         setStatus("idle");
       }
     } catch (e) {
-      setError(
-        "Error de conexión. Comprueba tu conexión a internet y que el backend esté desplegado y configurado (NEXT_PUBLIC_AUTH_API_URL en el servidor)."
-      );
+      setError(CONNECTION_ERROR_ES);
       setStatus("error");
     }
   }, [userName, playBase64]);
@@ -190,7 +195,7 @@ export default function InterviewPage() {
       await new Promise<void>((r) => setTimeout(r, 300));
       const blob = new Blob(chunksRef.current, { type: "audio/webm" });
       const audioBase64 = await blobToBase64(blob);
-      const res = await fetch("/api/voice/interview/respond", {
+      const res = await fetch(backendUrl("/api/voice/interview/respond"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -236,58 +241,6 @@ export default function InterviewPage() {
       setStatus("error");
     }
   }, [sessionId, questionIndex, questions?.length, playBase64]);
-
-  const skipToNextQuestion = useCallback(async () => {
-    if (sessionId == null || questionIndex >= (questions?.length ?? 0)) return;
-    setStatus("sending");
-    stop();
-    try {
-      const res = await fetch("/api/voice/interview/respond", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sessionId,
-          questionIndex,
-          audio: "",
-        }),
-      });
-      const data = (await res.json()) as RespondResponse & { message?: string };
-      if (res.status === 503 && data.message) {
-        setError(data.message === "Voice API not configured" ? "El servicio de voz no está configurado." : data.message);
-        setStatus("error");
-        return;
-      }
-      if (!res.ok) {
-        const msg = data.message ?? "Error al saltar la pregunta.";
-        setError(msg === "Network error" ? "Error de conexión con el servidor." : msg);
-        setStatus("error");
-        return;
-      }
-      setStatus("officer");
-      setIsPlayingAudio(true);
-      await playBase64(data.officerResponseAudio);
-      setIsPlayingAudio(false);
-      if (data.isComplete && data.review?.items) {
-        setReviewItems(data.review.items);
-        setStatus("review");
-        return;
-      }
-      if (data.nextQuestion && questionIndex + 1 < (questions?.length ?? 0)) {
-        const nextIdx = questionIndex + 1;
-        setQuestionIndex(nextIdx);
-        setStatus("question");
-        setIsPlayingAudio(true);
-        await playBase64(data.nextQuestion.questionAudio);
-        setIsPlayingAudio(false);
-        setStatus("ready_to_record");
-      } else {
-        setStatus("idle");
-      }
-    } catch (e) {
-      setError("Error de conexión. Comprueba tu conexión.");
-      setStatus("error");
-    }
-  }, [sessionId, questionIndex, questions?.length, playBase64, stop]);
 
   return (
     <main className="flex flex-col w-full justify-center pt-16 mt-8 pb-16">
@@ -343,32 +296,24 @@ export default function InterviewPage() {
             <p className="text-gray-700 font-medium">
               Pregunta {questionIndex + 1} de {questions.length}
             </p>
-            {hasQuestionTextEn(questions[questionIndex]) ? (
-              <>
-                <p className="text-gray-600 italic">&quot;{questions[questionIndex].questionTextEn}&quot;</p>
-                <p className="text-gray-600 text-sm">Haz clic para abrir el micrófono y grabar tu respuesta.</p>
-                <button
-                  type="button"
-                  onClick={startRecording}
-                  className="rounded-xl bg-green-600 text-white font-semibold py-4 px-6 hover:bg-green-700 transition-colors inline-flex items-center justify-center gap-2"
-                  aria-label="Abrir micrófono"
-                >
-                  <MicIcon />
-                  Abrir micrófono
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="text-gray-600">Esta pregunta no está disponible en inglés.</p>
-                <button
-                  type="button"
-                  onClick={skipToNextQuestion}
-                  className="rounded-xl bg-amber-500 text-white font-semibold py-4 px-6 hover:bg-amber-600 transition-colors"
-                >
-                  Siguiente pregunta
-                </button>
-              </>
-            )}
+            {(() => {
+              const label = interviewQuestionLabel(questions[questionIndex]);
+              return label ? (
+                <p className="text-gray-600 italic">&quot;{label}&quot;</p>
+              ) : (
+                <p className="text-gray-600">Escucha la pregunta en inglés en el audio y responde con el micrófono.</p>
+              );
+            })()}
+            <p className="text-gray-600 text-sm">Haz clic para abrir el micrófono y grabar tu respuesta.</p>
+            <button
+              type="button"
+              onClick={startRecording}
+              className="rounded-xl bg-green-600 text-white font-semibold py-4 px-6 hover:bg-green-700 transition-colors inline-flex items-center justify-center gap-2"
+              aria-label="Abrir micrófono"
+            >
+              <MicIcon />
+              Abrir micrófono
+            </button>
           </div>
         )}
 
@@ -380,8 +325,8 @@ export default function InterviewPage() {
             <p className="text-gray-700 font-medium">
               Pregunta {questionIndex + 1} de {questions.length}: grabando tu respuesta.
             </p>
-            {questions[questionIndex]?.questionTextEn && (
-              <p className="text-gray-600 italic">&quot;{questions[questionIndex].questionTextEn}&quot;</p>
+            {questions[questionIndex] && interviewQuestionLabel(questions[questionIndex]) && (
+              <p className="text-gray-600 italic">&quot;{interviewQuestionLabel(questions[questionIndex])}&quot;</p>
             )}
             <p className="text-amber-700 font-medium flex items-center gap-2">
               <span className="inline-flex h-3 w-3 rounded-full bg-red-500 animate-pulse" aria-hidden /> Grabando…
@@ -454,12 +399,13 @@ export default function InterviewPage() {
         {status === "error" && (
           <div className="rounded-xl border-2 border-red-200 bg-red-50 p-4 text-red-800">
             <p className="font-medium">{error}</p>
+            <p className="text-sm text-red-700 mt-1">{CONNECTION_ERROR_EN}</p>
             <button
               type="button"
               onClick={() => { setStatus("idle"); setError(null); }}
               className="mt-3 rounded-lg bg-red-100 text-red-800 px-4 py-2 font-medium hover:bg-red-200"
             >
-              Reintentar
+              Reintentar / Retry
             </button>
           </div>
         )}
