@@ -120,15 +120,24 @@ export default function Nav() {
           )}
         </div>
 
-        {/* Mobile: hamburger */}
-        <button
-          type="button"
-          onClick={() => setDrawerOpen(true)}
-          className="sm:hidden inline-flex items-center justify-center w-10 h-10 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-slate-100 transition-colors"
-          aria-label="Abrir menú"
-        >
-          <MenuIcon />
-        </button>
+        {/* Mobile: avatar (when signed in) + hamburger */}
+        <div className="sm:hidden flex items-center gap-2">
+          {isAuthEnabled && user ? (
+            <Avatar className="h-9 w-9 border-2 border-slate-200 shrink-0" aria-hidden>
+              <AvatarFallback className="bg-amber-100 text-amber-800 text-sm font-semibold">
+                {user.email.slice(0, 1).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            className="inline-flex items-center justify-center w-10 h-10 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-slate-100 transition-colors"
+            aria-label="Abrir menú"
+          >
+            <MenuIcon />
+          </button>
+        </div>
       </div>
 
       {/* Mobile drawer overlay */}
