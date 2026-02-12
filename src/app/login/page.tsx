@@ -36,9 +36,7 @@ export default function LoginPage() {
         <div className="max-w-sm mx-auto text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-3">Cuenta</h1>
           <p className="text-gray-600 mb-6">
-            La sincronización entre dispositivos no está configurada. Configura{" "}
-            <code className="text-sm bg-slate-100 px-1 rounded">NEXT_PUBLIC_AUTH_API_URL</code>{" "}
-            para habilitar inicio de sesión y guardar tu progreso en la nube.
+            La sincronización entre dispositivos no está disponible. Puedes usar la app sin cuenta; tu progreso se guardará en este dispositivo.
           </p>
           <Link
             href="/"

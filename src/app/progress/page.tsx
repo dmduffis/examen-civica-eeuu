@@ -50,7 +50,7 @@ export default function ProgressPage() {
         <div className="w-full px-6 sm:px-8 text-center max-w-md mx-auto">
           <h1 className="text-2xl font-bold text-gray-800 mb-3">Mi progreso</h1>
           <p className="text-gray-600 mb-6">
-            La sincronización entre dispositivos no está configurada. Configura el backend de autenticación para ver tu historial en la nube.
+            La sincronización entre dispositivos no está disponible. Tu historial se guarda solo en este dispositivo.
           </p>
           <Link
             href="/"

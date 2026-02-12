@@ -28,7 +28,16 @@ export async function login(
     body: JSON.stringify({ email, password }),
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.message || "Error al iniciar sesión");
+  if (!res.ok) {
+    const msg = data.message || "Error al iniciar sesión";
+    throw new Error(
+      msg === "Auth API not configured" || msg === "NEXT_PUBLIC_AUTH_API_URL must point to your auth backend, not this app." || msg?.startsWith("NEXT_PUBLIC")
+        ? "El servicio de inicio de sesión no está disponible."
+        : msg === "Network error"
+          ? "No se pudo conectar. Comprueba tu conexión e inténtalo de nuevo."
+          : msg
+    );
+  }
   return data as AuthResponse;
 }
 
@@ -46,9 +55,15 @@ export async function register(
     const msg =
       data.message ||
       (res.status === 401
-        ? "El servidor rechazó el registro (401). Revisa la configuración del backend."
+        ? "No se pudo completar el registro. Inténtalo de nuevo."
         : "Error al registrarse");
-    throw new Error(msg);
+    const friendly =
+      msg === "Auth API not configured" || (typeof msg === "string" && msg.includes("NEXT_PUBLIC"))
+        ? "El servicio de inicio de sesión no está disponible."
+        : msg === "Network error"
+          ? "No se pudo conectar. Comprueba tu conexión e inténtalo de nuevo."
+          : msg;
+    throw new Error(friendly);
   }
   return data as AuthResponse;
 }

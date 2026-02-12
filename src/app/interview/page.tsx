@@ -13,9 +13,18 @@ type InterviewQuestion = {
 };
 
 const CONNECTION_ERROR_ES =
-  "Error de conexión. Comprueba tu conexión a internet y que el backend esté desplegado y configurado (NEXT_PUBLIC_AUTH_API_URL en el servidor).";
+  "No se pudo conectar. Comprueba tu conexión a internet e inténtalo de nuevo.";
 const CONNECTION_ERROR_EN =
-  "Connection error. Check your internet connection and that the backend is deployed and configured (NEXT_PUBLIC_AUTH_API_URL on the server).";
+  "Couldn't connect. Check your internet connection and try again.";
+
+/** Show user-friendly message; hide technical details from backend/env. */
+function friendlyError(msg: string | undefined): string {
+  if (!msg?.trim()) return CONNECTION_ERROR_ES;
+  const m = msg.toLowerCase();
+  if (m.includes("backend") || m.includes("next_public") || m.includes("configurado") || m.includes("desplegado") || m.includes("timeout") || m.includes("not configured")) return CONNECTION_ERROR_ES;
+  if (m.includes("voice") && (m.includes("not available") || m.includes("no está"))) return "El servicio de voz no está disponible en este momento.";
+  return msg;
+}
 
 /** Civics answers are right or wrong, not "stronger" vs weaker. Use "answer" instead. */
 function neutralSuggestion(text: string): string {
@@ -138,19 +147,13 @@ export default function InterviewPage() {
       });
       const data = (await res.json()) as StartResponse & { message?: string };
       if (res.status === 503 && data.message) {
-        setError(data.message === "Voice API not configured" ? "El servicio de voz no está configurado." : data.message);
+        setError(friendlyError(data.message));
         setStatus("error");
         return;
       }
       if (!res.ok) {
         const msg = data.message ?? "No se pudo iniciar la entrevista.";
-        setError(
-          res.status === 502
-            ? CONNECTION_ERROR_ES
-            : msg === "Network error"
-              ? CONNECTION_ERROR_ES
-              : msg
-        );
+        setError(res.status === 502 ? CONNECTION_ERROR_ES : friendlyError(msg));
         setStatus("error");
         return;
       }
@@ -224,13 +227,13 @@ export default function InterviewPage() {
       });
       const data = (await res.json()) as RespondResponse & { message?: string };
       if (res.status === 503 && data.message) {
-        setError(data.message === "Voice API not configured" ? "El servicio de voz no está configurado." : data.message);
+        setError(friendlyError(data.message));
         setStatus("error");
         return;
       }
       if (!res.ok) {
         const msg = data.message ?? "Error al enviar la respuesta.";
-        setError(msg === "Network error" ? "Error de conexión con el servidor." : msg);
+        setError(friendlyError(msg));
         setStatus("error");
         return;
       }
@@ -257,7 +260,7 @@ export default function InterviewPage() {
         setStatus("idle");
       }
     } catch (e) {
-      setError("Error de conexión. Comprueba tu conexión.");
+      setError(CONNECTION_ERROR_ES);
       setStatus("error");
     }
   }, [sessionId, questionIndex, questions?.length, playBase64]);
@@ -402,7 +405,7 @@ export default function InterviewPage() {
         {status === "error" && (
           <div className="rounded-xl border-2 border-red-200 bg-red-50 p-4 text-red-800">
             <p className="font-medium">{error}</p>
-            <p className="text-sm text-red-700 mt-1">{CONNECTION_ERROR_EN}</p>
+            <p className="text-sm text-red-700 mt-1">Try again in a moment.</p>
             <button
               type="button"
               onClick={() => { setStatus("idle"); setError(null); }}

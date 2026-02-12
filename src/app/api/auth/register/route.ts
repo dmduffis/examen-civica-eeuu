@@ -5,12 +5,12 @@ const BASE = BACKEND_URL?.startsWith("http") ? BACKEND_URL : BACKEND_URL ? `http
 
 export async function POST(request: NextRequest) {
   if (!BASE) {
-    return NextResponse.json({ message: "Auth API not configured" }, { status: 503 });
+    return NextResponse.json({ message: "El servicio de inicio de sesión no está disponible." }, { status: 503 });
   }
   const selfOrigin = request.nextUrl.origin;
   if (BASE.startsWith(selfOrigin) || BASE.replace(/^https?:\/\//, "").split("/")[0] === selfOrigin.replace(/^https?:\/\//, "").split("/")[0]) {
     return NextResponse.json(
-      { message: "NEXT_PUBLIC_AUTH_API_URL must point to your auth backend, not this app. Use a different URL (e.g. your Railway auth API)." },
+      { message: "El servicio de inicio de sesión no está disponible." },
       { status: 503 }
     );
   }
@@ -24,6 +24,6 @@ export async function POST(request: NextRequest) {
     const data = await res.json().catch(() => ({}));
     return NextResponse.json(data, { status: res.status });
   } catch (e) {
-    return NextResponse.json({ message: "Network error" }, { status: 502 });
+    return NextResponse.json({ message: "No se pudo conectar. Comprueba tu conexión e inténtalo de nuevo." }, { status: 502 });
   }
 }
