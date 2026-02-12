@@ -7,8 +7,14 @@ import { VoiceCircle } from "../components/VoiceCircle";
 type InterviewQuestion = {
   id: string;
   questionText: string;
+  questionTextEn?: string;
   questionAudio: string;
 };
+
+/** Interview is in English: use questionTextEn only (questionText is Spanish). */
+function hasQuestionTextEn(q: InterviewQuestion): boolean {
+  return Boolean(q.questionTextEn?.trim());
+}
 
 type ReviewItem = {
   questionText: string;
@@ -221,6 +227,57 @@ export default function InterviewPage() {
     }
   }, [sessionId, questionIndex, questions?.length, playBase64]);
 
+  const skipToNextQuestion = useCallback(async () => {
+    if (sessionId == null || questionIndex >= (questions?.length ?? 0)) return;
+    setStatus("sending");
+    stop();
+    try {
+      const res = await fetch("/api/voice/interview/respond", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId,
+          questionIndex,
+          audio: "",
+        }),
+      });
+      const data = (await res.json()) as RespondResponse & { message?: string };
+      if (res.status === 503 && data.message) {
+        setError(data.message === "Voice API not configured" ? "El servicio de voz no está configurado." : data.message);
+        setStatus("error");
+        return;
+      }
+      if (!res.ok) {
+        setError(data.message ?? "Error al saltar la pregunta.");
+        setStatus("error");
+        return;
+      }
+      setStatus("officer");
+      setIsPlayingAudio(true);
+      await playBase64(data.officerResponseAudio);
+      setIsPlayingAudio(false);
+      if (data.isComplete && data.review?.items) {
+        setReviewItems(data.review.items);
+        setStatus("review");
+        return;
+      }
+      if (data.nextQuestion && questionIndex + 1 < (questions?.length ?? 0)) {
+        const nextIdx = questionIndex + 1;
+        setQuestionIndex(nextIdx);
+        setStatus("question");
+        setIsPlayingAudio(true);
+        await playBase64(data.nextQuestion.questionAudio);
+        setIsPlayingAudio(false);
+        setStatus("ready_to_record");
+      } else {
+        setStatus("idle");
+      }
+    } catch (e) {
+      setError("Error al saltar la pregunta.");
+      setStatus("error");
+    }
+  }, [sessionId, questionIndex, questions?.length, playBase64, stop]);
+
   return (
     <main className="flex flex-col w-full justify-center pt-16 mt-8 pb-16">
       <div className="w-full px-6 sm:px-8 max-w-2xl mx-auto">
@@ -267,7 +324,7 @@ export default function InterviewPage() {
           </div>
         )}
 
-        {status === "ready_to_record" && (
+        {status === "ready_to_record" && questions[questionIndex] && (
           <div className="flex flex-col gap-4">
             <div className="flex justify-center">
               <VoiceCircle size={160} className="flex-shrink-0" />
@@ -275,19 +332,32 @@ export default function InterviewPage() {
             <p className="text-gray-700 font-medium">
               Pregunta {questionIndex + 1} de {questions.length}
             </p>
-            {questions[questionIndex] && (
-              <p className="text-gray-600 italic">&quot;{questions[questionIndex].questionText}&quot;</p>
+            {hasQuestionTextEn(questions[questionIndex]) ? (
+              <>
+                <p className="text-gray-600 italic">&quot;{questions[questionIndex].questionTextEn}&quot;</p>
+                <p className="text-gray-600 text-sm">Haz clic para abrir el micrófono y grabar tu respuesta.</p>
+                <button
+                  type="button"
+                  onClick={startRecording}
+                  className="rounded-xl bg-green-600 text-white font-semibold py-4 px-6 hover:bg-green-700 transition-colors inline-flex items-center justify-center gap-2"
+                  aria-label="Abrir micrófono"
+                >
+                  <MicIcon />
+                  Abrir micrófono
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-600">Esta pregunta no está disponible en inglés.</p>
+                <button
+                  type="button"
+                  onClick={skipToNextQuestion}
+                  className="rounded-xl bg-amber-500 text-white font-semibold py-4 px-6 hover:bg-amber-600 transition-colors"
+                >
+                  Siguiente pregunta
+                </button>
+              </>
             )}
-            <p className="text-gray-600 text-sm">Haz clic para abrir el micrófono y grabar tu respuesta.</p>
-            <button
-              type="button"
-              onClick={startRecording}
-              className="rounded-xl bg-green-600 text-white font-semibold py-4 px-6 hover:bg-green-700 transition-colors inline-flex items-center justify-center gap-2"
-              aria-label="Abrir micrófono"
-            >
-              <MicIcon />
-              Abrir micrófono
-            </button>
           </div>
         )}
 
@@ -299,8 +369,8 @@ export default function InterviewPage() {
             <p className="text-gray-700 font-medium">
               Pregunta {questionIndex + 1} de {questions.length}: grabando tu respuesta.
             </p>
-            {questions[questionIndex] && (
-              <p className="text-gray-600 italic">&quot;{questions[questionIndex].questionText}&quot;</p>
+            {questions[questionIndex]?.questionTextEn && (
+              <p className="text-gray-600 italic">&quot;{questions[questionIndex].questionTextEn}&quot;</p>
             )}
             <p className="text-amber-700 font-medium flex items-center gap-2">
               <span className="inline-flex h-3 w-3 rounded-full bg-red-500 animate-pulse" aria-hidden /> Grabando…
