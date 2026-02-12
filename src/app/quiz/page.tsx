@@ -245,13 +245,13 @@ export default function QuizPage() {
                             Todas las preguntas
                           </button>
                         </div>
-                        <div className="flex gap-3 w-full">
+                        <div className="flex flex-col sm:flex-row gap-3 w-full">
                           {QUIZ_SIZES.filter((n) => n <= scorableCount).map(
                             (n) => (
                               <button
                                 key={n}
                                 onClick={() => handleStart(n)}
-                                className={`${rowClass} flex-1`}
+                                className={`${rowClass} w-full sm:flex-1`}
                               >
                                 {n} preguntas
                               </button>
