@@ -3,11 +3,9 @@ import { getStoredToken } from "./auth-api";
 import type { Profile, QuizHistoryEntry } from "./auth-types";
 
 async function authFetch(path: string, options: RequestInit = {}): Promise<Response> {
-  const base = getAuthApiUrl();
   const token = getStoredToken();
-  if (!base || !token) throw new Error("Not authenticated");
-  const url = `${base.replace(/\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
-  const res = await fetch(url, {
+  if (!getAuthApiUrl() || !token) throw new Error("Not authenticated");
+  const res = await fetch(path, {
     ...options,
     headers: {
       "Content-Type": "application/json",
