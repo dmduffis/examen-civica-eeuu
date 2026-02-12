@@ -2,7 +2,7 @@
 
 import React, { useCallback, useRef, useState } from "react";
 import Link from "next/link";
-import { VoiceCircle } from "../components/VoiceCircle";
+import { VoiceBars } from "../components/VoiceBars";
 import { backendUrl } from "../lib/backend-url";
 
 type InterviewQuestion = {
@@ -16,6 +16,13 @@ const CONNECTION_ERROR_ES =
   "Error de conexión. Comprueba tu conexión a internet y que el backend esté desplegado y configurado (NEXT_PUBLIC_AUTH_API_URL en el servidor).";
 const CONNECTION_ERROR_EN =
   "Connection error. Check your internet connection and that the backend is deployed and configured (NEXT_PUBLIC_AUTH_API_URL on the server).";
+
+/** Civics answers are right or wrong, not "stronger" vs weaker. Use "answer" instead. */
+function neutralSuggestion(text: string): string {
+  return text
+    .replace(/\bA stronger answer:?\s*/gi, "Answer: ")
+    .replace(/\bstronger answer:?\s*/gi, "answer: ");
+}
 
 /** Interview is in English only: backend questionText is Spanish, so we show questionTextEn when present. */
 function interviewQuestionLabel(q: InterviewQuestion): string | null {
@@ -279,7 +286,7 @@ export default function InterviewPage() {
 
         {(status === "loading" || status === "greeting" || status === "question") && (
           <div className="flex flex-col items-center gap-6">
-            <VoiceCircle isPlaying={isPlayingAudio} size={180} className="flex-shrink-0" />
+            <VoiceBars isPlaying={isPlayingAudio} className="flex-shrink-0" />
             <p className="text-gray-600">
               {status === "loading" && "Conectando…"}
               {status === "greeting" && "Reproduciendo bienvenida…"}
@@ -291,7 +298,7 @@ export default function InterviewPage() {
         {status === "ready_to_record" && questions[questionIndex] && (
           <div className="flex flex-col gap-4">
             <div className="flex justify-center">
-              <VoiceCircle size={160} className="flex-shrink-0" />
+              <VoiceBars className="flex-shrink-0" />
             </div>
             <p className="text-gray-700 font-medium">
               Pregunta {questionIndex + 1} de {questions.length}
@@ -320,7 +327,7 @@ export default function InterviewPage() {
         {status === "recording" && (
           <div className="flex flex-col gap-4">
             <div className="flex justify-center">
-              <VoiceCircle stream={recordingStream} size={180} className="flex-shrink-0" />
+              <VoiceBars stream={recordingStream} className="flex-shrink-0" />
             </div>
             <p className="text-gray-700 font-medium">
               Pregunta {questionIndex + 1} de {questions.length}: grabando tu respuesta.
@@ -344,40 +351,23 @@ export default function InterviewPage() {
         {status === "sending" && <p className="text-gray-600">Enviando respuesta…</p>}
         {status === "officer" && (
           <div className="flex flex-col items-center gap-6">
-            <VoiceCircle isPlaying={isPlayingAudio} size={180} className="flex-shrink-0" />
+            <VoiceBars isPlaying={isPlayingAudio} className="flex-shrink-0" />
             <p className="text-gray-600">Respuesta del oficial…</p>
           </div>
         )}
 
         {status === "review" && reviewItems.length > 0 && (
-          <div className="space-y-8">
-            <h2 className="text-xl font-bold text-gray-800">Resumen de la entrevista</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">English</h3>
-                <ul className="space-y-4">
-                  {reviewItems.map((item, i) => (
-                    <li key={i} className="rounded-xl border-2 border-slate-200 bg-white p-4">
-                      <p className="font-medium text-gray-800 mb-1">{item.questionText}</p>
-                      <p className="text-sm text-gray-600 mb-2">You said: {item.userAnswer || "(no speech)"}</p>
-                      <p className="text-sm text-gray-700">{item.suggestionEn}</p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Español</h3>
-                <ul className="space-y-4">
-                  {reviewItems.map((item, i) => (
-                    <li key={i} className="rounded-xl border-2 border-slate-200 bg-white p-4">
-                      <p className="font-medium text-gray-800 mb-1">{item.questionTextEs ?? item.questionText}</p>
-                      <p className="text-sm text-gray-600 mb-2">Dijiste: {item.userAnswer || "(sin audio)"}</p>
-                      <p className="text-sm text-gray-700">{item.suggestionEs}</p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+          <div className="space-y-8 w-full">
+            <h2 className="text-xl font-bold text-gray-800">Interview summary</h2>
+            <ul className="space-y-4 w-full">
+              {reviewItems.map((item, i) => (
+                <li key={i} className="rounded-xl border-2 border-slate-200 bg-white p-4 w-full">
+                  <p className="font-medium text-gray-800 mb-1">{item.questionText}</p>
+                  <p className="text-sm text-gray-600 mb-2">You said: {item.userAnswer || "(no speech)"}</p>
+                  <p className="text-sm text-gray-700">{neutralSuggestion(item.suggestionEn)}</p>
+                </li>
+              ))}
+            </ul>
             <div className="flex gap-3 pt-4">
               <button
                 type="button"
