@@ -2,6 +2,7 @@
 
 import React, { useCallback, useRef, useState } from "react";
 import Link from "next/link";
+import { BeatLoader } from "react-spinners";
 import { VoiceBars } from "../components/VoiceBars";
 import { backendUrl } from "../lib/backend-url";
 
@@ -26,11 +27,12 @@ function friendlyError(msg: string | undefined): string {
   return msg;
 }
 
-/** Civics answers are right or wrong, not "stronger" vs weaker. Use "answer" instead. */
-function neutralSuggestion(text: string): string {
+/** Strip "Answer:", "Your answer:", etc. so we can show a single "Correct answer:" label in the review. */
+function suggestionBody(text: string): string {
   return text
-    .replace(/\bA stronger answer:?\s*/gi, "Answer: ")
-    .replace(/\bstronger answer:?\s*/gi, "answer: ");
+    .replace(/^(?:A stronger answer|Stronger answer|Your answer|Answer):\s*/gi, "")
+    .replace(/^answer:\s*/i, "")
+    .trim() || text;
 }
 
 /** Interview is in English only: backend questionText is Spanish, so we show questionTextEn when present. */
@@ -116,9 +118,45 @@ async function blobToBase64(blob: Blob): Promise<string> {
 function afterNextPaint(): Promise<void> {
   return new Promise((resolve) => {
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => resolve());
+      requestAnimationFrame(() => {
+        setTimeout(resolve, 80);
+      });
     });
   });
+}
+
+const INTERVIEW_FETCH_TIMEOUT_MS = 90_000;
+const RETRY_DELAYS_MS = [0, 2000, 4000];
+
+/**
+ * Fetch with timeout and retries. Handles cold starts and transient 502/503/network errors.
+ * Retries up to 3 times with 2s then 4s delay. Does not retry 4xx.
+ */
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit = {},
+  opts: { retries?: number; timeoutMs?: number } = {}
+): Promise<Response> {
+  const { retries = 3, timeoutMs = INTERVIEW_FETCH_TIMEOUT_MS } = opts;
+  let lastRes: Response | null = null;
+  for (let attempt = 0; attempt < retries; attempt++) {
+    if (attempt > 0) {
+      await new Promise((r) => setTimeout(r, RETRY_DELAYS_MS[attempt] ?? 4000));
+    }
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (res.status < 500) return res;
+      lastRes = res;
+    } catch (e) {
+      clearTimeout(timeoutId);
+      lastRes = null;
+      if (attempt === retries - 1) throw e;
+    }
+  }
+  return lastRes!;
 }
 
 export default function InterviewPage() {
@@ -140,11 +178,15 @@ export default function InterviewPage() {
     setError(null);
     setStatus("loading");
     try {
-      const res = await fetch(backendUrl("/api/voice/interview/start"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userName ? { userName } : {}),
-      });
+      const res = await fetchWithRetry(
+        backendUrl("/api/voice/interview/start"),
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userName ? { userName } : {}),
+        },
+        { retries: 3, timeoutMs: INTERVIEW_FETCH_TIMEOUT_MS }
+      );
       const data = (await res.json()) as StartResponse & { message?: string };
       if (res.status === 503 && data.message) {
         setError(friendlyError(data.message));
@@ -216,15 +258,19 @@ export default function InterviewPage() {
       await new Promise<void>((r) => setTimeout(r, 300));
       const blob = new Blob(chunksRef.current, { type: "audio/webm" });
       const audioBase64 = await blobToBase64(blob);
-      const res = await fetch(backendUrl("/api/voice/interview/respond"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sessionId,
-          questionIndex,
-          audio: audioBase64,
-        }),
-      });
+      const res = await fetchWithRetry(
+        backendUrl("/api/voice/interview/respond"),
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionId,
+            questionIndex,
+            audio: audioBase64,
+          }),
+        },
+        { retries: 3, timeoutMs: INTERVIEW_FETCH_TIMEOUT_MS }
+      );
       const data = (await res.json()) as RespondResponse & { message?: string };
       if (res.status === 503 && data.message) {
         setError(friendlyError(data.message));
@@ -364,7 +410,12 @@ export default function InterviewPage() {
           </div>
         )}
 
-        {status === "sending" && <p className="text-gray-600">Enviando respuesta…</p>}
+        {status === "sending" && (
+          <div className="flex flex-col items-center gap-6">
+            <BeatLoader color="rgba(214, 169, 54, 0.6)" speedMultiplier={0.5} />
+            <p className="text-gray-600">Enviando respuesta…</p>
+          </div>
+        )}
         {status === "officer" && (
           <div className="flex flex-col items-center gap-6">
             <VoiceBars isPlaying={isPlayingAudio} className="flex-shrink-0" />
@@ -379,8 +430,8 @@ export default function InterviewPage() {
               {reviewItems.map((item, i) => (
                 <li key={i} className="rounded-xl border-2 border-slate-200 bg-white p-4 w-full">
                   <p className="font-medium text-gray-800 mb-1">{item.questionText}</p>
-                  <p className="text-sm text-gray-600 mb-2">You said: {item.userAnswer || "(no speech)"}</p>
-                  <p className="text-sm text-gray-700">{neutralSuggestion(item.suggestionEn)}</p>
+                  <p className="text-sm text-gray-600 mb-2">Your answer: {item.userAnswer || "(no speech)"}</p>
+                  <p className="text-sm text-gray-700">Correct answer: {suggestionBody(item.suggestionEn)}</p>
                 </li>
               ))}
             </ul>

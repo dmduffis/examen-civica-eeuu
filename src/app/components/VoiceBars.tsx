@@ -81,9 +81,20 @@ export function VoiceBars({
 
   const showLiveLevels = !!stream?.active;
   const showPlayingWave = isPlaying && !stream?.active;
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Force reflow on next frame when switching to wave so the CSS animation starts (avoids "stuck" on first paint).
+  useEffect(() => {
+    if (!showPlayingWave) return;
+    const id = requestAnimationFrame(() => {
+      containerRef.current && void containerRef.current.offsetHeight;
+    });
+    return () => cancelAnimationFrame(id);
+  }, [showPlayingWave]);
 
   return (
     <div
+      ref={containerRef}
       className={`flex items-end justify-center gap-1.5 h-12 ${className}`}
       aria-hidden
     >
