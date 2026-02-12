@@ -6,6 +6,7 @@ import { useAuth } from "../lib/auth-context";
 import { fetchQuizHistory } from "../lib/profile-api";
 import type { QuizHistoryEntry } from "../lib/auth-types";
 import { BeatLoader } from "react-spinners";
+import { ScoreChart } from "../components/ScoreChart";
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
@@ -131,7 +132,11 @@ export default function ProgressPage() {
             </Link>
           </div>
         ) : (
-          <ul className="flex flex-col gap-3">
+          <>
+            <div className="mb-6 max-w-lg">
+              <ScoreChart entries={history} width={400} height={220} />
+            </div>
+            <ul className="flex flex-col gap-3">
             {history.map((entry) => (
               <li
                 key={entry.id}
@@ -153,7 +158,8 @@ export default function ProgressPage() {
                 </div>
               </li>
             ))}
-          </ul>
+            </ul>
+          </>
         )}
 
         <div className="mt-8">
