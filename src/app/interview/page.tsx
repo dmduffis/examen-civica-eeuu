@@ -125,7 +125,10 @@ function afterNextPaint(): Promise<void> {
   });
 }
 
-const INTERVIEW_FETCH_TIMEOUT_MS = 90_000;
+/** Start generates 6 audios (15–45s); use at least 90s. */
+const VOICE_START_TIMEOUT_MS = 90_000;
+/** Respond does STT + TTS (5–15s); use at least 60s. */
+const VOICE_RESPOND_TIMEOUT_MS = 60_000;
 const RETRY_DELAYS_MS = [0, 2000, 4000];
 
 /**
@@ -137,7 +140,7 @@ async function fetchWithRetry(
   options: RequestInit = {},
   opts: { retries?: number; timeoutMs?: number } = {}
 ): Promise<Response> {
-  const { retries = 3, timeoutMs = INTERVIEW_FETCH_TIMEOUT_MS } = opts;
+  const { retries = 3, timeoutMs = VOICE_START_TIMEOUT_MS } = opts;
   let lastRes: Response | null = null;
   for (let attempt = 0; attempt < retries; attempt++) {
     if (attempt > 0) {
@@ -185,7 +188,7 @@ export default function InterviewPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(userName ? { userName } : {}),
         },
-        { retries: 3, timeoutMs: INTERVIEW_FETCH_TIMEOUT_MS }
+        { retries: 3, timeoutMs: VOICE_START_TIMEOUT_MS }
       );
       const data = (await res.json()) as StartResponse & { message?: string };
       if (res.status === 503 && data.message) {
@@ -269,7 +272,7 @@ export default function InterviewPage() {
             audio: audioBase64,
           }),
         },
-        { retries: 3, timeoutMs: INTERVIEW_FETCH_TIMEOUT_MS }
+        { retries: 3, timeoutMs: VOICE_RESPOND_TIMEOUT_MS }
       );
       const data = (await res.json()) as RespondResponse & { message?: string };
       if (res.status === 503 && data.message) {
@@ -350,7 +353,7 @@ export default function InterviewPage() {
           <div className="flex flex-col items-center gap-6">
             <VoiceBars isPlaying={isPlayingAudio} className="flex-shrink-0" />
             <p className="text-gray-600">
-              {status === "loading" && "Conectando…"}
+              {status === "loading" && "Preparando tu entrevista…"}
               {status === "greeting" && "Reproduciendo bienvenida…"}
               {status === "question" && "Reproduciendo pregunta…"}
             </p>
