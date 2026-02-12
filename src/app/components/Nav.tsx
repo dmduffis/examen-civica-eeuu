@@ -101,6 +101,9 @@ export default function Nav() {
           <Link href="/flashcards" className={linkClass}>
             Revisar
           </Link>
+          <Link href="/interview" className={linkClass}>
+            Entrevista
+          </Link>
           <span
             className="h-5 w-px bg-slate-200 shrink-0 self-center"
             aria-hidden
@@ -187,6 +190,13 @@ export default function Nav() {
                 onClick={closeDrawer}
               >
                 Revisar
+              </Link>
+              <Link
+                href="/interview"
+                className={drawerLinkClass}
+                onClick={closeDrawer}
+              >
+                Entrevista
               </Link>
             </div>
             <span className="h-px bg-slate-200 my-4" aria-hidden />

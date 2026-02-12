@@ -20,6 +20,21 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
+## Backend integration (examen_civica_backend)
+
+The frontend talks to a single backend. Set in `.env.local`:
+
+- **`NEXT_PUBLIC_AUTH_API_URL`** — Full backend base URL (e.g. `https://your-backend.herokuapp.com` or `http://localhost:8000`). Do **not** set this to the frontend domain.
+
+All API traffic is proxied through Next.js API routes to this backend:
+
+- **Auth:** `/api/auth/login`, `/api/auth/register` → backend auth; token stored and sent as `Authorization: Bearer <token>` on protected calls.
+- **Profile:** GET/PATCH `/api/profile`, POST `/api/profile/quiz-history` (after a quiz).
+- **Data:** GET `/api/questions` → backend `/api/question`; GET `/api/state` and `/api/state/[code]` → backend states.
+- **Voice:** POST `/api/voice/tts`, `/api/voice/stt`, `/api/voice/interview/start`, `/api/voice/interview/respond` for the practice interview (TTS/STT and interview flow). If the backend has no voice config, it returns 503 and the app shows a friendly message.
+
+The **Entrevista** (interview) page starts a voice session, plays greeting and questions, records your answers, and shows a bilingual review (English and Spanish suggestions) at the end.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
