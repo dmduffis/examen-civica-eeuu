@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 
 import { Spline_Sans } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
@@ -33,6 +34,7 @@ export default function RootLayout({
             <div className="max-w-[1067px] w-full mx-auto">{children}</div>
           </div>
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   );
