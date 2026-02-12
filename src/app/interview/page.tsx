@@ -27,12 +27,25 @@ function friendlyError(msg: string | undefined): string {
   return msg;
 }
 
-/** Strip "Answer:", "Your answer:", etc. so we can show a single "Correct answer:" label in the review. */
-function suggestionBody(text: string): string {
-  return text
-    .replace(/^(?:A stronger answer|Stronger answer|Your answer|Answer):\s*/gi, "")
-    .replace(/^answer:\s*/i, "")
-    .trim() || text;
+/**
+ * Extract only the suggested correct answer for "Correct answer:" in the review.
+ * Never show "a stronger answer" in the UI.
+ */
+function correctAnswerFromSuggestion(text: string): string {
+  const t = text.trim();
+  const strongerMatch = t.match(/\b(?:A\s+)?stronger\s+answer\s*:?\s*(.*)/is);
+  let out: string;
+  if (strongerMatch) {
+    let rest = strongerMatch[1].trim();
+    if (rest.startsWith('"') && rest.includes('"', 1)) {
+      const end = rest.indexOf('"', 1);
+      rest = rest.slice(1, end);
+    }
+    out = rest.trim() || t;
+  } else {
+    out = t.replace(/^.*?(?:Your\s+answer|Answer)\s*:?\s*["\u201C\u201D]?[^"]*["\u201C\u201D]?\.?\s*/i, "").trim() || t;
+  }
+  return out.replace(/\b(?:A\s+)?stronger\s+answer\s*:?\s*/gi, "").trim() || out;
 }
 
 /** Interview is in English only: backend questionText is Spanish, so we show questionTextEn when present. */
@@ -432,9 +445,8 @@ export default function InterviewPage() {
             <ul className="space-y-4 w-full">
               {reviewItems.map((item, i) => (
                 <li key={i} className="rounded-xl border-2 border-slate-200 bg-white p-4 w-full">
-                  <p className="font-medium text-gray-800 mb-1">{item.questionText}</p>
                   <p className="text-sm text-gray-600 mb-2">Your answer: {item.userAnswer || "(no speech)"}</p>
-                  <p className="text-sm text-gray-700">Correct answer: {suggestionBody(item.suggestionEn)}</p>
+                  <p className="text-sm text-gray-700">Correct answer: {correctAnswerFromSuggestion(item.suggestionEn)}</p>
                 </li>
               ))}
             </ul>
