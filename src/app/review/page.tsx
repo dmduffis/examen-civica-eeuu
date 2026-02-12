@@ -14,19 +14,15 @@ import {
 } from "../lib/state-api";
 import { useAuth } from "../lib/auth-context";
 import { fetchProfile, updateProfileState } from "../lib/profile-api";
-
-type Answer = { _id: string; isCorrect: boolean; answerText: string };
-type QuestionItem = {
-  _id: string;
-  questionText: string;
-  answers: Answer[];
-  isStateSpecific?: boolean;
-};
+import type { QuestionItem } from "../lib/question-types";
+import { questionDisplayText, answerDisplayText } from "../lib/question-types";
+import type { DisplayLang } from "../lib/question-types";
 
 export default function ReviewPage() {
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [displayLang, setDisplayLang] = useState<DisplayLang>("es");
   const [states, setStates] = useState<StateOption[]>([]);
   const [selectedStateCode, setSelectedStateCode] = useState<string | null>(
     null,
@@ -129,6 +125,23 @@ export default function ReviewPage() {
             Hay 100 preguntas en total; en la entrevista te harán 20 de forma
             oral. Aquí puedes estudiarlas todas con sus respuestas correctas.
           </p>
+          <span className="flex items-center gap-1 text-sm text-gray-500 mt-2">
+            <button
+              type="button"
+              onClick={() => setDisplayLang("es")}
+              className={`px-2 py-1 rounded ${displayLang === "es" ? "bg-amber-100 text-amber-800 font-medium" : "hover:bg-slate-100"}`}
+            >
+              ES
+            </button>
+            <span aria-hidden>|</span>
+            <button
+              type="button"
+              onClick={() => setDisplayLang("en")}
+              className={`px-2 py-1 rounded ${displayLang === "en" ? "bg-amber-100 text-amber-800 font-medium" : "hover:bg-slate-100"}`}
+            >
+              EN
+            </button>
+          </span>
         </div>
         <div className="flex flex-col sm:flex-row gap-8 justify-between items-end w-full mb-10">
           <section className="min-w-0 w-full max-w-xs">
@@ -182,7 +195,7 @@ export default function ReviewPage() {
               className="border border-slate-200 rounded-lg p-4 bg-white shadow-sm"
             >
               <p className="font-semibold text-gray-800 mb-3">
-                {index + 1}. {q.questionText}
+                {index + 1}. {questionDisplayText(q, displayLang)}
               </p>
               {q.isStateSpecific && (
                 <div className="mb-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
@@ -232,12 +245,12 @@ export default function ReviewPage() {
               <ul className="space-y-2">
                 {q.answers
                   .filter((answer) => answer.isCorrect)
-                  .map((answer) => (
+                  .map((answer, aIdx) => (
                     <li
-                      key={answer._id}
+                      key={answer._id ?? `a-${aIdx}`}
                       className="pl-3 py-1 rounded text-gray-800"
                     >
-                      {answer.answerText}
+                      {answerDisplayText(answer, displayLang)}
                     </li>
                   ))}
               </ul>

@@ -30,10 +30,10 @@ All API traffic is proxied through Next.js API routes to this backend:
 
 - **Auth:** `/api/auth/login`, `/api/auth/register` → backend auth; token stored and sent as `Authorization: Bearer <token>` on protected calls.
 - **Profile:** GET/PATCH `/api/profile`, POST `/api/profile/quiz-history` (after a quiz).
-- **Data:** GET `/api/questions` → backend `/api/question`; GET `/api/state` and `/api/state/[code]` → backend states.
-- **Voice:** POST `/api/voice/tts`, `/api/voice/stt`, `/api/voice/interview/start`, `/api/voice/interview/respond` for the practice interview (TTS/STT and interview flow). If the backend has no voice config, it returns 503 and the app shows a friendly message.
+- **Data:** GET `/api/questions` → backend `/api/question` (returns `questionText` Spanish, optional `questionTextEn` English; answers with `answerText` and optional `answerTextEn`). GET `/api/state` and `/api/state/[code]` for states.
+- **Voice:** POST `/api/voice/interview/start`, `/api/voice/interview/respond` for the practice interview. The officer speaks in **English**; greeting and questions are in English. On the last answer, the backend returns a **review** with `suggestionEn`, `suggestionEs`, and optional `questionTextEs` for the Spanish column.
 
-The **Entrevista** (interview) page starts a voice session, plays greeting and questions, records your answers, and shows a bilingual review (English and Spanish suggestions) at the end.
+**Language:** Quiz, Review, and Flashcards offer an **ES | EN** toggle to show questions and answers in Spanish (default) or English using `questionText`/`questionTextEn` and `answerText`/`answerTextEn`. The voice interview uses English; the review screen shows both languages (English column uses `questionText`, Spanish column uses `questionTextEs` when present).
 
 ## Learn More
 

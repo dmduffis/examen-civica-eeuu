@@ -1,42 +1,77 @@
-import React from 'react'
+import React from "react";
+import type { QuestionAnswer } from "../lib/question-types";
+import { answerDisplayText } from "../lib/question-types";
 
 type Props = {
-    key: string,
-    answer: { _id: string, isCorrect: boolean, answerText: string},
-    handleSelect: Function,
-    questionSelected: string | null,
-    answerClasses: any;
-    questionSubmitted: boolean,
-    currentCorrect: boolean | null,
-    feedbackClasses: any;
-    loading: boolean;
-}
+  answer: QuestionAnswer;
+  answerKey: string;
+  displayLang: "es" | "en";
+  handleSelect: (answer: QuestionAnswer) => void;
+  questionSelected: string | null;
+  answerClasses: { correct: string; incorrect: string; default: string; defaultAfter: string };
+  questionSubmitted: boolean;
+  currentCorrect: boolean | null;
+  feedbackClasses: { submitted: string; default: string };
+  loading: boolean;
+};
 
-function Question(props:Props) {
-    const { answer, handleSelect, questionSelected, answerClasses, questionSubmitted, currentCorrect, feedbackClasses} = props;
+function Question(props: Props) {
+  const {
+    answer,
+    answerKey,
+    displayLang,
+    handleSelect,
+    questionSelected,
+    answerClasses,
+    questionSubmitted,
+    currentCorrect,
+    feedbackClasses,
+  } = props;
+
+  const displayText = answerDisplayText(answer, displayLang);
+  const isSelected = questionSelected === answerKey;
 
   return (
-
-    (<div>
-    
-    <button 
-    onClick={() => handleSelect(answer)} 
-    className={questionSelected === answer._id ? (answer.isCorrect ? answerClasses.correct : answerClasses.incorrect) : (questionSubmitted ? answerClasses.defaultAfter : answerClasses.default)} disabled={questionSubmitted ? true : false}>
-    
-    <p>{answer.answerText}</p>
-    
-    <span className="text-green-500 shrink-0">
-      {questionSubmitted && !currentCorrect && answer.isCorrect ? (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-          <path d="M20 6L9 17l-5-5" />
-        </svg>
+    <div>
+      <button
+        type="button"
+        onClick={() => handleSelect(answer)}
+        className={
+          isSelected
+            ? answer.isCorrect
+              ? answerClasses.correct
+              : answerClasses.incorrect
+            : questionSubmitted
+              ? answerClasses.defaultAfter
+              : answerClasses.default
+        }
+        disabled={questionSubmitted}
+      >
+        <p>{displayText}</p>
+        <span className="text-green-500 shrink-0">
+          {questionSubmitted && !currentCorrect && answer.isCorrect ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-6 h-6"
+            >
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+          ) : null}
+        </span>
+      </button>
+      {isSelected ? (
+        <p className={questionSubmitted ? feedbackClasses.submitted : feedbackClasses.default}>
+          {questionSubmitted ? (currentCorrect ? "Correcto! 👏" : "Incorrecto 😥") : ""}
+        </p>
       ) : null}
-    </span>
-               </button>
-
-    {questionSelected === answer._id ? (<p className={questionSubmitted ? feedbackClasses.submitted : feedbackClasses.default}>{questionSubmitted ? (currentCorrect ? 'Correcto! 👏' : 'Incorrecto 😥') : ''}</p>) : ''}
-                </div>)
-    );
+    </div>
+  );
 }
 
-export default Question
+export default Question;

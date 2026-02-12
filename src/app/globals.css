@@ -42,6 +42,15 @@ h1, h2, h3, h4, h5, h6 {
   animation: fadeIn 200ms ease-in-out;
 }
 
+@keyframes voice-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.2); opacity: 0.9; }
+}
+
+.voice-breathe {
+  animation: voice-breathe 1.8s ease-in-out infinite;
+}
+
 
 
 

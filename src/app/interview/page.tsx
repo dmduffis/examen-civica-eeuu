@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import Link from "next/link";
+import { VoiceCircle } from "../components/VoiceCircle";
 
 type InterviewQuestion = {
   id: string;
@@ -11,6 +12,8 @@ type InterviewQuestion = {
 
 type ReviewItem = {
   questionText: string;
+  questionTextEn?: string;
+  questionTextEs?: string;
   userAnswer: string;
   suggestionEn: string;
   suggestionEs: string;
@@ -59,6 +62,14 @@ function useAudioPlayer() {
   return { playBase64, stop };
 }
 
+const MicIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z" />
+    <path d="M19 10v1a7 7 0 0 1-14 0v-1" />
+    <line x1="12" x2="12" y1="19" y2="22" />
+  </svg>
+);
+
 async function blobToBase64(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -73,13 +84,15 @@ async function blobToBase64(blob: Blob): Promise<string> {
 }
 
 export default function InterviewPage() {
-  const [status, setStatus] = useState<"idle" | "loading" | "greeting" | "question" | "recording" | "sending" | "officer" | "review" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "greeting" | "question" | "ready_to_record" | "recording" | "sending" | "officer" | "review" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
   const [userName, setUserName] = useState("");
+  const [recordingStream, setRecordingStream] = useState<MediaStream | null>(null);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -110,11 +123,15 @@ export default function InterviewPage() {
       setQuestionIndex(0);
       setReviewItems([]);
       setStatus("greeting");
+      setIsPlayingAudio(true);
       await playBase64(data.greetingAudio);
+      setIsPlayingAudio(false);
       if (data.questions?.length) {
         setStatus("question");
+        setIsPlayingAudio(true);
         await playBase64(data.questions[0].questionAudio);
-        setStatus("recording");
+        setIsPlayingAudio(false);
+        setStatus("ready_to_record");
       } else {
         setStatus("idle");
       }
@@ -128,6 +145,7 @@ export default function InterviewPage() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
+      setRecordingStream(stream);
       const recorder = new MediaRecorder(stream);
       recorderRef.current = recorder;
       chunksRef.current = [];
@@ -150,6 +168,7 @@ export default function InterviewPage() {
     recorder.stop();
     stream?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
+    setRecordingStream(null);
     recorderRef.current = null;
     setStatus("sending");
     try {
@@ -177,7 +196,9 @@ export default function InterviewPage() {
         return;
       }
       setStatus("officer");
+      setIsPlayingAudio(true);
       await playBase64(data.officerResponseAudio);
+      setIsPlayingAudio(false);
       if (data.isComplete && data.review?.items) {
         setReviewItems(data.review.items);
         setStatus("review");
@@ -187,8 +208,10 @@ export default function InterviewPage() {
         const nextIdx = questionIndex + 1;
         setQuestionIndex(nextIdx);
         setStatus("question");
+        setIsPlayingAudio(true);
         await playBase64(data.nextQuestion.questionAudio);
-        setStatus("recording");
+        setIsPlayingAudio(false);
+        setStatus("ready_to_record");
       } else {
         setStatus("idle");
       }
@@ -197,12 +220,6 @@ export default function InterviewPage() {
       setStatus("error");
     }
   }, [sessionId, questionIndex, questions?.length, playBase64]);
-
-  useEffect(() => {
-    if (status === "recording" && sessionId != null && questions.length > 0) {
-      startRecording();
-    }
-  }, [status, sessionId, questions.length]); // eslint-disable-line react-hooks/exhaustive-deps -- only start when entering recording
 
   return (
     <main className="flex flex-col w-full justify-center pt-16 mt-8 pb-16">
@@ -240,35 +257,71 @@ export default function InterviewPage() {
         )}
 
         {(status === "loading" || status === "greeting" || status === "question") && (
-          <p className="text-gray-600">
-            {status === "loading" && "Conectando…"}
-            {status === "greeting" && "Reproduciendo bienvenida…"}
-            {status === "question" && "Reproduciendo pregunta…"}
-          </p>
+          <div className="flex flex-col items-center gap-6">
+            <VoiceCircle isPlaying={isPlayingAudio} size={180} className="flex-shrink-0" />
+            <p className="text-gray-600">
+              {status === "loading" && "Conectando…"}
+              {status === "greeting" && "Reproduciendo bienvenida…"}
+              {status === "question" && "Reproduciendo pregunta…"}
+            </p>
+          </div>
         )}
 
-        {status === "recording" && (
+        {status === "ready_to_record" && (
           <div className="flex flex-col gap-4">
+            <div className="flex justify-center">
+              <VoiceCircle size={160} className="flex-shrink-0" />
+            </div>
             <p className="text-gray-700 font-medium">
-              Pregunta {questionIndex + 1} de {questions.length}: responde en voz alta.
+              Pregunta {questionIndex + 1} de {questions.length}
             </p>
             {questions[questionIndex] && (
               <p className="text-gray-600 italic">&quot;{questions[questionIndex].questionText}&quot;</p>
             )}
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={stopRecordingAndSend}
-                className="rounded-xl bg-amber-500 text-white font-semibold py-3 px-6 hover:bg-amber-600 transition-colors"
-              >
-                Enviar respuesta
-              </button>
+            <p className="text-gray-600 text-sm">Haz clic para abrir el micrófono y grabar tu respuesta.</p>
+            <button
+              type="button"
+              onClick={startRecording}
+              className="rounded-xl bg-green-600 text-white font-semibold py-4 px-6 hover:bg-green-700 transition-colors inline-flex items-center justify-center gap-2"
+              aria-label="Abrir micrófono"
+            >
+              <MicIcon />
+              Abrir micrófono
+            </button>
+          </div>
+        )}
+
+        {status === "recording" && (
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-center">
+              <VoiceCircle stream={recordingStream} size={180} className="flex-shrink-0" />
             </div>
+            <p className="text-gray-700 font-medium">
+              Pregunta {questionIndex + 1} de {questions.length}: grabando tu respuesta.
+            </p>
+            {questions[questionIndex] && (
+              <p className="text-gray-600 italic">&quot;{questions[questionIndex].questionText}&quot;</p>
+            )}
+            <p className="text-amber-700 font-medium flex items-center gap-2">
+              <span className="inline-flex h-3 w-3 rounded-full bg-red-500 animate-pulse" aria-hidden /> Grabando…
+            </p>
+            <button
+              type="button"
+              onClick={stopRecordingAndSend}
+              className="rounded-xl bg-amber-500 text-white font-semibold py-4 px-6 hover:bg-amber-600 transition-colors"
+            >
+              Dejar de grabar y enviar
+            </button>
           </div>
         )}
 
         {status === "sending" && <p className="text-gray-600">Enviando respuesta…</p>}
-        {status === "officer" && <p className="text-gray-600">Respuesta del oficial…</p>}
+        {status === "officer" && (
+          <div className="flex flex-col items-center gap-6">
+            <VoiceCircle isPlaying={isPlayingAudio} size={180} className="flex-shrink-0" />
+            <p className="text-gray-600">Respuesta del oficial…</p>
+          </div>
+        )}
 
         {status === "review" && reviewItems.length > 0 && (
           <div className="space-y-8">
@@ -291,7 +344,7 @@ export default function InterviewPage() {
                 <ul className="space-y-4">
                   {reviewItems.map((item, i) => (
                     <li key={i} className="rounded-xl border-2 border-slate-200 bg-white p-4">
-                      <p className="font-medium text-gray-800 mb-1">{item.questionText}</p>
+                      <p className="font-medium text-gray-800 mb-1">{item.questionTextEs ?? item.questionText}</p>
                       <p className="text-sm text-gray-600 mb-2">Dijiste: {item.userAnswer || "(sin audio)"}</p>
                       <p className="text-sm text-gray-700">{item.suggestionEs}</p>
                     </li>

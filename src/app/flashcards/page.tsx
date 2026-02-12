@@ -14,14 +14,9 @@ import {
 } from "../lib/state-api";
 import { useAuth } from "../lib/auth-context";
 import { fetchProfile, updateProfileState } from "../lib/profile-api";
-
-type Answer = { _id: string; isCorrect: boolean; answerText: string };
-type QuestionItem = {
-  _id: string;
-  questionText: string;
-  answers: Answer[];
-  isStateSpecific?: boolean;
-};
+import type { QuestionItem } from "../lib/question-types";
+import { questionDisplayText, answerDisplayText } from "../lib/question-types";
+import type { DisplayLang } from "../lib/question-types";
 
 const QUESTIONS_API = "/api/questions";
 
@@ -86,6 +81,7 @@ export default function FlashcardsPage() {
   const [marks, setMarks] = useState<Record<string, "right" | "wrong">>({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const [displayLang, setDisplayLang] = useState<DisplayLang>("es");
   const { user, isAuthEnabled } = useAuth();
 
   useEffect(() => {
@@ -262,10 +258,15 @@ export default function FlashcardsPage() {
               Revisar
             </h1>
           </div>
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
           <span className="text-sm text-gray-500">
             {currentIndex + 1} / {studyQueue.length}
             {showWrongOnly && " (solo incorrectas)"}
+          </span>
+          <span className="flex items-center gap-1 text-sm text-gray-500">
+            <button type="button" onClick={() => setDisplayLang("es")} className={`px-2 py-1 rounded ${displayLang === "es" ? "bg-amber-100 text-amber-800 font-medium" : "hover:bg-slate-100"}`}>ES</button>
+            <span aria-hidden>|</span>
+            <button type="button" onClick={() => setDisplayLang("en")} className={`px-2 py-1 rounded ${displayLang === "en" ? "bg-amber-100 text-amber-800 font-medium" : "hover:bg-slate-100"}`}>EN</button>
           </span>
           <button
             onClick={() => setView("select")}
@@ -281,7 +282,7 @@ export default function FlashcardsPage() {
         >
           {!flipped ? (
             <p className="text-lg font-semibold text-gray-800 text-center">
-              {currentQuestion.questionText}
+              {questionDisplayText(currentQuestion, displayLang)}
             </p>
           ) : (
             <div className="text-center w-full">
@@ -330,9 +331,9 @@ export default function FlashcardsPage() {
                 </div>
               ) : (
                 <ul className="space-y-1.5 text-left inline-block">
-                  {correctAnswers.map((a) => (
-                    <li key={a._id} className="text-base text-gray-800">
-                      {a.answerText}
+                  {correctAnswers.map((a, aIdx) => (
+                    <li key={a._id ?? `a-${aIdx}`} className="text-base text-gray-800">
+                      {answerDisplayText(a, displayLang)}
                     </li>
                   ))}
                 </ul>
@@ -424,6 +425,11 @@ export default function FlashcardsPage() {
           <p className="text-gray-600">
             Elige las preguntas que quieres repasar y estudia con tarjetas.
           </p>
+          <span className="flex items-center gap-1 text-sm text-gray-500 mt-2">
+            <button type="button" onClick={() => setDisplayLang("es")} className={`px-2 py-1 rounded ${displayLang === "es" ? "bg-amber-100 text-amber-800 font-medium" : "hover:bg-slate-100"}`}>ES</button>
+            <span aria-hidden>|</span>
+            <button type="button" onClick={() => setDisplayLang("en")} className={`px-2 py-1 rounded ${displayLang === "en" ? "bg-amber-100 text-amber-800 font-medium" : "hover:bg-slate-100"}`}>EN</button>
+          </span>
         </div>
 
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
@@ -495,7 +501,7 @@ export default function FlashcardsPage() {
               </span>
             </span>
             <span className="block min-w-0 flex-1 py-0.5 text-gray-800 text-sm text-left break-words [overflow-wrap:anywhere]">
-              {index + 1}. {q.questionText}
+              {index + 1}. {questionDisplayText(q, displayLang)}
             </span>
           </label>
         ))}

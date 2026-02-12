@@ -11,12 +11,9 @@ import Results from "./Results";
 import Question from "../components/Question";
 import girlExam from "../assets/images/girl_exam.png";
 import { BeatLoader } from "react-spinners";
-type QuestionItem = {
-  _id: string;
-  questionText: string;
-  answers: { _id: string; isCorrect: boolean; answerText: string }[];
-  isStateSpecific?: boolean;
-};
+import type { QuestionItem } from "../lib/question-types";
+import { questionDisplayText } from "../lib/question-types";
+import type { DisplayLang } from "../lib/question-types";
 
 function shuffle<T>(arr: T[]): T[] {
   const out = [...arr];
@@ -70,11 +67,10 @@ export default function QuizPage() {
   const [data, setData] = useState<QuestionItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [started, setStarted] = useState<boolean>(false);
-  const [sortedAnswersArray, setSortedAnswersArray] = useState<
-    { _id: string; isCorrect: boolean; answerText: string }[]
-  >([]);
+  const [sortedAnswersArray, setSortedAnswersArray] = useState<QuestionItem["answers"]>([]);
   const [currentQuestionText, setCurrentQuestionText] = useState<string>("");
   const [questionIndex, setQuestionIndex] = useState<number>(0);
+  const [displayLang, setDisplayLang] = useState<DisplayLang>("es");
   const [quizSubmitted, setQuizSubmitted] = useState<boolean>(false);
   const [questionSelected, setQuestionSelected] = useState<string | null>(null);
   const [questionSubmitted, setQuestionSubmitted] = useState(false);
@@ -136,7 +132,7 @@ export default function QuizPage() {
             Math.min(count, scorableQuestions.length),
           );
     setData(quizSet);
-    setCurrentQuestionText(quizSet[0].questionText);
+    setCurrentQuestionText(questionDisplayText(quizSet[0], displayLang));
     setSortedAnswersArray(shuffle(quizSet[0].answers));
     setQuestionIndex(0);
     setQuestionSubmitted(false);
@@ -146,9 +142,9 @@ export default function QuizPage() {
     setStarted(true);
   };
 
-  const handleSelect = (item: any) => {
+  const handleSelect = (item: QuestionItem["answers"][number], key: string) => {
     setQuestionSubmitted(true);
-    setQuestionSelected(item._id);
+    setQuestionSelected(key);
     if (item.isCorrect) {
       setCurrentCorrect(true);
       setScore((prev) => prev + 1);
@@ -165,6 +161,9 @@ export default function QuizPage() {
       setQuestionSubmitted(false);
       setQuestionSelected(null);
       setCurrentCorrect(null);
+      const next = data[questionIndex + 1];
+      if (next) setCurrentQuestionText(questionDisplayText(next, displayLang));
+      setSortedAnswersArray(shuffle(next.answers));
     }
   };
 
@@ -186,6 +185,12 @@ export default function QuizPage() {
     const incorrect = data.length - score;
     addQuizResult(score, incorrect, data.length).catch(() => {});
   }, [quizSubmitted, isAuthEnabled, user, score, data.length]);
+
+  useEffect(() => {
+    if (data.length > 0 && questionIndex < data.length) {
+      setCurrentQuestionText(questionDisplayText(data[questionIndex], displayLang));
+    }
+  }, [displayLang, data, questionIndex]);
 
   if (quizSubmitted) {
     return (
@@ -287,19 +292,36 @@ export default function QuizPage() {
         <div>
           <ProgressBar progressPercentage={progressPercentage} />
 
-          <div className="mt-6">
-            <p className="text-lg font-bold mb-6">{currentQuestionText}</p>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <p className="text-lg font-bold flex-1 min-w-0">{currentQuestionText}</p>
+            <span className="flex items-center gap-1 text-sm text-gray-500">
+              <button
+                type="button"
+                onClick={() => setDisplayLang("es")}
+                className={`px-2 py-1 rounded ${displayLang === "es" ? "bg-amber-100 text-amber-800 font-medium" : "hover:bg-slate-100"}`}
+              >
+                ES
+              </button>
+              <span aria-hidden>|</span>
+              <button
+                type="button"
+                onClick={() => setDisplayLang("en")}
+                className={`px-2 py-1 rounded ${displayLang === "en" ? "bg-amber-100 text-amber-800 font-medium" : "hover:bg-slate-100"}`}
+              >
+                EN
+              </button>
+            </span>
           </div>
 
-          {sortedAnswersArray.map(
-            (
-              answer: { _id: string; isCorrect: boolean; answerText: string },
-              idx,
-            ) => (
+          {sortedAnswersArray.map((answer, idx) => {
+            const answerKey = answer._id ?? `idx-${idx}`;
+            return (
               <Question
-                key={answer._id}
+                key={answerKey}
                 answer={answer}
-                handleSelect={handleSelect}
+                answerKey={answerKey}
+                displayLang={displayLang}
+                handleSelect={(a) => handleSelect(a, answerKey)}
                 questionSelected={questionSelected}
                 answerClasses={answerClasses}
                 questionSubmitted={questionSubmitted}
@@ -307,8 +329,8 @@ export default function QuizPage() {
                 feedbackClasses={feedbackClasses}
                 loading={loading}
               />
-            ),
-          )}
+            );
+          })}
 
           <div className="mt-6 flex flex-row items-center w-full text-sm justify-between">
             <p>
