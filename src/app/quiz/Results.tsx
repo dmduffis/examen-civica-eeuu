@@ -99,18 +99,18 @@ export default function Results({
       </h1>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12 max-w-sm mx-auto w-full">
-        <Link
-          href="/"
-          className="rounded-xl text-gray-800 py-4 px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 text-center font-semibold transition-colors"
-        >
-          Volver al inicio
-        </Link>
         <button
           onClick={() => restartQuiz()}
           className="rounded-xl text-gray-800 py-4 px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 font-semibold transition-colors"
         >
-          Hacer otro quiz
+          Repetir quiz
         </button>
+        <Link
+          href="/quiz"
+          className="rounded-xl text-gray-800 py-4 px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 text-center font-semibold transition-colors"
+        >
+          Elegir otro quiz
+        </Link>
       </div>
     </main>
   );
