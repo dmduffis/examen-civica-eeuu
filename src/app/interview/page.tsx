@@ -103,6 +103,15 @@ async function blobToBase64(blob: Blob): Promise<string> {
   });
 }
 
+/** Yield so the browser can paint the new screen and start CSS animations before we play audio. */
+function afterNextPaint(): Promise<void> {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => resolve());
+    });
+  });
+}
+
 export default function InterviewPage() {
   const [status, setStatus] = useState<"idle" | "loading" | "greeting" | "question" | "ready_to_record" | "recording" | "sending" | "officer" | "review" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
@@ -151,11 +160,13 @@ export default function InterviewPage() {
       setReviewItems([]);
       setStatus("greeting");
       setIsPlayingAudio(true);
+      await afterNextPaint();
       await playBase64(data.greetingAudio);
       setIsPlayingAudio(false);
       if (data.questions?.length) {
         setStatus("question");
         setIsPlayingAudio(true);
+        await afterNextPaint();
         await playBase64(data.questions[0].questionAudio);
         setIsPlayingAudio(false);
         setStatus("ready_to_record");
@@ -225,6 +236,7 @@ export default function InterviewPage() {
       }
       setStatus("officer");
       setIsPlayingAudio(true);
+      await afterNextPaint();
       await playBase64(data.officerResponseAudio);
       setIsPlayingAudio(false);
       if (data.isComplete && data.review?.items) {
@@ -237,6 +249,7 @@ export default function InterviewPage() {
         setQuestionIndex(nextIdx);
         setStatus("question");
         setIsPlayingAudio(true);
+        await afterNextPaint();
         await playBase64(data.nextQuestion.questionAudio);
         setIsPlayingAudio(false);
         setStatus("ready_to_record");
