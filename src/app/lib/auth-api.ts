@@ -1,25 +1,10 @@
 import type { AuthResponse } from "./auth-types";
+import { getBackendBaseUrl, backendUrl } from "./backend-url";
 
-/**
- * NEXT_PUBLIC_AUTH_API_URL must be the URL of your auth backend (where register/login live),
- * e.g. https://your-backend.up.railway.app or https://examen-civica-backend.vercel.app
- * Do NOT set it to the frontend URL (e.g. https://examencivica.com).
- */
-const RAW_AUTH_API_URL = process.env.NEXT_PUBLIC_AUTH_API_URL;
 const TOKEN_KEY = "civic-auth-token";
 
-function normalizeAuthApiUrl(url: string | undefined): string | undefined {
-  if (!url || typeof url !== "string") return undefined;
-  const trimmed = url.trim();
-  if (!trimmed) return undefined;
-  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
-  return `https://${trimmed}`;
-}
-
-const AUTH_API_URL = normalizeAuthApiUrl(RAW_AUTH_API_URL);
-
 export function getAuthApiUrl(): string | undefined {
-  return AUTH_API_URL;
+  return getBackendBaseUrl();
 }
 
 export function getStoredToken(): string | null {
@@ -37,8 +22,7 @@ export async function login(
   email: string,
   password: string
 ): Promise<AuthResponse> {
-  if (!getAuthApiUrl()) throw new Error("Auth API not configured");
-  const res = await fetch("/api/auth/login", {
+  const res = await fetch(backendUrl("/api/auth/login"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -52,8 +36,7 @@ export async function register(
   email: string,
   password: string
 ): Promise<AuthResponse> {
-  if (!getAuthApiUrl()) throw new Error("Auth API not configured");
-  const res = await fetch("/api/auth/register", {
+  const res = await fetch(backendUrl("/api/auth/register"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),

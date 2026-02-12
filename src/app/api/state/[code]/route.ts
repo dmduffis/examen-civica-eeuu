@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const RAILWAY_BASE =
-  process.env.NEXT_PUBLIC_QUESTIONS_API_URL?.trim() ||
-  "https://examencivicabackend-production.up.railway.app";
+const BACKEND =
+  process.env.NEXT_PUBLIC_AUTH_API_URL?.trim()?.startsWith("http")
+    ? process.env.NEXT_PUBLIC_AUTH_API_URL?.trim()
+    : process.env.NEXT_PUBLIC_AUTH_API_URL?.trim()
+      ? `https://${process.env.NEXT_PUBLIC_AUTH_API_URL.trim()}`
+      : undefined;
 
 export async function GET(
   _request: NextRequest,
@@ -12,9 +15,12 @@ export async function GET(
   if (!code) {
     return NextResponse.json({ message: "Missing state code" }, { status: 400 });
   }
+  if (!BACKEND) {
+    return NextResponse.json({ message: "Backend not configured" }, { status: 503 });
+  }
   try {
     const res = await fetch(
-      `${RAILWAY_BASE}/api/state/${encodeURIComponent(code)}`,
+      `${BACKEND}/api/state/${encodeURIComponent(code)}`,
       { headers: { "Content-Type": "application/json" } }
     );
     const data = await res.json().catch(() => ({}));

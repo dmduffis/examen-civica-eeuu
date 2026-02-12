@@ -1,12 +1,18 @@
 import { NextResponse } from "next/server";
 
-const RAILWAY_BASE =
-  process.env.NEXT_PUBLIC_QUESTIONS_API_URL?.trim() ||
-  "https://examencivicabackend-production.up.railway.app";
+const BACKEND =
+  process.env.NEXT_PUBLIC_AUTH_API_URL?.trim()?.startsWith("http")
+    ? process.env.NEXT_PUBLIC_AUTH_API_URL?.trim()
+    : process.env.NEXT_PUBLIC_AUTH_API_URL?.trim()
+      ? `https://${process.env.NEXT_PUBLIC_AUTH_API_URL.trim()}`
+      : undefined;
 
 export async function GET() {
+  if (!BACKEND) {
+    return NextResponse.json({ message: "Backend not configured" }, { status: 503 });
+  }
   try {
-    const res = await fetch(`${RAILWAY_BASE}/api/question/`, {
+    const res = await fetch(`${BACKEND}/api/question`, {
       headers: { "Content-Type": "application/json" },
     });
     const data = await res.json().catch(() => ({}));

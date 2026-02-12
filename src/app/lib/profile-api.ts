@@ -1,11 +1,12 @@
 import { getAuthApiUrl } from "./auth-api";
 import { getStoredToken } from "./auth-api";
+import { backendUrl } from "./backend-url";
 import type { Profile, QuizHistoryEntry } from "./auth-types";
 
 async function authFetch(path: string, options: RequestInit = {}): Promise<Response> {
   const token = getStoredToken();
   if (!getAuthApiUrl() || !token) throw new Error("Not authenticated");
-  const res = await fetch(path, {
+  const res = await fetch(backendUrl(path), {
     ...options,
     headers: {
       "Content-Type": "application/json",
