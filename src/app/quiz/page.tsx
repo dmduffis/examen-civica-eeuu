@@ -237,15 +237,13 @@ export default function QuizPage() {
                       "rounded-xl text-gray-800 py-4 px-5 sm:py-5 sm:px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 text-left text-lg sm:text-xl font-semibold transition-colors min-w-0";
                     return (
                       <>
-                        <div className="w-full flex">
+                        <div className="flex flex-col gap-3 w-full">
                           <button
                             onClick={() => handleStart(null)}
-                            className={`${rowClass} flex-1`}
+                            className={`${rowClass} w-full`}
                           >
                             Todas las preguntas
                           </button>
-                        </div>
-                        <div className="flex flex-col gap-3 w-full">
                           {QUIZ_SIZES.filter((n) => n <= scorableCount).map(
                             (n) => (
                               <button
