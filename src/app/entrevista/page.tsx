@@ -489,12 +489,12 @@ export default function InterviewPage() {
 
             {status === "review" && reviewItems.length > 0 && (
               <div className="space-y-8 w-full">
-                <h2 className="text-xl font-bold text-gray-800">Interview summary</h2>
+                <h2 className="text-xl font-bold text-gray-800">Resumen de la entrevista</h2>
                 <ul className="space-y-4 w-full">
                   {reviewItems.map((item, i) => (
                     <li key={i} className="rounded-xl border-2 border-slate-200 bg-white p-4 w-full">
-                      <p className="text-sm text-gray-600 mb-2">Your answer: {item.userAnswer || "(no speech)"}</p>
-                      <p className="text-sm text-gray-700">Correct answer: {correctAnswerFromSuggestion(item.suggestionEn)}</p>
+                      <p className="text-sm text-gray-600 mb-2">Tu respuesta: {item.userAnswer || "(no se detectó voz)"}</p>
+                      <p className="text-sm text-gray-700">Respuesta correcta: {correctAnswerFromSuggestion(item.suggestionEn)}</p>
                     </li>
                   ))}
                 </ul>
