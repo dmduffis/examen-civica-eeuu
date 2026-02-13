@@ -47,7 +47,9 @@ export default function ReviewPage() {
         }
       })
       .catch(() => {});
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [isAuthEnabled, user]);
 
   useEffect(() => {

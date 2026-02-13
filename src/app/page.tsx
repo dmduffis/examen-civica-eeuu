@@ -12,7 +12,7 @@ const FlashcardIcon = () => (
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="w-12 h-12 shrink-0"
+    className="w-full h-full shrink-0"
     aria-hidden
   >
     <rect
@@ -35,12 +35,12 @@ const FlashcardIcon = () => (
 );
 
 const linkClass =
-  "rounded-xl text-gray-800 py-4 px-5 sm:py-5 sm:px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 inline-flex flex-row items-center justify-start gap-4 sm:gap-5 transition-colors min-h-[72px] sm:min-h-0 w-full";
+  "rounded-xl text-gray-800 p-2 sm:p-3 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 flex flex-row sm:flex-col items-center justify-start sm:justify-center gap-3 sm:gap-2 transition-colors w-full min-w-0 overflow-hidden text-left sm:text-center min-h-[56px] sm:min-h-0 sm:aspect-square sm:max-h-40 sm:max-w-40";
 
 export default function Home() {
   return (
     <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
-      <div className="w-full px-6 sm:px-8">
+      <div className="w-full min-w-0 px-6 sm:px-8">
         <div className="text-center sm:text-left mb-8 sm:mb-10">
           <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
             Examen de Educación Cívica
@@ -50,9 +50,9 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-[5rem] items-center w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] gap-8 sm:gap-[5rem] items-center w-full min-w-0 overflow-hidden">
           {/* Mobile: image first. Desktop: right column — image ~2x larger */}
-          <div className="order-1 sm:order-2 flex justify-center items-center">
+          <div className="order-1 sm:order-2 flex justify-center sm:justify-start items-center min-w-0">
             <Image
               src={boyReading}
               width={560}
@@ -61,30 +61,32 @@ export default function Home() {
             />
           </div>
 
-          {/* Mobile: buttons second. Desktop: left column — left-aligned with title */}
-          <div className="order-2 sm:order-1 flex flex-col items-start w-full">
-            <div className="flex flex-col gap-4 sm:gap-6 w-full">
+          {/* Mobile: stacked, icon left. Desktop: 4 squares, icon on top */}
+          <div className="order-2 sm:order-1 w-full min-w-0 overflow-hidden">
+            <div className="flex flex-col sm:grid sm:grid-cols-2 sm:grid-rows-2 sm:justify-items-start sm:items-center gap-3 sm:gap-4 w-full min-w-0 sm:max-w-[352px]">
               <Link href="/quiz" className={linkClass}>
-                <FileText size={48} className="shrink-0" aria-hidden />
-                <span className="text-lg sm:text-xl font-semibold">
+                <FileText className="shrink-0 size-9 sm:size-10 md:size-11 lg:size-12" aria-hidden />
+                <span className="text-sm sm:text-base font-semibold min-w-0 break-words leading-tight">
                   Tomar Quiz
                 </span>
               </Link>
               <Link href="/review" className={linkClass}>
-                <BookOpen size={48} className="shrink-0" aria-hidden />
-                <span className="text-lg sm:text-xl font-semibold">
+                <BookOpen className="shrink-0 size-9 sm:size-10 md:size-11 lg:size-12" aria-hidden />
+                <span className="text-sm sm:text-base font-semibold min-w-0 break-words leading-tight">
                   Preguntas
                 </span>
               </Link>
               <Link href="/flashcards" className={linkClass}>
-                <FlashcardIcon />
-                <span className="text-lg sm:text-xl font-semibold">
-                  Revisar
+                <span className="shrink-0 size-9 sm:size-10 md:size-11 lg:size-12 flex items-center justify-center">
+                  <FlashcardIcon />
+                </span>
+                <span className="text-sm sm:text-base font-semibold min-w-0 break-words leading-tight">
+                  Repasar
                 </span>
               </Link>
               <Link href="/interview" className={linkClass}>
-                <Mic size={48} className="shrink-0" aria-hidden />
-                <span className="text-lg sm:text-xl font-semibold">
+                <Mic className="shrink-0 size-9 sm:size-10 md:size-11 lg:size-12" aria-hidden />
+                <span className="text-sm sm:text-base font-semibold min-w-0 break-words leading-tight">
                   Entrevista
                 </span>
               </Link>

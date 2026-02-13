@@ -211,7 +211,7 @@ export default function FlashcardsPage() {
         <div className="w-full px-6 sm:px-8">
           <div className="text-center sm:text-left mb-8 sm:mb-10">
             <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
-              Revisar
+              Repasar
             </h1>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
@@ -393,7 +393,7 @@ export default function FlashcardsPage() {
       <div className="w-full px-6 sm:px-8">
         <div className="text-center sm:text-left mb-8 sm:mb-10">
           <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
-            Revisar
+            Repasar
           </h1>
           <p className="text-gray-600">
             Elige las preguntas que quieres repasar y estudia con tarjetas.
@@ -483,7 +483,13 @@ export default function FlashcardsPage() {
                   }`}
                   aria-hidden
                 >
-                  {selectedIds.has(q._id) && <Check size={14} className="text-amber-600 shrink-0" aria-hidden />}
+                  {selectedIds.has(q._id) && (
+                    <Check
+                      size={14}
+                      className="text-amber-600 shrink-0"
+                      aria-hidden
+                    />
+                  )}
                 </span>
               </span>
               <span className="block min-w-0 flex-1 py-0.5 text-gray-800 text-sm text-left break-words [overflow-wrap:anywhere]">
@@ -499,7 +505,7 @@ export default function FlashcardsPage() {
             disabled={selectedIds.size === 0}
             className="w-full rounded-xl py-3.5 px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            Revisar {selectedIds.size} tarjeta
+            Repasar {selectedIds.size} tarjeta
             {selectedIds.size !== 1 ? "s" : ""}
           </button>
         </div>

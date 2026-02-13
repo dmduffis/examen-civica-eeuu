@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, User, Mic } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "../lib/auth-context";
 import iconExamenCivica from "../assets/images/icon_examen_civica.png";
@@ -58,10 +58,9 @@ export default function Nav() {
             Preguntas
           </Link>
           <Link href="/flashcards" className={linkClass}>
-            Revisar
+            Repasar
           </Link>
-          <Link href="/interview" className={`${linkClass} gap-2`}>
-            <Mic size={18} className="shrink-0" aria-hidden />
+          <Link href="/interview" className={linkClass}>
             Entrevista
           </Link>
           <span
@@ -72,21 +71,28 @@ export default function Nav() {
             <UserDropdown email={user.email} onLogout={logout} />
           ) : null}
           {(!isAuthEnabled || !user) && (
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-amber-500 text-white text-sm font-semibold px-4 py-2 hover:bg-amber-600 transition-colors"
-              aria-label="Iniciar sesión / Registrarse"
-            >
-              <User size={22} aria-hidden />
-              Sign up / In
-            </Link>
+            <div className="inline-flex items-center gap-3">
+              <Link href="/login" className={linkClass} aria-label="Iniciar sesión">
+                Login
+              </Link>
+              <Link
+                href="/login"
+                className="inline-flex items-center justify-center rounded-lg bg-amber-500 text-white text-sm font-semibold px-4 py-2 hover:bg-amber-600 transition-colors"
+                aria-label="Registrarse"
+              >
+                Sign up
+              </Link>
+            </div>
           )}
         </div>
 
         {/* Mobile: avatar (when signed in) + hamburger */}
         <div className="sm:hidden flex items-center gap-2">
           {isAuthEnabled && user ? (
-            <Avatar className="h-9 w-9 border-2 border-slate-200 shrink-0" aria-hidden>
+            <Avatar
+              className="h-9 w-9 border-2 border-slate-200 shrink-0"
+              aria-hidden
+            >
               <AvatarFallback className="bg-amber-100 text-amber-800 text-sm font-semibold">
                 {user.email.slice(0, 1).toUpperCase()}
               </AvatarFallback>
@@ -149,14 +155,13 @@ export default function Nav() {
                 className={drawerLinkClass}
                 onClick={closeDrawer}
               >
-                Revisar
+                Repasar
               </Link>
               <Link
                 href="/interview"
-                className={`${drawerLinkClass} inline-flex items-center gap-2`}
+                className={drawerLinkClass}
                 onClick={closeDrawer}
               >
-                <Mic size={20} className="shrink-0" aria-hidden />
                 Entrevista
               </Link>
             </div>
@@ -169,7 +174,9 @@ export default function Nav() {
                       {user.email.slice(0, 1).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm text-gray-600 truncate">{user.email}</span>
+                  <span className="text-sm text-gray-600 truncate">
+                    {user.email}
+                  </span>
                 </div>
                 <Link
                   href="/progress"
@@ -180,7 +187,10 @@ export default function Nav() {
                 </Link>
                 <button
                   type="button"
-                  onClick={() => { logout(); closeDrawer(); }}
+                  onClick={() => {
+                    logout();
+                    closeDrawer();
+                  }}
                   className="text-left py-3 text-base font-medium text-gray-700 hover:text-gray-900 transition-colors"
                 >
                   Cerrar sesión
@@ -188,14 +198,24 @@ export default function Nav() {
               </div>
             ) : null}
             {(!isAuthEnabled || !user) && (
-              <Link
-                href="/login"
-                onClick={closeDrawer}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-amber-500 text-white text-sm font-semibold py-3 px-4 hover:bg-amber-600 transition-colors"
-              >
-                <User size={22} aria-hidden />
-                Sign up / In
-              </Link>
+              <div className="flex flex-col gap-2">
+                <Link
+                  href="/login"
+                  onClick={closeDrawer}
+                  className={drawerLinkClass}
+                  aria-label="Iniciar sesión"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/login"
+                  onClick={closeDrawer}
+                  className="inline-flex items-center justify-center rounded-lg bg-amber-500 text-white text-sm font-semibold py-3 px-4 hover:bg-amber-600 transition-colors"
+                  aria-label="Registrarse"
+                >
+                  Sign up
+                </Link>
+              </div>
             )}
           </div>
         </div>

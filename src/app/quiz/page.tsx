@@ -33,7 +33,9 @@ export default function QuizPage() {
   const [data, setData] = useState<QuestionItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [started, setStarted] = useState<boolean>(false);
-  const [sortedAnswersArray, setSortedAnswersArray] = useState<QuestionItem["answers"]>([]);
+  const [sortedAnswersArray, setSortedAnswersArray] = useState<
+    QuestionItem["answers"]
+  >([]);
   const [currentQuestionText, setCurrentQuestionText] = useState<string>("");
   const [questionIndex, setQuestionIndex] = useState<number>(0);
   const [displayLang, setDisplayLang] = useState<DisplayLang>("es");
@@ -146,7 +148,14 @@ export default function QuizPage() {
   };
 
   useEffect(() => {
-    if (!quizSubmitted || !isAuthEnabled || !user || data.length === 0 || savedResultRef.current) return;
+    if (
+      !quizSubmitted ||
+      !isAuthEnabled ||
+      !user ||
+      data.length === 0 ||
+      savedResultRef.current
+    )
+      return;
     savedResultRef.current = true;
     const incorrect = data.length - score;
     addQuizResult(score, incorrect, data.length).catch(() => {});
@@ -154,7 +163,9 @@ export default function QuizPage() {
 
   useEffect(() => {
     if (data.length > 0 && questionIndex < data.length) {
-      setCurrentQuestionText(questionDisplayText(data[questionIndex], displayLang));
+      setCurrentQuestionText(
+        questionDisplayText(data[questionIndex], displayLang),
+      );
     }
   }, [displayLang, data, questionIndex]);
 
@@ -243,7 +254,11 @@ export default function QuizPage() {
       <main className="flex flex-col w-full justify-center mt-2 sm:mt-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
-            <FileText size={32} className="shrink-0 text-gray-700" aria-hidden />
+            <FileText
+              size={32}
+              className="shrink-0 text-gray-700"
+              aria-hidden
+            />
             Quiz
           </h1>
           <button
@@ -259,7 +274,9 @@ export default function QuizPage() {
           <ProgressBar progressPercentage={progressPercentage} />
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <p className="text-lg font-bold flex-1 min-w-0">{currentQuestionText}</p>
+            <p className="text-lg font-bold flex-1 min-w-0">
+              {currentQuestionText}
+            </p>
             <span className="flex items-center gap-1 text-sm text-gray-500">
               <button
                 type="button"
