@@ -54,13 +54,13 @@ export default function Nav() {
           <Link href="/quiz" className={linkClass}>
             Quiz
           </Link>
-          <Link href="/review" className={linkClass}>
+          <Link href="/preguntas" className={linkClass}>
             Preguntas
           </Link>
-          <Link href="/flashcards" className={linkClass}>
+          <Link href="/repasar" className={linkClass}>
             Repasar
           </Link>
-          <Link href="/interview" className={linkClass}>
+          <Link href="/entrevista" className={linkClass}>
             Entrevista
           </Link>
           <span
@@ -144,21 +144,21 @@ export default function Nav() {
                 Quiz
               </Link>
               <Link
-                href="/review"
+                href="/preguntas"
                 className={drawerLinkClass}
                 onClick={closeDrawer}
               >
                 Preguntas
               </Link>
               <Link
-                href="/flashcards"
+                href="/repasar"
                 className={drawerLinkClass}
                 onClick={closeDrawer}
               >
                 Repasar
               </Link>
               <Link
-                href="/interview"
+                href="/entrevista"
                 className={drawerLinkClass}
                 onClick={closeDrawer}
               >

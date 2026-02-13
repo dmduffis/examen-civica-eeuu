@@ -70,13 +70,13 @@ export default function Home() {
                   Tomar Quiz
                 </span>
               </Link>
-              <Link href="/review" className={linkClass}>
+              <Link href="/preguntas" className={linkClass}>
                 <BookOpen className="shrink-0 size-9 sm:size-10 md:size-11 lg:size-12" aria-hidden />
                 <span className="text-sm sm:text-base font-semibold min-w-0 break-words leading-tight">
                   Preguntas
                 </span>
               </Link>
-              <Link href="/flashcards" className={linkClass}>
+              <Link href="/repasar" className={linkClass}>
                 <span className="shrink-0 size-9 sm:size-10 md:size-11 lg:size-12 flex items-center justify-center">
                   <FlashcardIcon />
                 </span>
@@ -84,7 +84,7 @@ export default function Home() {
                   Repasar
                 </span>
               </Link>
-              <Link href="/interview" className={linkClass}>
+              <Link href="/entrevista" className={linkClass}>
                 <Mic className="shrink-0 size-9 sm:size-10 md:size-11 lg:size-12" aria-hidden />
                 <span className="text-sm sm:text-base font-semibold min-w-0 break-words leading-tight">
                   Entrevista

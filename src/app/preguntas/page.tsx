@@ -20,7 +20,7 @@ import { questionDisplayText, answerDisplayText } from "../lib/question-types";
 import type { DisplayLang } from "../lib/question-types";
 import { backendUrl } from "../lib/backend-url";
 
-export default function ReviewPage() {
+export default function PreguntasPage() {
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
