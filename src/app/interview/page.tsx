@@ -80,39 +80,18 @@ type RespondResponse = {
 
 function useAudioPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [playingBlob, setPlayingBlob] = useState<Blob | null>(null);
-  const [playbackTime, setPlaybackTime] = useState(0);
 
   const playBase64 = useCallback((base64: string): Promise<void> => {
     return new Promise((resolve, reject) => {
-      const dataUrl = `data:audio/mp3;base64,${base64}`;
-      fetch(dataUrl)
-        .then((r) => r.blob())
-        .then((blob) => {
-          setPlayingBlob(blob);
-          setPlaybackTime(0);
-          const audio = new Audio(dataUrl);
-          audioRef.current = audio;
-          const onEnded = () => {
-            setPlayingBlob(null);
-            setPlaybackTime(0);
-            resolve();
-          };
-          const onTimeUpdate = () => setPlaybackTime(audio.currentTime);
-          audio.onended = onEnded;
-          audio.ontimeupdate = onTimeUpdate;
-          audio.onerror = () => {
-            setPlayingBlob(null);
-            setPlaybackTime(0);
-            reject(new Error("Playback failed"));
-          };
-          audio.play().catch((e) => {
-            setPlayingBlob(null);
-            setPlaybackTime(0);
-            reject(e);
-          });
-        })
-        .catch(reject);
+      try {
+        const audio = new Audio(`data:audio/mp3;base64,${base64}`);
+        audioRef.current = audio;
+        audio.onended = () => resolve();
+        audio.onerror = () => reject(new Error("Playback failed"));
+        audio.play().catch(reject);
+      } catch (e) {
+        reject(e);
+      }
     });
   }, []);
 
@@ -121,11 +100,9 @@ function useAudioPlayer() {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
-    setPlayingBlob(null);
-    setPlaybackTime(0);
   }, []);
 
-  return { playBase64, stop, playingBlob, playbackTime };
+  return { playBase64, stop };
 }
 
 const MicIcon = () => (
@@ -211,7 +188,7 @@ export default function InterviewPage() {
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const { playBase64, stop, playingBlob, playbackTime } = useAudioPlayer();
+  const { playBase64, stop } = useAudioPlayer();
 
   const startInterview = useCallback(async () => {
     setError(null);
@@ -464,12 +441,7 @@ export default function InterviewPage() {
         )}
         {status === "officer" && (
           <div className="flex flex-col items-center gap-6">
-            <VoiceBars
-              audioBlob={playingBlob}
-              audioCurrentTime={playbackTime}
-              isPlaying={isPlayingAudio}
-              className="flex-shrink-0"
-            />
+            <VoiceBars isPlaying={isPlayingAudio} className="flex-shrink-0" />
             <p className="text-gray-600">Respuesta del oficial…</p>
           </div>
         )}
