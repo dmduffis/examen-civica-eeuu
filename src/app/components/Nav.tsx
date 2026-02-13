@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useAuth } from "../lib/auth-context";
+import iconExamenCivica from "../assets/images/icon_examen_civica.png";
 import { UserDropdown } from "./ui/user-dropdown";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 
@@ -85,8 +87,16 @@ export default function Nav() {
       <div className="max-w-[1067px] mx-auto px-6 sm:px-8 pt-5 pb-6 sm:pt-6 sm:pb-7 flex items-center justify-between">
         <Link
           href="/"
-          className="inline-flex items-center text-lg font-bold text-amber-700 hover:text-amber-800 transition-colors"
+          className="inline-flex items-center gap-2 text-lg font-bold text-amber-700 hover:text-amber-800 transition-colors"
         >
+          <Image
+            src={iconExamenCivica}
+            alt=""
+            width={28}
+            height={28}
+            className="h-7 w-7 shrink-0"
+            aria-hidden
+          />
           Examen Civica
         </Link>
 
