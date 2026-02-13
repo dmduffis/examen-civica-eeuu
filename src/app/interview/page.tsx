@@ -356,7 +356,7 @@ export default function InterviewPage() {
               <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-2 leading-tight">
                 Entrevista de Práctica
               </h1>
-              <p className="text-gray-600 mb-8 rounded-lg bg-amber-50 border border-amber-200 px-4 py-2 text-amber-800 font-medium">
+              <p className="text-gray-600 mb-8">
                 Prepárate con confianza: practica en inglés y en audio, escucha las preguntas y responde en voz alta con el micrófono, igual que en la entrevista de naturalización.
               </p>
 
