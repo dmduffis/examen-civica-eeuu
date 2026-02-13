@@ -350,7 +350,7 @@ export default function InterviewPage() {
     <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
       <div className="w-full min-w-0 px-6 sm:px-8">
         {isStartScreen ? (
-          <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] gap-8 sm:gap-[5rem] items-start w-full min-w-0 overflow-hidden">
+          <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] gap-8 sm:gap-[5rem] items-start w-full min-w-0">
             {/* Content left */}
             <div className="order-2 sm:order-1 w-full min-w-0">
               <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-2 leading-tight">
