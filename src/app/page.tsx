@@ -1,71 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import { FileText, BookOpen, Layers } from "lucide-react";
 import boyReading from "./assets/images/quiz_start.png";
-
-const QuizIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="w-12 h-12 shrink-0"
-  >
-    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-    <path d="M14 2v6h6" />
-    <path d="M16 13H8" />
-    <path d="M16 17H8" />
-    <path d="M10 9H8" />
-  </svg>
-);
-
-const ReviewIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="w-12 h-12 shrink-0"
-  >
-    <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
-    <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
-  </svg>
-);
-
-const FlashcardIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="-2 -2 28 28"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="w-12 h-12 shrink-0"
-  >
-    <rect
-      x="2"
-      y="4"
-      width="14"
-      height="18"
-      rx="1.5"
-      transform="rotate(-8 9 13)"
-    />
-    <rect
-      x="8"
-      y="0"
-      width="14"
-      height="18"
-      rx="1.5"
-      transform="rotate(8 15 9)"
-    />
-  </svg>
-);
 
 const linkClass =
   "rounded-xl text-gray-800 py-4 px-5 sm:py-5 sm:px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 inline-flex flex-row items-center justify-start gap-4 sm:gap-5 transition-colors min-h-[72px] sm:min-h-0 w-full hover:text-amber-700 transition-colors";
@@ -98,19 +34,19 @@ export default function Home() {
           <div className="order-2 sm:order-1 flex flex-col items-start w-full">
             <div className="flex flex-col gap-4 sm:gap-6 w-full">
               <Link href="/quiz" className={linkClass}>
-                <QuizIcon />
+                <FileText size={48} className="shrink-0" aria-hidden />
                 <span className="text-lg sm:text-xl font-semibold hover:text-amber-700 transition-colors">
                   Tomar Quiz
                 </span>
               </Link>
               <Link href="/review" className={linkClass}>
-                <ReviewIcon />
+                <BookOpen size={48} className="shrink-0" aria-hidden />
                 <span className="text-lg sm:text-xl font-semibold">
                   Preguntas
                 </span>
               </Link>
               <Link href="/flashcards" className={linkClass}>
-                <FlashcardIcon />
+                <Layers size={48} className="shrink-0" aria-hidden />
                 <span className="text-lg sm:text-xl font-semibold">
                   Revisar
                 </span>

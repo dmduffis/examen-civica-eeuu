@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { FileText, XCircle } from "lucide-react";
 import { useAuth } from "../lib/auth-context";
 import { addQuizResult } from "../lib/profile-api";
 import Image from "next/image";
@@ -26,41 +27,6 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 const QUIZ_SIZES = [10, 20, 50];
-
-const QuizIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="w-8 h-8 shrink-0 text-gray-700"
-  >
-    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-    <path d="M14 2v6h6" />
-    <path d="M16 13H8" />
-    <path d="M16 17H8" />
-    <path d="M10 9H8" />
-  </svg>
-);
-
-const ExitIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="w-6 h-6 shrink-0"
-  >
-    <circle cx="12" cy="12" r="10" />
-    <path d="M15 9l-6 6M9 9l6 6" />
-  </svg>
-);
 
 export default function QuizPage() {
   const [allQuestions, setAllQuestions] = useState<QuestionItem[]>([]);
@@ -277,7 +243,7 @@ export default function QuizPage() {
       <main className="flex flex-col w-full justify-center mt-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
-            <QuizIcon />
+            <FileText size={32} className="shrink-0 text-gray-700" aria-hidden />
             Quiz
           </h1>
           <button
@@ -286,7 +252,7 @@ export default function QuizPage() {
             className="text-gray-500 hover:text-gray-800 p-1 rounded-full hover:bg-slate-100 transition-colors"
             aria-label="Salir"
           >
-            <ExitIcon />
+            <XCircle size={24} className="shrink-0" aria-hidden />
           </button>
         </div>
         <div>

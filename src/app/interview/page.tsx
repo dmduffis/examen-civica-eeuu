@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useRef, useState } from "react";
+import { Mic } from "lucide-react";
 import { BeatLoader } from "react-spinners";
 import { VoiceBars } from "../components/VoiceBars";
 import { backendUrl } from "../lib/backend-url";
@@ -104,14 +105,6 @@ function useAudioPlayer() {
 
   return { playBase64, stop };
 }
-
-const MicIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z" />
-    <path d="M19 10v1a7 7 0 0 1-14 0v-1" />
-    <line x1="12" x2="12" y1="19" y2="22" />
-  </svg>
-);
 
 async function blobToBase64(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -424,7 +417,7 @@ export default function InterviewPage() {
               className="rounded-xl bg-green-600 text-white font-semibold py-4 px-6 hover:bg-green-700 transition-colors inline-flex items-center justify-center gap-2"
               aria-label="Abrir micrófono"
             >
-              <MicIcon />
+              <Mic size={22} aria-hidden />
               Abrir micrófono
             </button>
           </div>

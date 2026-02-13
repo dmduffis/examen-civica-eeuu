@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
+import { CheckCheck, X, Check } from "lucide-react";
 import { BeatLoader } from "react-spinners";
 import {
   getStoredStateCode,
@@ -18,52 +19,6 @@ import type { QuestionItem } from "../lib/question-types";
 import { questionDisplayText, answerDisplayText } from "../lib/question-types";
 import type { DisplayLang } from "../lib/question-types";
 import { backendUrl } from "../lib/backend-url";
-
-const CheckAllIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="w-4 h-4 shrink-0"
-  >
-    <path d="M9 11l3 3L22 4" />
-    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
-  </svg>
-);
-
-const ClearAllIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="w-4 h-4 shrink-0"
-  >
-    <path d="M18 6L6 18M6 6l12 12" />
-  </svg>
-);
-
-const CheckIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="w-3.5 h-3.5 text-amber-600"
-  >
-    <path d="M20 6L9 17l-5-5" />
-  </svg>
-);
 
 export default function FlashcardsPage() {
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
@@ -468,14 +423,14 @@ export default function FlashcardsPage() {
               onClick={selectAll}
               className="h-11 rounded-xl px-3 text-sm bg-white border-2 border-slate-200 shadow-sm hover:bg-amber-50 hover:border-amber-200 inline-flex items-center gap-1.5 transition-colors font-medium text-gray-700"
             >
-              <CheckAllIcon />
+              <CheckCheck size={16} className="shrink-0" aria-hidden />
               Todas
             </button>
             <button
               onClick={deselectAll}
               className="h-11 rounded-xl px-3 text-sm bg-white border-2 border-slate-200 shadow-sm hover:bg-amber-50 hover:border-amber-200 inline-flex items-center gap-1.5 transition-colors font-medium text-gray-700"
             >
-              <ClearAllIcon />
+              <X size={16} className="shrink-0" aria-hidden />
               Quitar todas
             </button>
           </div>
@@ -528,7 +483,7 @@ export default function FlashcardsPage() {
                   }`}
                   aria-hidden
                 >
-                  {selectedIds.has(q._id) && <CheckIcon />}
+                  {selectedIds.has(q._id) && <Check size={14} className="text-amber-600 shrink-0" aria-hidden />}
                 </span>
               </span>
               <span className="block min-w-0 flex-1 py-0.5 text-gray-800 text-sm text-left break-words [overflow-wrap:anywhere]">
