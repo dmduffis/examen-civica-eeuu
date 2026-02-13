@@ -1,21 +1,33 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { AudioVisualizer, LiveAudioVisualizer } from "react-audio-visualize";
 
 const BAR_COUNT = 5;
 const MIN_BAR_HEIGHT = 8;
 const MAX_BAR_HEIGHT = 48;
+const AMBER_BAR_COLOR = "rgba(214, 169, 54, 0.9)";
+const AMBER_PLAYED_COLOR = "rgba(214, 169, 54, 0.5)";
 
 type VoiceBarsProps = {
-  /** When set, bars react to this stream's volume (e.g. user mic). */
+  /** When set, use library wave visualizer for this recorder (e.g. user speaking). */
+  mediaRecorder?: MediaRecorder | null;
+  /** When set with audioCurrentTime, use library waveform for playback (e.g. officer response). */
+  audioBlob?: Blob | null;
+  /** Current playback time in seconds for audioBlob visualization. */
+  audioCurrentTime?: number;
+  /** When set (and no mediaRecorder), bars react to this stream's volume. Fallback if mediaRecorder not used. */
   stream?: MediaStream | null;
-  /** When true and no stream, show a gentle "playing" wave animation. */
+  /** When true and no stream/recorder, show a gentle "playing" wave animation. */
   isPlaying?: boolean;
   /** CSS class for the container. */
   className?: string;
 };
 
 export function VoiceBars({
+  mediaRecorder,
+  audioBlob,
+  audioCurrentTime = 0,
   stream,
   isPlaying = false,
   className = "",
@@ -79,11 +91,12 @@ export function VoiceBars({
     };
   }, [stream]);
 
-  const showLiveLevels = !!stream?.active;
-  const showPlayingWave = isPlaying && !stream?.active;
+  const useLibraryVisualizer = !!mediaRecorder;
+  const usePlaybackVisualizer = !!audioBlob;
+  const showLiveLevels = !useLibraryVisualizer && !usePlaybackVisualizer && !!stream?.active;
+  const showPlayingWave = isPlaying && !stream?.active && !useLibraryVisualizer && !usePlaybackVisualizer;
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Force reflow on next frame when switching to wave so the CSS animation starts (avoids "stuck" on first paint).
   useEffect(() => {
     if (!showPlayingWave) return;
     const id = requestAnimationFrame(() => {
@@ -91,6 +104,40 @@ export function VoiceBars({
     });
     return () => cancelAnimationFrame(id);
   }, [showPlayingWave]);
+
+  if (useLibraryVisualizer) {
+    return (
+      <div className={`flex items-center justify-center h-12 w-full max-w-[280px] ${className}`} aria-hidden>
+        <LiveAudioVisualizer
+          mediaRecorder={mediaRecorder!}
+          width={280}
+          height={48}
+          barWidth={3}
+          gap={2}
+          barColor={AMBER_BAR_COLOR}
+          backgroundColor="transparent"
+        />
+      </div>
+    );
+  }
+
+  if (usePlaybackVisualizer && audioBlob) {
+    return (
+      <div className={`flex items-center justify-center h-12 w-full max-w-[280px] ${className}`} aria-hidden>
+        <AudioVisualizer
+          blob={audioBlob}
+          width={280}
+          height={48}
+          barWidth={3}
+          gap={2}
+          barColor={AMBER_PLAYED_COLOR}
+          barPlayedColor={AMBER_BAR_COLOR}
+          currentTime={audioCurrentTime}
+          backgroundColor="transparent"
+        />
+      </div>
+    );
+  }
 
   return (
     <div

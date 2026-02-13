@@ -80,18 +80,39 @@ type RespondResponse = {
 
 function useAudioPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [playingBlob, setPlayingBlob] = useState<Blob | null>(null);
+  const [playbackTime, setPlaybackTime] = useState(0);
 
   const playBase64 = useCallback((base64: string): Promise<void> => {
     return new Promise((resolve, reject) => {
-      try {
-        const audio = new Audio(`data:audio/mp3;base64,${base64}`);
-        audioRef.current = audio;
-        audio.onended = () => resolve();
-        audio.onerror = () => reject(new Error("Playback failed"));
-        audio.play().catch(reject);
-      } catch (e) {
-        reject(e);
-      }
+      const dataUrl = `data:audio/mp3;base64,${base64}`;
+      fetch(dataUrl)
+        .then((r) => r.blob())
+        .then((blob) => {
+          setPlayingBlob(blob);
+          setPlaybackTime(0);
+          const audio = new Audio(dataUrl);
+          audioRef.current = audio;
+          const onEnded = () => {
+            setPlayingBlob(null);
+            setPlaybackTime(0);
+            resolve();
+          };
+          const onTimeUpdate = () => setPlaybackTime(audio.currentTime);
+          audio.onended = onEnded;
+          audio.ontimeupdate = onTimeUpdate;
+          audio.onerror = () => {
+            setPlayingBlob(null);
+            setPlaybackTime(0);
+            reject(new Error("Playback failed"));
+          };
+          audio.play().catch((e) => {
+            setPlayingBlob(null);
+            setPlaybackTime(0);
+            reject(e);
+          });
+        })
+        .catch(reject);
     });
   }, []);
 
@@ -100,9 +121,11 @@ function useAudioPlayer() {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
+    setPlayingBlob(null);
+    setPlaybackTime(0);
   }, []);
 
-  return { playBase64, stop };
+  return { playBase64, stop, playingBlob, playbackTime };
 }
 
 const MicIcon = () => (
@@ -183,11 +206,12 @@ export default function InterviewPage() {
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
   const [userName, setUserName] = useState("");
   const [recordingStream, setRecordingStream] = useState<MediaStream | null>(null);
+  const [recordingRecorder, setRecordingRecorder] = useState<MediaRecorder | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const { playBase64, stop } = useAudioPlayer();
+  const { playBase64, stop, playingBlob, playbackTime } = useAudioPlayer();
 
   const startInterview = useCallback(async () => {
     setError(null);
@@ -251,6 +275,7 @@ export default function InterviewPage() {
         if (e.data.size) chunksRef.current.push(e.data);
       };
       recorder.start();
+      setRecordingRecorder(recorder);
       setStatus("recording");
     } catch (e) {
       setError("No se pudo acceder al micrófono.");
@@ -267,6 +292,7 @@ export default function InterviewPage() {
     stream?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
     setRecordingStream(null);
+    setRecordingRecorder(null);
     recorderRef.current = null;
     setStatus("sending");
     try {
@@ -410,7 +436,7 @@ export default function InterviewPage() {
         {status === "recording" && (
           <div className="flex flex-col gap-4">
             <div className="flex justify-center">
-              <VoiceBars stream={recordingStream} className="flex-shrink-0" />
+              <VoiceBars mediaRecorder={recordingRecorder} className="flex-shrink-0" />
             </div>
             <p className="text-gray-700 font-medium">
               Pregunta {questionIndex + 1} de {questions.length}: grabando tu respuesta.
@@ -418,15 +444,14 @@ export default function InterviewPage() {
             {questions[questionIndex] && interviewQuestionLabel(questions[questionIndex]) && (
               <p className="text-gray-600 italic">&quot;{interviewQuestionLabel(questions[questionIndex])}&quot;</p>
             )}
-            <p className="text-amber-700 font-medium flex items-center gap-2">
-              <span className="inline-flex h-3 w-3 rounded-full bg-red-500 animate-pulse" aria-hidden /> Grabando…
-            </p>
             <button
               type="button"
               onClick={stopRecordingAndSend}
-              className="rounded-xl bg-amber-500 text-white font-semibold py-4 px-6 hover:bg-amber-600 transition-colors"
+              className="rounded-xl bg-red-600 text-white font-semibold py-4 px-6 hover:bg-red-700 transition-colors inline-flex items-center justify-center gap-2"
+              aria-label="Dejar de grabar y enviar"
             >
-              Dejar de grabar y enviar
+              <span className="inline-flex h-2.5 w-2.5 rounded-full bg-white animate-pulse" aria-hidden />
+              Grabando
             </button>
           </div>
         )}
@@ -439,7 +464,12 @@ export default function InterviewPage() {
         )}
         {status === "officer" && (
           <div className="flex flex-col items-center gap-6">
-            <VoiceBars isPlaying={isPlayingAudio} className="flex-shrink-0" />
+            <VoiceBars
+              audioBlob={playingBlob}
+              audioCurrentTime={playbackTime}
+              isPlaying={isPlayingAudio}
+              className="flex-shrink-0"
+            />
             <p className="text-gray-600">Respuesta del oficial…</p>
           </div>
         )}
