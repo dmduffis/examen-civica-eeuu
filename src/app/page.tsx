@@ -1,7 +1,26 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FileText, BookOpen, Layers } from "lucide-react";
+import { FileText, BookOpen } from "lucide-react";
 import boyReading from "./assets/images/quiz_start.png";
+
+const FlashcardIcon = ({ size = 48, className = "" }: { size?: number; className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 48 48"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    width={size}
+    height={size}
+    className={className}
+    aria-hidden
+  >
+    <rect x="4" y="8" width="28" height="36" rx="2" transform="rotate(-6 18 26)" />
+    <rect x="12" y="2" width="28" height="36" rx="2" transform="rotate(6 26 20)" />
+  </svg>
+);
 
 const linkClass =
   "rounded-xl text-gray-800 py-4 px-5 sm:py-5 sm:px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 inline-flex flex-row items-center justify-start gap-4 sm:gap-5 transition-colors min-h-[72px] sm:min-h-0 w-full hover:text-amber-700 transition-colors";
@@ -46,7 +65,7 @@ export default function Home() {
                 </span>
               </Link>
               <Link href="/flashcards" className={linkClass}>
-                <Layers size={48} className="shrink-0" aria-hidden />
+                <FlashcardIcon size={48} className="shrink-0" />
                 <span className="text-lg sm:text-xl font-semibold">
                   Revisar
                 </span>
