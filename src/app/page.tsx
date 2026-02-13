@@ -3,22 +3,34 @@ import Link from "next/link";
 import { FileText, BookOpen } from "lucide-react";
 import boyReading from "./assets/images/quiz_start.png";
 
-const FlashcardIcon = ({ size = 48, className = "" }: { size?: number; className?: string }) => (
+const FlashcardIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 48 48"
+    viewBox="-2 -2 28 28"
     fill="none"
     stroke="currentColor"
-    strokeWidth="1.5"
+    strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    width={size}
-    height={size}
-    className={className}
+    className="w-12 h-12 shrink-0"
     aria-hidden
   >
-    <rect x="4" y="8" width="28" height="36" rx="2" transform="rotate(-6 18 26)" />
-    <rect x="12" y="2" width="28" height="36" rx="2" transform="rotate(6 26 20)" />
+    <rect
+      x="2"
+      y="4"
+      width="14"
+      height="18"
+      rx="1.5"
+      transform="rotate(-8 9 13)"
+    />
+    <rect
+      x="8"
+      y="0"
+      width="14"
+      height="18"
+      rx="1.5"
+      transform="rotate(8 15 9)"
+    />
   </svg>
 );
 
@@ -65,7 +77,7 @@ export default function Home() {
                 </span>
               </Link>
               <Link href="/flashcards" className={linkClass}>
-                <FlashcardIcon size={48} className="shrink-0" />
+                <FlashcardIcon />
                 <span className="text-lg sm:text-xl font-semibold">
                   Revisar
                 </span>
