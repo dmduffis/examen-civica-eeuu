@@ -188,6 +188,7 @@ export default function InterviewPage() {
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const recordingMimeRef = useRef<string>("audio/webm");
   const { playBase64, stop } = useAudioPlayer();
 
   const startInterview = useCallback(async () => {
@@ -240,24 +241,43 @@ export default function InterviewPage() {
     }
   }, [userName, playBase64]);
 
-  const startRecording = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      streamRef.current = stream;
-      setRecordingStream(stream);
-      const recorder = new MediaRecorder(stream);
-      recorderRef.current = recorder;
-      chunksRef.current = [];
-      recorder.ondataavailable = (e) => {
-        if (e.data.size) chunksRef.current.push(e.data);
-      };
-      recorder.start();
-      setRecordingRecorder(recorder);
-      setStatus("recording");
-    } catch (e) {
-      setError("No se pudo acceder al micrófono.");
+  const startRecording = useCallback(() => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setError("El micrófono no está disponible. Abre la página con HTTPS (no HTTP).");
       setStatus("error");
+      return;
     }
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then((stream) => {
+        streamRef.current = stream;
+        setRecordingStream(stream);
+        chunksRef.current = [];
+        const mimeType = MediaRecorder.isTypeSupported("audio/mp4")
+          ? "audio/mp4"
+          : MediaRecorder.isTypeSupported("audio/webm")
+            ? "audio/webm"
+            : "";
+        recordingMimeRef.current = mimeType || "audio/webm";
+        const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+        recorderRef.current = recorder;
+        recorder.ondataavailable = (e) => {
+          if (e.data.size) chunksRef.current.push(e.data);
+        };
+        recorder.start();
+        setRecordingRecorder(recorder);
+        setStatus("recording");
+      })
+      .catch((e) => {
+        const msg =
+          e?.name === "NotAllowedError"
+            ? "Permiso de micrófono denegado. Permite el acceso en la configuración del navegador."
+            : e?.name === "NotFoundError"
+              ? "No se encontró ningún micrófono."
+              : "No se pudo acceder al micrófono. Usa HTTPS y permite el micrófono cuando lo pida el navegador.";
+        setError(msg);
+        setStatus("error");
+      });
   }, []);
 
   const stopRecordingAndSend = useCallback(async () => {
@@ -274,7 +294,7 @@ export default function InterviewPage() {
     setStatus("sending");
     try {
       await new Promise<void>((r) => setTimeout(r, 300));
-      const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+      const blob = new Blob(chunksRef.current, { type: recordingMimeRef.current });
       const audioBase64 = await blobToBase64(blob);
       const res = await fetchWithRetry(
         backendUrl("/api/voice/interview/respond"),
