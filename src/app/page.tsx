@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FileText, BookOpen } from "lucide-react";
+import { FileText, BookOpen, Mic } from "lucide-react";
 import boyReading from "./assets/images/quiz_start.png";
 
 const FlashcardIcon = () => (
@@ -35,11 +35,11 @@ const FlashcardIcon = () => (
 );
 
 const linkClass =
-  "rounded-xl text-gray-800 py-4 px-5 sm:py-5 sm:px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 inline-flex flex-row items-center justify-start gap-4 sm:gap-5 transition-colors min-h-[72px] sm:min-h-0 w-full hover:text-amber-700 transition-colors";
+  "rounded-xl text-gray-800 py-4 px-5 sm:py-5 sm:px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 inline-flex flex-row items-center justify-start gap-4 sm:gap-5 transition-colors min-h-[72px] sm:min-h-0 w-full";
 
 export default function Home() {
   return (
-    <main className="flex flex-col w-full justify-center pt-16 mt-8 pb-16">
+    <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
       <div className="w-full px-6 sm:px-8">
         <div className="text-center sm:text-left mb-8 sm:mb-10">
           <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
@@ -66,7 +66,7 @@ export default function Home() {
             <div className="flex flex-col gap-4 sm:gap-6 w-full">
               <Link href="/quiz" className={linkClass}>
                 <FileText size={48} className="shrink-0" aria-hidden />
-                <span className="text-lg sm:text-xl font-semibold hover:text-amber-700 transition-colors">
+                <span className="text-lg sm:text-xl font-semibold">
                   Tomar Quiz
                 </span>
               </Link>
@@ -80,6 +80,12 @@ export default function Home() {
                 <FlashcardIcon />
                 <span className="text-lg sm:text-xl font-semibold">
                   Revisar
+                </span>
+              </Link>
+              <Link href="/interview" className={linkClass}>
+                <Mic size={48} className="shrink-0" aria-hidden />
+                <span className="text-lg sm:text-xl font-semibold">
+                  Entrevista
                 </span>
               </Link>
             </div>

@@ -32,7 +32,7 @@ export default function LoginPage() {
 
   if (!isAuthEnabled) {
     return (
-      <main className="flex flex-col w-full justify-center pt-16 mt-8 pb-16 px-6">
+      <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16 px-6">
         <div className="max-w-sm mx-auto text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-3">Cuenta</h1>
           <p className="text-gray-600 mb-6">
@@ -50,7 +50,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex flex-col w-full justify-center pt-16 mt-8 pb-16 px-6">
+    <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16 px-6">
       <div className="max-w-sm mx-auto w-full">
         <h1 className="text-2xl font-bold text-gray-800 mb-2">
           {mode === "login" ? "Iniciar sesión" : "Crear cuenta"}

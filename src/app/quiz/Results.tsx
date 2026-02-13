@@ -57,7 +57,7 @@ export default function Results({
   }, [correctPercentage]);
 
   return (
-    <main className="flex flex-col w-full justify-center pt-12 pb-16">
+    <main className="flex flex-col w-full justify-center pt-4 sm:pt-12 pb-16">
       {correctPercentage === 100 && (
         <div className="flex justify-center mb-6">
           <Image

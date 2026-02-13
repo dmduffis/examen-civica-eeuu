@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, User } from "lucide-react";
+import { Menu, X, User, Mic } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "../lib/auth-context";
 import iconExamenCivica from "../assets/images/icon_examen_civica.png";
@@ -60,7 +60,8 @@ export default function Nav() {
           <Link href="/flashcards" className={linkClass}>
             Revisar
           </Link>
-          <Link href="/interview" className={linkClass}>
+          <Link href="/interview" className={`${linkClass} gap-2`}>
+            <Mic size={18} className="shrink-0" aria-hidden />
             Entrevista
           </Link>
           <span
@@ -152,9 +153,10 @@ export default function Nav() {
               </Link>
               <Link
                 href="/interview"
-                className={drawerLinkClass}
+                className={`${drawerLinkClass} inline-flex items-center gap-2`}
                 onClick={closeDrawer}
               >
+                <Mic size={20} className="shrink-0" aria-hidden />
                 Entrevista
               </Link>
             </div>

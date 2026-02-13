@@ -169,7 +169,7 @@ export default function QuizPage() {
     );
   } else {
     return !started ? (
-      <main className="flex flex-col w-full justify-center pt-16 mt-8 pb-16">
+      <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
         {loading ? (
           <div className="flex min-h-[70vh] w-full flex-col items-center justify-center">
             <BeatLoader color="rgba(214, 169, 54, 0.6)" speedMultiplier={0.5} />
@@ -240,7 +240,7 @@ export default function QuizPage() {
         )}
       </main>
     ) : (
-      <main className="flex flex-col w-full justify-center mt-8">
+      <main className="flex flex-col w-full justify-center mt-2 sm:mt-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
             <FileText size={32} className="shrink-0 text-gray-700" aria-hidden />

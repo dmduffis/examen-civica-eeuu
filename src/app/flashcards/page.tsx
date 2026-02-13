@@ -157,7 +157,7 @@ export default function FlashcardsPage() {
 
   if (error) {
     return (
-      <main className="flex flex-col w-full justify-center mt-8">
+      <main className="flex flex-col w-full justify-center mt-2 sm:mt-8">
         <p className="text-center text-red-600">{error}</p>
         <div className="flex justify-center mt-4">
           <Link
@@ -174,7 +174,7 @@ export default function FlashcardsPage() {
   if (view === "study") {
     if (selectedQuestions.length === 0) {
       return (
-        <main className="flex flex-col w-full justify-center mt-8">
+        <main className="flex flex-col w-full justify-center mt-2 sm:mt-8">
           <p className="text-center text-gray-600">
             No hay preguntas seleccionadas.
           </p>
@@ -207,7 +207,7 @@ export default function FlashcardsPage() {
     };
 
     return (
-      <main className="flex flex-col w-full justify-center pt-16 mt-8 pb-16">
+      <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
         <div className="w-full px-6 sm:px-8">
           <div className="text-center sm:text-left mb-8 sm:mb-10">
             <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
@@ -389,7 +389,7 @@ export default function FlashcardsPage() {
   }
 
   return (
-    <main className="flex flex-col w-full justify-center pt-16 mt-8 pb-16">
+    <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
       <div className="w-full px-6 sm:px-8">
         <div className="text-center sm:text-left mb-8 sm:mb-10">
           <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
