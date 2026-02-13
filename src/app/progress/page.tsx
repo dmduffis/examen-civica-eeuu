@@ -110,7 +110,7 @@ export default function ProgressPage() {
   return (
     <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
       <div className="w-full px-6 sm:px-8">
-        <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-2">
+        <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-2 leading-tight">
           Mi progreso
         </h1>
         <p className="text-gray-600 mb-8">

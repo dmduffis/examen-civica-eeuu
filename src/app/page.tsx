@@ -41,8 +41,8 @@ export default function Home() {
   return (
     <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
       <div className="w-full min-w-0 px-6 sm:px-8">
-        <div className="text-center sm:text-left mb-8 sm:mb-10">
-          <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
+        <div className="text-left mb-8 sm:mb-10">
+          <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3 leading-tight">
             Examen de Educación Cívica
           </h1>
           <p className="text-gray-600">

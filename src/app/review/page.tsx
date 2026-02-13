@@ -121,15 +121,17 @@ export default function ReviewPage() {
   return (
     <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
       <div className="w-full px-6 sm:px-8">
-        <div className="text-center sm:text-left mb-8 sm:mb-10">
-          <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
-            Lista de preguntas
-          </h1>
-          <p className="text-gray-600">
-            Hay 100 preguntas en total; en la entrevista te harán 20 de forma
-            oral. Aquí puedes estudiarlas todas con sus respuestas correctas.
-          </p>
-          <span className="flex items-center gap-1 text-sm text-gray-500 mt-2">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8 sm:mb-10">
+          <div className="text-left min-w-0">
+            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3 leading-tight">
+              Lista de Preguntas
+            </h1>
+            <p className="text-gray-600">
+              Hay 100 preguntas en total; en la entrevista te harán 20 de forma
+              oral. Aquí puedes estudiarlas todas con sus respuestas correctas.
+            </p>
+          </div>
+          <span className="flex items-center gap-1 text-sm text-gray-500 shrink-0 sm:pt-1">
             <button
               type="button"
               onClick={() => setDisplayLang("es")}
@@ -148,7 +150,7 @@ export default function ReviewPage() {
           </span>
         </div>
         <div className="flex flex-col sm:flex-row gap-8 justify-between items-end w-full mb-10">
-          <section className="min-w-0 w-full max-w-xs">
+          <section className="min-w-0 w-full sm:max-w-xs">
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Tu estado (para las 4 preguntas específicas de tu estado)
             </label>
@@ -168,7 +170,7 @@ export default function ReviewPage() {
           <div className="w-full sm:w-auto shrink-0">
             <button
               type="button"
-              className="flex items-center gap-2 rounded-xl border-2 border-slate-200 bg-white py-2.5 px-4 text-gray-800 shadow-sm font-medium hover:bg-amber-50 hover:border-amber-200 transition-colors"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border-2 border-slate-200 bg-white py-2.5 px-4 text-gray-800 shadow-sm font-medium hover:bg-amber-50 hover:border-amber-200 transition-colors"
               aria-label="Descargar PDF"
             >
               <Download size={18} aria-hidden />
@@ -247,10 +249,23 @@ export default function ReviewPage() {
           ))}
         </div>
 
-        <div className="flex justify-center mt-8">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 mt-8 w-full">
+          <button
+            type="button"
+            onClick={() =>
+              window.scrollTo({ top: 0, left: 0, behavior: "smooth" })
+            }
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg text-gray-700 py-2 px-4 bg-slate-200 border border-slate-300 hover:bg-slate-300 transition-colors font-medium"
+            aria-label="Volver arriba"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="m18 15-6-6-6 6" />
+            </svg>
+            Volver arriba
+          </button>
           <Link
             href="/quiz"
-            className="rounded-lg text-gray-900 py-2 px-4 bg-slate-200 border border-slate-300 hover:bg-yellow-500"
+            className="w-full sm:w-auto inline-flex items-center justify-center rounded-lg text-gray-900 py-2 px-4 bg-slate-200 border border-slate-300 hover:bg-yellow-500 transition-colors font-medium"
           >
             Tomar el Quiz
           </Link>

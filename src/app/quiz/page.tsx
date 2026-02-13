@@ -187,8 +187,8 @@ export default function QuizPage() {
           </div>
         ) : (
           <div className="w-full px-6 sm:px-8">
-            <div className="text-center sm:text-left mb-8 sm:mb-10">
-              <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
+            <div className="text-left mb-8 sm:mb-10">
+              <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3 leading-tight">
                 Practica el Quiz
               </h1>
               <p className="text-gray-600">

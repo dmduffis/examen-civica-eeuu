@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useCallback, useRef, useState } from "react";
+import Image from "next/image";
 import { Mic } from "lucide-react";
 import { BeatLoader } from "react-spinners";
 import { VoiceBars } from "../components/VoiceBars";
 import { backendUrl } from "../lib/backend-url";
+import practiceInterviewHero from "../assets/images/practice_interview_hero.png";
 
 type InterviewQuestion = {
   id: string;
@@ -342,17 +344,23 @@ export default function InterviewPage() {
     }
   }, [sessionId, questionIndex, questions?.length, playBase64]);
 
+  const isStartScreen = status === "idle";
+
   return (
     <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
-      <div className="w-full px-6 sm:px-8 max-w-2xl mx-auto">
-        <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-2">
-          Entrevista de práctica
-        </h1>
-        <p className="text-gray-600 mb-8">
-          Simula la entrevista con audio: escucha la pregunta, responde en voz alta y recibe retroalimentación en inglés y español.
-        </p>
+      <div className="w-full min-w-0 px-6 sm:px-8">
+        {isStartScreen ? (
+          <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] gap-8 sm:gap-[5rem] items-start w-full min-w-0 overflow-hidden">
+            {/* Content left */}
+            <div className="order-2 sm:order-1 w-full min-w-0">
+              <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-2 leading-tight">
+                Entrevista de Práctica
+              </h1>
+              <p className="text-gray-600 mb-8">
+                Simula la entrevista con audio: escucha la pregunta, responde en voz alta y recibe retroalimentación en inglés y español.
+              </p>
 
-        {status === "idle" && (
+              {status === "idle" && (
           <div className="flex flex-col gap-4">
             <div>
               <label htmlFor="userName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -375,127 +383,148 @@ export default function InterviewPage() {
               Iniciar entrevista
             </button>
           </div>
-        )}
-
-        {status === "loading" && (
-          <div className="flex flex-col items-center gap-6">
-            <BeatLoader color="rgba(214, 169, 54, 0.6)" speedMultiplier={0.5} />
-            <p className="text-gray-600">Preparando tu entrevista…</p>
-          </div>
-        )}
-
-        {(status === "greeting" || status === "question") && (
-          <div className="flex flex-col items-center gap-6">
-            <VoiceBars isPlaying={isPlayingAudio} className="flex-shrink-0" />
-            <p className="text-gray-600">
-              {status === "greeting" && "Reproduciendo bienvenida…"}
-              {status === "question" && "Reproduciendo pregunta…"}
-            </p>
-          </div>
-        )}
-
-        {status === "ready_to_record" && questions[questionIndex] && (
-          <div className="flex flex-col gap-4">
-            <div className="flex justify-center">
-              <VoiceBars className="flex-shrink-0" />
-            </div>
-            <p className="text-gray-700 font-medium">
-              Pregunta {questionIndex + 1} de {questions.length}
-            </p>
-            {(() => {
-              const label = interviewQuestionLabel(questions[questionIndex]);
-              return label ? (
-                <p className="text-gray-600 italic">&quot;{label}&quot;</p>
-              ) : (
-                <p className="text-gray-600">Escucha la pregunta en inglés en el audio y responde con el micrófono.</p>
-              );
-            })()}
-            <p className="text-gray-600 text-sm">Haz clic para abrir el micrófono y grabar tu respuesta.</p>
-            <button
-              type="button"
-              onClick={startRecording}
-              className="rounded-xl bg-green-600 text-white font-semibold py-4 px-6 hover:bg-green-700 transition-colors inline-flex items-center justify-center gap-2"
-              aria-label="Abrir micrófono"
-            >
-              <Mic size={22} aria-hidden />
-              Abrir micrófono
-            </button>
-          </div>
-        )}
-
-        {status === "recording" && (
-          <div className="flex flex-col gap-4">
-            <div className="flex justify-center">
-              <VoiceBars mediaRecorder={recordingRecorder} className="flex-shrink-0" />
-            </div>
-            <p className="text-gray-700 font-medium">
-              Pregunta {questionIndex + 1} de {questions.length}: grabando tu respuesta.
-            </p>
-            {questions[questionIndex] && interviewQuestionLabel(questions[questionIndex]) && (
-              <p className="text-gray-600 italic">&quot;{interviewQuestionLabel(questions[questionIndex])}&quot;</p>
             )}
-            <button
-              type="button"
-              onClick={stopRecordingAndSend}
-              className="rounded-xl bg-red-600 text-white font-semibold py-4 px-6 hover:bg-red-700 transition-colors inline-flex items-center justify-center gap-2"
-              aria-label="Dejar de grabar y enviar"
-            >
-              <span className="inline-flex h-2.5 w-2.5 rounded-full bg-white animate-pulse" aria-hidden />
-              Grabando
-            </button>
-          </div>
-        )}
+            </div>
 
-        {status === "sending" && (
-          <div className="flex flex-col items-center gap-6">
-            <BeatLoader color="rgba(214, 169, 54, 0.6)" speedMultiplier={0.5} />
-            <p className="text-gray-600">Enviando respuesta…</p>
-          </div>
-        )}
-        {status === "officer" && (
-          <div className="flex flex-col items-center gap-6">
-            <VoiceBars isPlaying={isPlayingAudio} className="flex-shrink-0" />
-            <p className="text-gray-600">Respuesta del oficial…</p>
-          </div>
-        )}
-
-        {status === "review" && reviewItems.length > 0 && (
-          <div className="space-y-8 w-full">
-            <h2 className="text-xl font-bold text-gray-800">Interview summary</h2>
-            <ul className="space-y-4 w-full">
-              {reviewItems.map((item, i) => (
-                <li key={i} className="rounded-xl border-2 border-slate-200 bg-white p-4 w-full">
-                  <p className="text-sm text-gray-600 mb-2">Your answer: {item.userAnswer || "(no speech)"}</p>
-                  <p className="text-sm text-gray-700">Correct answer: {correctAnswerFromSuggestion(item.suggestionEn)}</p>
-                </li>
-              ))}
-            </ul>
-            <div className="flex gap-3 pt-4">
-              <button
-                type="button"
-                onClick={() => { setStatus("idle"); setSessionId(null); setQuestions([]); setQuestionIndex(0); setReviewItems([]); }}
-                className="rounded-xl bg-amber-500 text-white font-semibold py-3 px-6 hover:bg-amber-600 transition-colors"
-              >
-                Hacer otra entrevista
-              </button>
+            {/* Hero right - only on start screen */}
+            <div className="order-1 sm:order-2 flex justify-center sm:justify-start items-center min-w-0">
+              <Image
+                src={practiceInterviewHero}
+                width={560}
+                height={560}
+                alt="Oficial de práctica para la entrevista"
+                className="w-[min(100%,363px)] sm:w-[min(100%,500px)] h-auto"
+              />
             </div>
           </div>
-        )}
+        ) : (
+          /* Interview in progress: no image, single column */
+          <div className="max-w-2xl mx-auto w-full">
+            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-6 leading-tight text-center">
+              Entrevista de Práctica
+            </h1>
 
-        {status === "error" && (
-          <div className="rounded-xl border-2 border-red-200 bg-red-50 p-4 text-red-800">
-            <p className="font-medium">{error}</p>
-            <p className="text-sm text-red-700 mt-1">Try again in a moment.</p>
-            <button
-              type="button"
-              onClick={() => { setStatus("idle"); setError(null); }}
-              className="mt-3 rounded-lg bg-red-100 text-red-800 px-4 py-2 font-medium hover:bg-red-200"
-            >
-              Reintentar / Retry
-            </button>
+            {status === "loading" && (
+              <div className="flex flex-col items-center gap-6">
+                <BeatLoader color="rgba(214, 169, 54, 0.6)" speedMultiplier={0.5} />
+                <p className="text-gray-600">Preparando tu entrevista…</p>
+              </div>
+            )}
+
+            {(status === "greeting" || status === "question") && (
+              <div className="flex flex-col items-center gap-6">
+                <VoiceBars isPlaying={isPlayingAudio} className="flex-shrink-0" />
+                <p className="text-gray-600">
+                  {status === "greeting" && "Reproduciendo bienvenida…"}
+                  {status === "question" && "Reproduciendo pregunta…"}
+                </p>
+              </div>
+            )}
+
+            {status === "ready_to_record" && questions[questionIndex] && (
+              <div className="flex flex-col gap-4">
+                <div className="flex justify-center">
+                  <VoiceBars className="flex-shrink-0" />
+                </div>
+                <p className="text-gray-700 font-medium">
+                  Pregunta {questionIndex + 1} de {questions.length}
+                </p>
+                {(() => {
+                  const label = interviewQuestionLabel(questions[questionIndex]);
+                  return label ? (
+                    <p className="text-gray-600 italic">&quot;{label}&quot;</p>
+                  ) : (
+                    <p className="text-gray-600">Escucha la pregunta en inglés en el audio y responde con el micrófono.</p>
+                  );
+                })()}
+                <p className="text-gray-600 text-sm">Haz clic para abrir el micrófono y grabar tu respuesta.</p>
+                <button
+                  type="button"
+                  onClick={startRecording}
+                  className="rounded-xl bg-green-600 text-white font-semibold py-4 px-6 hover:bg-green-700 transition-colors inline-flex items-center justify-center gap-2"
+                  aria-label="Abrir micrófono"
+                >
+                  <Mic size={22} aria-hidden />
+                  Abrir micrófono
+                </button>
+              </div>
+            )}
+
+            {status === "recording" && (
+              <div className="flex flex-col gap-4">
+                <div className="flex justify-center">
+                  <VoiceBars mediaRecorder={recordingRecorder} className="flex-shrink-0" />
+                </div>
+                <p className="text-gray-700 font-medium">
+                  Pregunta {questionIndex + 1} de {questions.length}: grabando tu respuesta.
+                </p>
+                {questions[questionIndex] && interviewQuestionLabel(questions[questionIndex]) && (
+                  <p className="text-gray-600 italic">&quot;{interviewQuestionLabel(questions[questionIndex])}&quot;</p>
+                )}
+                <button
+                  type="button"
+                  onClick={stopRecordingAndSend}
+                  className="rounded-xl bg-red-600 text-white font-semibold py-4 px-6 hover:bg-red-700 transition-colors inline-flex items-center justify-center gap-2"
+                  aria-label="Dejar de grabar y enviar"
+                >
+                  <span className="inline-flex h-2.5 w-2.5 rounded-full bg-white animate-pulse" aria-hidden />
+                  Grabando
+                </button>
+              </div>
+            )}
+
+            {status === "sending" && (
+              <div className="flex flex-col items-center gap-6">
+                <BeatLoader color="rgba(214, 169, 54, 0.6)" speedMultiplier={0.5} />
+                <p className="text-gray-600">Enviando respuesta…</p>
+              </div>
+            )}
+
+            {status === "officer" && (
+              <div className="flex flex-col items-center gap-6">
+                <VoiceBars isPlaying={isPlayingAudio} className="flex-shrink-0" />
+                <p className="text-gray-600">Respuesta del oficial…</p>
+              </div>
+            )}
+
+            {status === "review" && reviewItems.length > 0 && (
+              <div className="space-y-8 w-full">
+                <h2 className="text-xl font-bold text-gray-800">Interview summary</h2>
+                <ul className="space-y-4 w-full">
+                  {reviewItems.map((item, i) => (
+                    <li key={i} className="rounded-xl border-2 border-slate-200 bg-white p-4 w-full">
+                      <p className="text-sm text-gray-600 mb-2">Your answer: {item.userAnswer || "(no speech)"}</p>
+                      <p className="text-sm text-gray-700">Correct answer: {correctAnswerFromSuggestion(item.suggestionEn)}</p>
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => { setStatus("idle"); setSessionId(null); setQuestions([]); setQuestionIndex(0); setReviewItems([]); }}
+                    className="rounded-xl bg-amber-500 text-white font-semibold py-3 px-6 hover:bg-amber-600 transition-colors"
+                  >
+                    Hacer otra entrevista
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {status === "error" && (
+              <div className="rounded-xl border-2 border-red-200 bg-red-50 p-4 text-red-800">
+                <p className="font-medium">{error}</p>
+                <p className="text-sm text-red-700 mt-1">Try again in a moment.</p>
+                <button
+                  type="button"
+                  onClick={() => { setStatus("idle"); setError(null); }}
+                  className="mt-3 rounded-lg bg-red-100 text-red-800 px-4 py-2 font-medium hover:bg-red-200"
+                >
+                  Reintentar / Retry
+                </button>
+              </div>
+            )}
           </div>
         )}
-
       </div>
     </main>
   );

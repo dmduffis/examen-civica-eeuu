@@ -209,8 +209,8 @@ export default function FlashcardsPage() {
     return (
       <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
         <div className="w-full px-6 sm:px-8">
-          <div className="text-center sm:text-left mb-8 sm:mb-10">
-            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
+          <div className="text-left mb-8 sm:mb-10">
+            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3 leading-tight">
               Repasar
             </h1>
           </div>
@@ -391,14 +391,16 @@ export default function FlashcardsPage() {
   return (
     <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
       <div className="w-full px-6 sm:px-8">
-        <div className="text-center sm:text-left mb-8 sm:mb-10">
-          <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3">
-            Repasar
-          </h1>
-          <p className="text-gray-600">
-            Elige las preguntas que quieres repasar y estudia con tarjetas.
-          </p>
-          <span className="flex items-center gap-1 text-sm text-gray-500 mt-2">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8 sm:mb-10">
+          <div className="text-left min-w-0">
+            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3 leading-tight">
+              Repasar
+            </h1>
+            <p className="text-gray-600">
+              Elige las preguntas que quieres repasar y estudia con tarjetas.
+            </p>
+          </div>
+          <span className="flex items-center gap-1 text-sm text-gray-500 shrink-0 sm:pt-1">
             <button
               type="button"
               onClick={() => setDisplayLang("es")}
@@ -447,7 +449,7 @@ export default function FlashcardsPage() {
                 if (isAuthEnabled && user)
                   updateProfileState(code).catch(() => {});
               }}
-              className="w-full max-w-xs h-11 rounded-xl border-2 border-slate-200 bg-white py-2.5 px-3 text-gray-800 shadow-sm sm:ml-auto"
+              className="w-full sm:max-w-xs h-11 rounded-xl border-2 border-slate-200 bg-white py-2.5 px-3 text-gray-800 shadow-sm sm:ml-auto"
             >
               <option value="">— Seleccionar estado —</option>
               {states.map((s) => (
