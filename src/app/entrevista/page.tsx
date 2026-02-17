@@ -491,12 +491,19 @@ export default function InterviewPage() {
               <div className="space-y-8 w-full">
                 <h2 className="text-xl font-bold text-gray-800">Resumen de la entrevista</h2>
                 <ul className="space-y-4 w-full">
-                  {reviewItems.map((item, i) => (
-                    <li key={i} className="rounded-xl border-2 border-slate-200 bg-white p-4 w-full">
-                      <p className="text-sm text-gray-600 mb-2">Tu respuesta: {item.userAnswer || "(no se detectó voz)"}</p>
-                      <p className="text-sm text-gray-700">Respuesta correcta: {correctAnswerFromSuggestion(item.suggestionEn)}</p>
-                    </li>
-                  ))}
+                  {reviewItems.map((item, i) => {
+                    const correctAnswer = correctAnswerFromSuggestion(item.suggestionEn);
+                    const isCorrect = !/\bstronger\s+answer\b/i.test(item.suggestionEn);
+                    return (
+                      <li key={i} className="rounded-xl border-2 border-slate-200 bg-white p-4 w-full">
+                        {isCorrect && (
+                          <p className="text-sm font-medium text-green-700 mb-2">Correcto.</p>
+                        )}
+                        <p className="text-sm text-gray-600 mb-2">Tu respuesta: {item.userAnswer || "(no se detectó voz)"}</p>
+                        <p className="text-sm text-gray-700">Respuesta correcta: {correctAnswer}</p>
+                      </li>
+                    );
+                  })}
                 </ul>
                 <div className="flex gap-3 pt-4">
                   <button
