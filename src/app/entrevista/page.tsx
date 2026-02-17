@@ -2,7 +2,7 @@
 
 import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
-import { Mic } from "lucide-react";
+import { Mic, Check } from "lucide-react";
 import { BeatLoader } from "react-spinners";
 import { VoiceBars } from "../components/VoiceBars";
 import { backendUrl } from "../lib/backend-url";
@@ -495,12 +495,16 @@ export default function InterviewPage() {
                     const correctAnswer = correctAnswerFromSuggestion(item.suggestionEn);
                     const isCorrect = !/\bstronger\s+answer\b/i.test(item.suggestionEn);
                     return (
-                      <li key={i} className="rounded-xl border-2 border-slate-200 bg-white p-4 w-full">
+                      <li key={i} className="rounded-xl border-2 border-slate-200 bg-white p-4 w-full flex items-start gap-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm text-gray-600 mb-2">Tu respuesta: {item.userAnswer || "(no se detectó voz)"}</p>
+                          <p className="text-sm text-gray-700">
+                            Respuesta correcta: {isCorrect ? "Tu respuesta es aceptable." : correctAnswer}
+                          </p>
+                        </div>
                         {isCorrect && (
-                          <p className="text-sm font-medium text-green-700 mb-2">Correcto.</p>
+                          <Check size={24} className="shrink-0 text-green-600 self-center" aria-label="Correcto" />
                         )}
-                        <p className="text-sm text-gray-600 mb-2">Tu respuesta: {item.userAnswer || "(no se detectó voz)"}</p>
-                        <p className="text-sm text-gray-700">Respuesta correcta: {correctAnswer}</p>
                       </li>
                     );
                   })}
