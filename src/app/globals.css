@@ -63,12 +63,40 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* Home: image fades in with a subtle scale-up */
+@keyframes homeImageIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Home: buttons slide up with a bit less travel */
+@keyframes homeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .home-slide-up {
-  animation: slideInUp 0.5s ease-out forwards;
+  animation: homeSlideUp 0.45s ease-out both;
 }
 
 .home-fade-in {
   animation: fadeInImage 1.2s ease-out both;
+}
+
+.home-image-in {
+  animation: homeImageIn 0.9s ease-out both;
 }
 
 @keyframes pageTitleIn {
