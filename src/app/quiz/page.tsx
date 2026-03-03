@@ -10,7 +10,7 @@ import Link from "next/link";
 import ProgressBar from "../components/ProgressBar";
 import Results from "./Results";
 import Question from "../components/Question";
-import girlExam from "../assets/images/girl_exam.png";
+import quizHero from "../assets/images/repasar.png";
 import { BeatLoader } from "react-spinners";
 import type { QuestionItem } from "../lib/question-types";
 import { questionDisplayText } from "../lib/question-types";
@@ -197,14 +197,15 @@ export default function QuizPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-[5rem] items-center w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-8 sm:gap-[5rem] items-center w-full min-w-0">
               {/* Mobile: image first. Desktop: right column */}
               <div className="order-1 sm:order-2 flex justify-center items-center">
                 <Image
-                  src={girlExam}
-                  width={560}
+                  src={quizHero}
+                  width={quizHero.width}
+                  height={quizHero.height}
                   alt="Person studying"
-                  className="w-[min(100%,290px)] sm:w-[min(100%,400px)] h-auto"
+                  className="w-[min(100%,387px)] sm:w-[min(100%,532px)] h-auto object-contain"
                 />
               </div>
 

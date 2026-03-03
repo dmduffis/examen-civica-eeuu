@@ -1,0 +1,7 @@
+{
+  "expo": {
+    "name": "examen-civica-eeuu",
+    "slug": "examen-civica-eeuu",
+    "platforms": ["ios", "android", "web"]
+  }
+}

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FileText, BookOpen, Mic } from "lucide-react";
-import boyReading from "./assets/images/quiz_start.png";
+import boyReading from "./assets/images/quiz_start_hero.png";
 
 const FlashcardIcon = () => (
   <svg
@@ -57,7 +57,7 @@ export default function Home() {
               src={boyReading}
               width={560}
               alt="Person studying"
-              className="w-[min(100%,290px)] sm:w-[min(100%,400px)] h-auto"
+              className="w-[min(100%,320px)] sm:w-[min(100%,441px)] h-auto"
             />
           </div>
 

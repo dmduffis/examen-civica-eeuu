@@ -6,7 +6,7 @@ import { Mic, Check } from "lucide-react";
 import { BeatLoader } from "react-spinners";
 import { VoiceBars } from "../components/VoiceBars";
 import { backendUrl } from "../lib/backend-url";
-import practiceInterviewHero from "../assets/images/practice_interview_hero.png";
+import interviewHero from "../assets/images/officer_quiz.png";
 
 type InterviewQuestion = {
   id: string;
@@ -389,11 +389,11 @@ export default function InterviewPage() {
             {/* Hero right - only on start screen */}
             <div className="order-1 sm:order-2 flex justify-center sm:justify-start items-center min-w-0">
               <Image
-                src={practiceInterviewHero}
-                width={560}
-                height={560}
+                src={interviewHero}
+                width={interviewHero.width}
+                height={interviewHero.height}
                 alt="Oficial de práctica para la entrevista"
-                className="w-[min(100%,363px)] sm:w-[min(100%,500px)] h-auto"
+                className="w-[min(100%,320px)] sm:w-[min(100%,440px)] h-auto object-contain"
               />
             </div>
           </div>
