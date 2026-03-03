@@ -52,7 +52,7 @@ export default function Home() {
 
         <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] gap-8 sm:gap-[5rem] items-center w-full min-w-0 overflow-hidden">
           {/* Mobile: image first. Desktop: right column — image ~2x larger */}
-          <div className="order-1 sm:order-2 flex justify-center sm:justify-start items-center min-w-0 home-image-in" style={{ animationDelay: "0.15s" }}>
+          <div className="order-1 sm:order-2 flex justify-center sm:justify-start items-center min-w-0 home-fade-in" style={{ animationDelay: "0.15s" }}>
             <Image
               src={boyReading}
               width={560}
