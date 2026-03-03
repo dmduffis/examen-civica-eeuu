@@ -94,20 +94,20 @@ export default function Results({
         </div>
       </div>
 
-      <h1 className="text-2xl font-semibold text-gray-800 text-center mt-6">
+      <h1 className="text-2xl font-semibold text-[var(--title-blue)] text-center mt-6">
         {message}
       </h1>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12 max-w-sm mx-auto w-full">
         <button
           onClick={() => restartQuiz()}
-          className="rounded-xl text-gray-800 py-4 px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 font-semibold transition-colors"
+          className="rounded-xl text-gray-800 py-4 px-6 bg-slate-200 border-2 border-slate-300 hover:bg-orange-100 hover:border-orange-200 font-semibold transition-colors"
         >
           Repetir quiz
         </button>
         <Link
           href="/quiz"
-          className="rounded-xl text-gray-800 py-4 px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 text-center font-semibold transition-colors"
+          className="rounded-xl text-gray-800 py-4 px-6 bg-slate-200 border-2 border-slate-300 hover:bg-orange-100 hover:border-orange-200 text-center font-semibold transition-colors"
         >
           Elegir otro quiz
         </Link>

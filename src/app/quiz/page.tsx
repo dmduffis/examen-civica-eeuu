@@ -188,7 +188,7 @@ export default function QuizPage() {
         ) : (
           <div className="w-full px-6 sm:px-8">
             <div className="text-left mb-8 sm:mb-10">
-              <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3 leading-tight">
+              <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-3 leading-tight">
                 Practica el Quiz
               </h1>
               <p className="text-gray-600">
@@ -217,7 +217,7 @@ export default function QuizPage() {
                       (q) => !q.isStateSpecific,
                     ).length;
                     const rowClass =
-                      "rounded-xl text-gray-800 py-4 px-5 sm:py-5 sm:px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 text-left text-lg sm:text-xl font-semibold transition-colors min-w-0";
+                      "rounded-xl text-gray-800 py-4 px-5 sm:py-5 sm:px-6 bg-slate-200 border-2 border-slate-300 hover:bg-orange-100 hover:border-orange-200 text-left text-lg sm:text-xl font-semibold transition-colors min-w-0";
                     return (
                       <>
                         <div className="flex flex-col gap-3 w-full">
@@ -254,7 +254,7 @@ export default function QuizPage() {
     ) : (
       <main className="flex flex-col w-full justify-center mt-2 sm:mt-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+          <h1 className="text-2xl font-semibold text-[var(--title-blue)] flex items-center gap-2">
             <FileText
               size={32}
               className="shrink-0 text-gray-700"

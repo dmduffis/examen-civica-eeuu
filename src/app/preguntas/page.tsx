@@ -123,7 +123,7 @@ export default function PreguntasPage() {
       <div className="w-full px-6 sm:px-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8 sm:mb-10">
           <div className="text-left min-w-0">
-            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3 leading-tight">
+            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-3 leading-tight">
               Lista de Preguntas
             </h1>
             <p className="text-gray-600">
@@ -170,7 +170,7 @@ export default function PreguntasPage() {
           <div className="w-full sm:w-auto shrink-0">
             <button
               type="button"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border-2 border-slate-200 bg-white py-2.5 px-4 text-gray-800 shadow-sm font-medium hover:bg-amber-50 hover:border-amber-200 transition-colors"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border-2 border-slate-200 bg-white py-2.5 px-4 text-gray-800 shadow-sm font-medium hover:bg-orange-50 hover:border-orange-200 transition-colors"
               aria-label="Descargar PDF"
             >
               <Download size={18} aria-hidden />

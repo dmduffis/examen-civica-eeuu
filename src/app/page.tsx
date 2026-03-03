@@ -35,14 +35,14 @@ const FlashcardIcon = () => (
 );
 
 const linkClass =
-  "rounded-xl text-gray-800 p-2 sm:p-3 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 flex flex-row sm:flex-col items-center justify-start sm:justify-center gap-3 sm:gap-2 transition-colors w-full min-w-0 overflow-hidden text-left sm:text-center min-h-[56px] sm:min-h-0 sm:aspect-square sm:max-h-40 sm:max-w-40";
+  "rounded-xl text-gray-800 p-2 sm:p-3 bg-slate-200 border-2 border-slate-300 hover:bg-orange-100 hover:border-orange-200 flex flex-row sm:flex-col items-center justify-start sm:justify-center gap-3 sm:gap-2 transition-colors w-full min-w-0 overflow-hidden text-left sm:text-center min-h-[56px] sm:min-h-0 sm:aspect-square sm:max-h-40 sm:max-w-40";
 
 export default function Home() {
   return (
     <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
       <div className="w-full min-w-0 px-6 sm:px-8">
         <div className="text-left mb-8 sm:mb-10">
-          <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3 leading-tight">
+          <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-3 leading-tight">
             Examen de Educación Cívica
           </h1>
           <p className="text-gray-600">

@@ -48,7 +48,7 @@ export default function ProgressPage() {
     return (
       <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
         <div className="w-full px-6 sm:px-8 text-center max-w-md mx-auto">
-          <h1 className="text-2xl font-bold text-gray-800 mb-3">Mi progreso</h1>
+          <h1 className="text-2xl font-bold text-[var(--title-blue)] mb-3">Mi progreso</h1>
           <p className="text-gray-600 mb-6">
             La sincronización entre dispositivos no está disponible. Tu historial se guarda solo en este dispositivo.
           </p>
@@ -77,7 +77,7 @@ export default function ProgressPage() {
     return (
       <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
         <div className="w-full px-6 sm:px-8 text-center max-w-md mx-auto">
-          <h1 className="text-2xl font-bold text-gray-800 mb-3">Mi progreso</h1>
+          <h1 className="text-2xl font-bold text-[var(--title-blue)] mb-3">Mi progreso</h1>
           <p className="text-gray-600 mb-6">
             Inicia sesión para ver tu historial de quizzes.
           </p>
@@ -110,7 +110,7 @@ export default function ProgressPage() {
   return (
     <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
       <div className="w-full px-6 sm:px-8">
-        <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-2 leading-tight">
+        <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-2 leading-tight">
           Mi progreso
         </h1>
         <p className="text-gray-600 mb-8">
@@ -143,7 +143,7 @@ export default function ProgressPage() {
                 className="flex flex-wrap items-center justify-between gap-4 rounded-xl border-2 border-slate-200 bg-white p-4 shadow-sm"
               >
                 <div>
-                  <p className="font-semibold text-gray-800">
+                  <p className="font-semibold text-[var(--title-blue)]">
                     {entry.scorePercent}% — {entry.correct} de {entry.total} correctas
                   </p>
                   <p className="text-sm text-gray-500 mt-0.5">

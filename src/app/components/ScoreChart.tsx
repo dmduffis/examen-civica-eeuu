@@ -59,7 +59,7 @@ export function ScoreChart({
 
   return (
     <div className="rounded-xl border-2 border-slate-200 bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-semibold text-gray-700 mb-3">
+      <h2 className="text-sm font-semibold text-[var(--title-blue)] mb-3">
         Puntuación (últimos 7 días)
       </h2>
       <svg

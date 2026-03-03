@@ -210,7 +210,7 @@ export default function FlashcardsPage() {
       <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
         <div className="w-full px-6 sm:px-8">
           <div className="text-left mb-8 sm:mb-10">
-            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3 leading-tight">
+            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-3 leading-tight">
               Repasar
             </h1>
           </div>
@@ -348,7 +348,7 @@ export default function FlashcardsPage() {
                 setFlipped(false);
               }}
               disabled={currentIndex === 0}
-              className="rounded-xl py-2.5 px-5 bg-white border-2 border-slate-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-amber-50 hover:border-amber-200 transition-colors font-medium text-gray-800"
+              className="rounded-xl py-2.5 px-5 bg-white border-2 border-slate-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-orange-50 hover:border-orange-200 transition-colors font-medium text-gray-800"
             >
               Anterior
             </button>
@@ -359,7 +359,7 @@ export default function FlashcardsPage() {
                 );
                 setFlipped(false);
               }}
-              className="rounded-xl py-2.5 px-5 bg-white border-2 border-slate-200 shadow-sm hover:bg-amber-50 hover:border-amber-200 transition-colors font-medium text-gray-800"
+              className="rounded-xl py-2.5 px-5 bg-white border-2 border-slate-200 shadow-sm hover:bg-orange-50 hover:border-orange-200 transition-colors font-medium text-gray-800"
             >
               {currentIndex >= studyQueue.length - 1 ? "Primera" : "Siguiente"}
             </button>
@@ -369,7 +369,7 @@ export default function FlashcardsPage() {
             {wrongCount > 0 && !showWrongOnly && (
               <button
                 onClick={startWrongOnly}
-                className="rounded-xl py-2 px-4 text-sm bg-amber-50 border-2 border-amber-200 text-amber-900 font-medium hover:bg-amber-100 transition-colors"
+                className="rounded-xl py-2 px-4 text-sm bg-amber-50 border-2 border-amber-200 text-amber-900 font-medium hover:bg-orange-100 transition-colors"
               >
                 Repasar solo incorrectas ({wrongCount})
               </button>
@@ -377,7 +377,7 @@ export default function FlashcardsPage() {
             {showWrongOnly && (
               <button
                 onClick={backToAll}
-                className="rounded-xl py-2 px-4 text-sm bg-white border-2 border-slate-200 text-gray-700 font-medium hover:bg-amber-50 hover:border-amber-200 transition-colors"
+                className="rounded-xl py-2 px-4 text-sm bg-white border-2 border-slate-200 text-gray-700 font-medium hover:bg-orange-50 hover:border-orange-200 transition-colors"
               >
                 Volver a todas
               </button>
@@ -393,7 +393,7 @@ export default function FlashcardsPage() {
       <div className="w-full px-6 sm:px-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8 sm:mb-10">
           <div className="text-left min-w-0">
-            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-3 leading-tight">
+            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-3 leading-tight">
               Repasar
             </h1>
             <p className="text-gray-600">
@@ -423,14 +423,14 @@ export default function FlashcardsPage() {
           <div className="flex gap-2 shrink-0 order-2 sm:order-1">
             <button
               onClick={selectAll}
-              className="h-11 rounded-xl px-3 text-sm bg-white border-2 border-slate-200 shadow-sm hover:bg-amber-50 hover:border-amber-200 inline-flex items-center gap-1.5 transition-colors font-medium text-gray-700"
+              className="h-11 rounded-xl px-3 text-sm bg-white border-2 border-slate-200 shadow-sm hover:bg-orange-50 hover:border-orange-200 inline-flex items-center gap-1.5 transition-colors font-medium text-gray-700"
             >
               <CheckCheck size={16} className="shrink-0" aria-hidden />
               Todas
             </button>
             <button
               onClick={deselectAll}
-              className="h-11 rounded-xl px-3 text-sm bg-white border-2 border-slate-200 shadow-sm hover:bg-amber-50 hover:border-amber-200 inline-flex items-center gap-1.5 transition-colors font-medium text-gray-700"
+              className="h-11 rounded-xl px-3 text-sm bg-white border-2 border-slate-200 shadow-sm hover:bg-orange-50 hover:border-orange-200 inline-flex items-center gap-1.5 transition-colors font-medium text-gray-700"
             >
               <X size={16} className="shrink-0" aria-hidden />
               Quitar todas
@@ -468,7 +468,7 @@ export default function FlashcardsPage() {
           {questions.map((q, index) => (
             <label
               key={q._id}
-              className="flex items-start gap-3 w-full max-w-full min-w-0 py-4 px-3 border-2 border-slate-200 rounded-xl bg-white cursor-pointer hover:bg-amber-50/50 hover:border-amber-200 transition-colors"
+              className="flex items-start gap-3 w-full max-w-full min-w-0 py-4 px-3 border-2 border-slate-200 rounded-xl bg-white cursor-pointer hover:bg-orange-50/50 hover:border-orange-200 transition-colors"
             >
               <span className="relative shrink-0 flex items-center justify-center w-[22px] h-[22px] flex-shrink-0">
                 <input
@@ -505,7 +505,7 @@ export default function FlashcardsPage() {
           <button
             onClick={startStudy}
             disabled={selectedIds.size === 0}
-            className="w-full rounded-xl py-3.5 px-6 bg-slate-200 border-2 border-slate-300 hover:bg-amber-100 hover:border-amber-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full rounded-xl py-3.5 px-6 bg-slate-200 border-2 border-slate-300 hover:bg-orange-100 hover:border-orange-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Repasar {selectedIds.size} tarjeta
             {selectedIds.size !== 1 ? "s" : ""}

@@ -353,7 +353,7 @@ export default function InterviewPage() {
           <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] gap-8 sm:gap-[5rem] items-start w-full min-w-0">
             {/* Content left */}
             <div className="order-2 sm:order-1 w-full min-w-0">
-              <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-2 leading-tight">
+              <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-2 leading-tight">
                 Entrevista de Práctica
               </h1>
               <p className="text-gray-600 mb-8">
@@ -400,7 +400,7 @@ export default function InterviewPage() {
         ) : (
           /* Interview in progress: no image, single column */
           <div className="max-w-2xl mx-auto w-full">
-            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-gray-800 mb-6 leading-tight text-center">
+            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-6 leading-tight text-center">
               Entrevista de Práctica
             </h1>
 
@@ -489,7 +489,7 @@ export default function InterviewPage() {
 
             {status === "review" && reviewItems.length > 0 && (
               <div className="space-y-8 w-full">
-                <h2 className="text-xl font-bold text-gray-800">Resumen de la entrevista</h2>
+                <h2 className="text-xl font-bold text-[var(--title-blue)]">Resumen de la entrevista</h2>
                 <ul className="space-y-4 w-full">
                   {reviewItems.map((item, i) => {
                     const correctAnswer = correctAnswerFromSuggestion(item.suggestionEn);

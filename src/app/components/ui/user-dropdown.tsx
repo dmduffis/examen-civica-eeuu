@@ -57,7 +57,7 @@ export function UserDropdown({ email, onLogout, className }: UserDropdownProps) 
           <Link
             href="/progress"
             onClick={() => setOpen(false)}
-            className="block rounded-sm px-2 py-1.5 text-sm text-gray-800 hover:bg-amber-50 hover:text-amber-900"
+            className="block rounded-sm px-2 py-1.5 text-sm text-gray-800 hover:bg-orange-50 hover:text-amber-900"
             role="menuitem"
           >
             Mi progreso
