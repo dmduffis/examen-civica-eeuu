@@ -59,7 +59,7 @@ export default function Results({
   return (
     <main className="flex flex-col w-full justify-center pt-4 sm:pt-12 pb-16">
       {correctPercentage === 100 && (
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-6 home-fade-in">
           <Image
             src={celebration}
             width={240}
@@ -70,14 +70,14 @@ export default function Results({
         </div>
       )}
 
-      <p className="text-5xl font-bold text-gray-800 text-center">
+      <p className="text-5xl font-bold text-gray-800 text-center page-title-in">
         {correctPercentage}%
       </p>
-      <p className="text-gray-500 text-center text-sm mt-3">
+      <p className="text-gray-500 text-center text-sm mt-3 page-content-in opacity-0" style={{ animationDelay: "0.1s" }}>
         {correctAnswers} de {totalQuestions} correctas
       </p>
 
-      <div className="w-full max-w-xs mx-auto mt-8">
+      <div className="w-full max-w-xs mx-auto mt-8 page-content-in opacity-0" style={{ animationDelay: "0.2s" }}>
         <div className="flex h-2 overflow-hidden bg-slate-200">
           <div
             className="bg-green-500 transition-all duration-500"
@@ -94,11 +94,11 @@ export default function Results({
         </div>
       </div>
 
-      <h1 className="text-2xl font-semibold text-[var(--title-blue)] text-center mt-6">
+      <h1 className="text-2xl font-semibold text-[var(--title-blue)] text-center mt-6 page-title-in opacity-0" style={{ animationDelay: "0.25s" }}>
         {message}
       </h1>
 
-      <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12 max-w-sm mx-auto w-full">
+      <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12 max-w-sm mx-auto w-full page-content-in opacity-0" style={{ animationDelay: "0.35s" }}>
         <button
           onClick={() => restartQuiz()}
           className="rounded-xl text-gray-800 py-4 px-6 bg-slate-200 border-2 border-slate-300 hover:bg-orange-100 hover:border-orange-200 font-semibold transition-colors"

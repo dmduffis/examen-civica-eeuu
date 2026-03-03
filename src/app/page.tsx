@@ -52,7 +52,7 @@ export default function Home() {
 
         <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] gap-8 sm:gap-[5rem] items-center w-full min-w-0 overflow-hidden">
           {/* Mobile: image first. Desktop: right column — image ~2x larger */}
-          <div className="order-1 sm:order-2 flex justify-center sm:justify-start items-center min-w-0">
+          <div className="order-1 sm:order-2 flex justify-center sm:justify-start items-center min-w-0 home-fade-in">
             <Image
               src={boyReading}
               width={560}
@@ -64,19 +64,19 @@ export default function Home() {
           {/* Mobile: stacked, icon left. Desktop: 4 squares, icon on top */}
           <div className="order-2 sm:order-1 w-full min-w-0 overflow-hidden">
             <div className="flex flex-col sm:grid sm:grid-cols-2 sm:grid-rows-2 sm:justify-items-start sm:items-center gap-3 sm:gap-4 w-full min-w-0 sm:max-w-[352px]">
-              <Link href="/quiz" className={linkClass}>
+              <Link href="/quiz" className={`${linkClass} opacity-0 home-slide-up`} style={{ animationDelay: "0.1s" }}>
                 <FileText className="shrink-0 size-9 sm:size-10 md:size-11 lg:size-12" aria-hidden />
                 <span className="text-sm sm:text-base font-semibold min-w-0 break-words leading-tight">
                   Tomar Quiz
                 </span>
               </Link>
-              <Link href="/preguntas" className={linkClass}>
+              <Link href="/preguntas" className={`${linkClass} opacity-0 home-slide-up`} style={{ animationDelay: "0.2s" }}>
                 <BookOpen className="shrink-0 size-9 sm:size-10 md:size-11 lg:size-12" aria-hidden />
                 <span className="text-sm sm:text-base font-semibold min-w-0 break-words leading-tight">
                   Preguntas
                 </span>
               </Link>
-              <Link href="/repasar" className={linkClass}>
+              <Link href="/repasar" className={`${linkClass} opacity-0 home-slide-up`} style={{ animationDelay: "0.3s" }}>
                 <span className="shrink-0 size-9 sm:size-10 md:size-11 lg:size-12 flex items-center justify-center">
                   <FlashcardIcon />
                 </span>
@@ -84,7 +84,7 @@ export default function Home() {
                   Repasar
                 </span>
               </Link>
-              <Link href="/entrevista" className={linkClass}>
+              <Link href="/entrevista" className={`${linkClass} opacity-0 home-slide-up`} style={{ animationDelay: "0.4s" }}>
                 <Mic className="shrink-0 size-9 sm:size-10 md:size-11 lg:size-12" aria-hidden />
                 <span className="text-sm sm:text-base font-semibold min-w-0 break-words leading-tight">
                   Entrevista

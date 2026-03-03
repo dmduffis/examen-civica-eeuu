@@ -353,15 +353,17 @@ export default function InterviewPage() {
           <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] gap-8 sm:gap-[5rem] items-start w-full min-w-0">
             {/* Content left */}
             <div className="order-2 sm:order-1 w-full min-w-0">
-              <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-2 leading-tight">
-                Entrevista de Práctica
-              </h1>
-              <p className="text-gray-600 mb-8">
-                Prepárate con confianza: practica en inglés y en audio, escucha las preguntas y responde en voz alta con el micrófono, igual que en la entrevista de naturalización.
-              </p>
+              <div className="page-title-in">
+                <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-2 leading-tight">
+                  Entrevista de Práctica
+                </h1>
+                <p className="text-gray-600 mb-8">
+                  Prepárate con confianza: practica en inglés y en audio, escucha las preguntas y responde en voz alta con el micrófono, igual que en la entrevista de naturalización.
+                </p>
+              </div>
 
               {status === "idle" && (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 page-content-in opacity-0" style={{ animationDelay: "0.15s" }}>
             <div>
               <label htmlFor="userName" className="block text-sm font-medium text-gray-700 mb-1">
                 Tu nombre (opcional)
@@ -387,7 +389,7 @@ export default function InterviewPage() {
             </div>
 
             {/* Hero right - only on start screen */}
-            <div className="order-1 sm:order-2 flex justify-center sm:justify-start items-center min-w-0">
+            <div className="order-1 sm:order-2 flex justify-center sm:justify-start items-center min-w-0 home-fade-in" style={{ animationDelay: "0.1s" }}>
               <Image
                 src={interviewHero}
                 width={interviewHero.width}
@@ -400,7 +402,7 @@ export default function InterviewPage() {
         ) : (
           /* Interview in progress: no image, single column */
           <div className="max-w-2xl mx-auto w-full">
-            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-6 leading-tight text-center">
+            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-6 leading-tight text-center page-title-in">
               Entrevista de Práctica
             </h1>
 
@@ -489,7 +491,7 @@ export default function InterviewPage() {
 
             {status === "review" && reviewItems.length > 0 && (
               <div className="space-y-8 w-full">
-                <h2 className="text-xl font-bold text-[var(--title-blue)]">Resumen de la entrevista</h2>
+                <h2 className="text-xl font-bold text-[var(--title-blue)] page-title-in">Resumen de la entrevista</h2>
                 <ul className="space-y-4 w-full">
                   {reviewItems.map((item, i) => {
                     const correctAnswer = correctAnswerFromSuggestion(item.suggestionEn);

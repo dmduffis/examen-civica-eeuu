@@ -34,7 +34,7 @@ export default function LoginPage() {
     return (
       <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16 px-6">
         <div className="max-w-sm mx-auto text-center">
-          <h1 className="text-2xl font-bold text-[var(--title-blue)] mb-3">Cuenta</h1>
+          <h1 className="text-2xl font-bold text-[var(--title-blue)] mb-3 page-title-in">Cuenta</h1>
           <p className="text-gray-600 mb-6">
             La sincronización entre dispositivos no está disponible. Puedes usar la app sin cuenta; tu progreso se guardará en este dispositivo.
           </p>
@@ -52,16 +52,18 @@ export default function LoginPage() {
   return (
     <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16 px-6">
       <div className="max-w-sm mx-auto w-full">
-        <h1 className="text-2xl font-bold text-[var(--title-blue)] mb-2">
-          {mode === "login" ? "Iniciar sesión" : "Crear cuenta"}
-        </h1>
-        <p className="text-gray-600 mb-6 text-sm">
-          {mode === "login"
-            ? "Entra para ver tu progreso en todos tus dispositivos."
-            : "Regístrate para guardar tu historial de quizzes y estado."}
-        </p>
+        <div className="page-title-in">
+          <h1 className="text-2xl font-bold text-[var(--title-blue)] mb-2">
+            {mode === "login" ? "Iniciar sesión" : "Crear cuenta"}
+          </h1>
+          <p className="text-gray-600 mb-6 text-sm">
+            {mode === "login"
+              ? "Entra para ver tu progreso en todos tus dispositivos."
+              : "Regístrate para guardar tu historial de quizzes y estado."}
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 page-content-in opacity-0" style={{ animationDelay: "0.1s" }}>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
               Correo

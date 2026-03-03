@@ -48,7 +48,7 @@ export default function ProgressPage() {
     return (
       <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
         <div className="w-full px-6 sm:px-8 text-center max-w-md mx-auto">
-          <h1 className="text-2xl font-bold text-[var(--title-blue)] mb-3">Mi progreso</h1>
+          <h1 className="text-2xl font-bold text-[var(--title-blue)] mb-3 page-title-in">Mi progreso</h1>
           <p className="text-gray-600 mb-6">
             La sincronización entre dispositivos no está disponible. Tu historial se guarda solo en este dispositivo.
           </p>
@@ -77,7 +77,7 @@ export default function ProgressPage() {
     return (
       <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
         <div className="w-full px-6 sm:px-8 text-center max-w-md mx-auto">
-          <h1 className="text-2xl font-bold text-[var(--title-blue)] mb-3">Mi progreso</h1>
+          <h1 className="text-2xl font-bold text-[var(--title-blue)] mb-3 page-title-in">Mi progreso</h1>
           <p className="text-gray-600 mb-6">
             Inicia sesión para ver tu historial de quizzes.
           </p>
@@ -110,13 +110,16 @@ export default function ProgressPage() {
   return (
     <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
       <div className="w-full px-6 sm:px-8">
-        <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-2 leading-tight">
-          Mi progreso
-        </h1>
-        <p className="text-gray-600 mb-8">
+        <div className="page-title-in">
+          <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-2 leading-tight">
+            Mi progreso
+          </h1>
+          <p className="text-gray-600 mb-8">
           Historial de tus quizzes. Inicia sesión en otro dispositivo para ver el mismo historial.
-        </p>
+          </p>
+        </div>
 
+        <div className="page-content-in opacity-0" style={{ animationDelay: "0.1s" }}>
         {loading ? (
           <div className="flex min-h-[30vh] items-center justify-center">
             <BeatLoader color="rgba(214, 169, 54, 0.6)" speedMultiplier={0.5} />
@@ -169,6 +172,7 @@ export default function ProgressPage() {
           >
             Tomar otro Quiz
           </Link>
+        </div>
         </div>
       </div>
     </main>

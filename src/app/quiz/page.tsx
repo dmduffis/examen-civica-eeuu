@@ -187,7 +187,7 @@ export default function QuizPage() {
           </div>
         ) : (
           <div className="w-full px-6 sm:px-8">
-            <div className="text-left mb-8 sm:mb-10">
+            <div className="text-left mb-8 sm:mb-10 page-title-in">
               <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-3 leading-tight">
                 Practica el Quiz
               </h1>
@@ -199,7 +199,7 @@ export default function QuizPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-8 sm:gap-[5rem] items-center w-full min-w-0">
               {/* Mobile: image first. Desktop: right column */}
-              <div className="order-1 sm:order-2 flex justify-center items-center">
+              <div className="order-1 sm:order-2 flex justify-center items-center home-fade-in" style={{ animationDelay: "0.1s" }}>
                 <Image
                   src={quizHero}
                   width={quizHero.width}
@@ -217,29 +217,31 @@ export default function QuizPage() {
                       (q) => !q.isStateSpecific,
                     ).length;
                     const rowClass =
-                      "rounded-xl text-gray-800 py-4 px-5 sm:py-5 sm:px-6 bg-slate-200 border-2 border-slate-300 hover:bg-orange-100 hover:border-orange-200 text-left text-lg sm:text-xl font-semibold transition-colors min-w-0";
+                      "rounded-xl text-gray-800 py-4 px-5 sm:py-5 sm:px-6 bg-slate-200 border-2 border-slate-300 hover:bg-orange-100 hover:border-orange-200 text-left text-lg sm:text-xl font-semibold transition-colors min-w-0 page-content-in";
                     return (
                       <>
                         <div className="flex flex-col gap-3 w-full">
                           <button
                             onClick={() => handleStart(null)}
-                            className={`${rowClass} w-full`}
+                            className={`${rowClass} w-full opacity-0`}
+                            style={{ animationDelay: "0.2s" }}
                           >
                             Todas las preguntas
                           </button>
                           {QUIZ_SIZES.filter((n) => n <= scorableCount).map(
-                            (n) => (
+                            (n, i) => (
                               <button
                                 key={n}
                                 onClick={() => handleStart(n)}
-                                className={`${rowClass} w-full`}
+                                className={`${rowClass} w-full opacity-0`}
+                                style={{ animationDelay: `${0.3 + i * 0.1}s` }}
                               >
                                 {n} preguntas
                               </button>
                             ),
                           )}
                         </div>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-500 page-content-in opacity-0" style={{ animationDelay: "0.5s" }}>
                           Test al azar con 10, 20 o 50 preguntas
                         </p>
                       </>

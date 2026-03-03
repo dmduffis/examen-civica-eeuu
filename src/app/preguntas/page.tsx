@@ -122,7 +122,7 @@ export default function PreguntasPage() {
     <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
       <div className="w-full px-6 sm:px-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8 sm:mb-10">
-          <div className="text-left min-w-0">
+          <div className="text-left min-w-0 page-title-in">
             <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-3 leading-tight">
               Lista de Preguntas
             </h1>
@@ -149,7 +149,7 @@ export default function PreguntasPage() {
             </button>
           </span>
         </div>
-        <div className="flex flex-col sm:flex-row gap-8 justify-between items-end w-full mb-10">
+        <div className="flex flex-col sm:flex-row gap-8 justify-between items-end w-full mb-10 page-content-in opacity-0" style={{ animationDelay: "0.1s" }}>
           <section className="min-w-0 w-full sm:max-w-xs">
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Tu estado (para las 4 preguntas específicas de tu estado)
@@ -179,7 +179,7 @@ export default function PreguntasPage() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-8 page-content-in opacity-0" style={{ animationDelay: "0.2s" }}>
           {questions.map((q, index) => (
             <article
               key={q._id}

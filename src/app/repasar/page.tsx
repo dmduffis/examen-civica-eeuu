@@ -209,12 +209,12 @@ export default function FlashcardsPage() {
     return (
       <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
         <div className="w-full px-6 sm:px-8">
-          <div className="text-left mb-8 sm:mb-10">
+          <div className="text-left mb-8 sm:mb-10 page-title-in">
             <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-3 leading-tight">
               Repasar
             </h1>
           </div>
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-4 page-content-in opacity-0" style={{ animationDelay: "0.1s" }}>
             <span className="text-sm text-gray-500">
               {currentIndex + 1} / {studyQueue.length}
               {showWrongOnly && " (solo incorrectas)"}
@@ -245,7 +245,8 @@ export default function FlashcardsPage() {
           </div>
 
           <div
-            className="min-h-[200px] rounded-xl border-2 border-slate-200 bg-white shadow-sm flex flex-col items-center justify-center p-6 cursor-pointer select-none touch-manipulation"
+            className="min-h-[200px] rounded-xl border-2 border-slate-200 bg-white shadow-sm flex flex-col items-center justify-center p-6 cursor-pointer select-none touch-manipulation page-content-in opacity-0"
+            style={{ animationDelay: "0.2s" }}
             onClick={() => setFlipped((f) => !f)}
           >
             {!flipped ? (
@@ -392,7 +393,7 @@ export default function FlashcardsPage() {
     <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
       <div className="w-full px-6 sm:px-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8 sm:mb-10">
-          <div className="text-left min-w-0">
+          <div className="text-left min-w-0 page-title-in">
             <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-3 leading-tight">
               Repasar
             </h1>
@@ -419,7 +420,7 @@ export default function FlashcardsPage() {
           </span>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6 page-content-in opacity-0" style={{ animationDelay: "0.1s" }}>
           <div className="flex gap-2 shrink-0 order-2 sm:order-1">
             <button
               onClick={selectAll}
