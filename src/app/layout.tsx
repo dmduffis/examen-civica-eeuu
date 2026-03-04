@@ -15,9 +15,45 @@ const splineSans = Spline_Sans({
 
 const geistSans = GeistSans;
 
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://examencivica.com";
+
 export const metadata: Metadata = {
-  title: "Examen de Educación Cívica",
-  description: "examen de educación cívica para naturalización",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Examen de Educación Cívica | Práctica para la naturalización USA",
+    template: "%s | Examen Cívica",
+  },
+  description:
+    "Practica las 100 preguntas del examen de educación cívica para la entrevista de naturalización de Estados Unidos. Quiz, lista de preguntas, repaso con tarjetas y entrevista en audio.",
+  keywords: [
+    "examen cívica USA",
+    "naturalización",
+    "ciudadanía americana",
+    "100 preguntas civics",
+    "entrevista naturalización",
+    "USCIS",
+    "práctica examen cívica",
+  ],
+  authors: [{ name: "Examen Cívica" }],
+  creator: "Examen Cívica",
+  openGraph: {
+    type: "website",
+    locale: "es",
+    siteName: "Examen de Educación Cívica",
+    title: "Examen de Educación Cívica | Práctica para la naturalización USA",
+    description:
+      "Practica las 100 preguntas del examen de educación cívica para la entrevista de naturalización. Quiz, lista de preguntas, repaso y entrevista en audio.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Examen de Educación Cívica | Práctica para la naturalización USA",
+    description:
+      "Practica las 100 preguntas del examen de educación cívica para la entrevista de naturalización.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -26,7 +62,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body className={`${splineSans.variable} ${geistSans.variable} ${geistSans.className} flex flex-col min-h-screen`}>
         <AuthProvider>
           <Nav />

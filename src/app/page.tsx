@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { FileText, BookOpen, Mic } from "lucide-react";
 import boyReading from "./assets/images/quiz_start_hero.png";
+
+export const metadata: Metadata = {
+  title: "Inicio",
+  description:
+    "Practica para la entrevista de naturalización de Estados Unidos. Accede al quiz, lista de preguntas, repaso con tarjetas y entrevista en audio.",
+};
 
 const FlashcardIcon = () => (
   <svg

@@ -1,4 +1,12 @@
-export default function RootLayout({
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Quiz",
+  description:
+    "Practica el examen de educación cívica con un quiz al azar. Elige 10, 20 o 50 preguntas o todas. Prepárate para la entrevista de naturalización.",
+};
+
+export default function QuizLayout({
   children,
 }: {
   children: React.ReactNode;
