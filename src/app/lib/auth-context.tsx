@@ -17,6 +17,8 @@ type AuthContextValue = {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  /** After reset-password success: store token and user so the user is logged in. */
+  setSession: (token: string, user: User) => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -73,6 +75,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
+  const setSession = useCallback((token: string, user: User) => {
+    setStoredToken(token);
+    setUser(user);
+  }, []);
+
   const value: AuthContextValue = {
     user,
     loading,
@@ -80,6 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     login,
     register,
     logout,
+    setSession,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
