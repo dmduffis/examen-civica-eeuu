@@ -20,7 +20,9 @@ export default function ForgotPasswordPage() {
       await forgotPassword(email);
       setSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Algo salió mal.");
+      const msg = err instanceof Error ? err.message : "Algo salió mal.";
+      const isNetwork = /fetch|network|conexión|cors/i.test(msg) || msg === "Failed to fetch";
+      setError(isNetwork ? "No se pudo conectar. Comprueba tu conexión e inténtalo de nuevo." : msg);
     } finally {
       setSubmitting(false);
     }
