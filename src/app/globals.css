@@ -40,16 +40,13 @@ h1, h2, h3, h4, h5, h6 {
     @apply flex w-full items-center gap-4 rounded-xl border border-slate-200 bg-slate-100 px-4 py-3.5 transition-colors hover:border-slate-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-orange)] focus-visible:ring-offset-2 lg:px-5 lg:py-4;
   }
 
+  /* Orange glyphs only — no filled tile behind icons */
   .home-nav-icon-well {
-    @apply flex size-14 shrink-0 items-center justify-center rounded-xl transition-colors lg:size-[3.75rem];
-    background-color: var(--accent-orange-soft);
-    border: 1px solid color-mix(in srgb, var(--accent-orange) 28%, white);
+    @apply flex shrink-0 items-center justify-center transition-colors;
     color: var(--accent-orange);
   }
 
   .home-nav-row:hover .home-nav-icon-well {
-    background-color: color-mix(in srgb, var(--accent-orange) 17%, white);
-    border-color: color-mix(in srgb, var(--accent-orange) 42%, white);
     color: color-mix(in srgb, var(--accent-orange) 88%, black);
   }
 }

@@ -53,7 +53,7 @@ const navRows: {
   },
 ];
 
-const iconClass = "size-7 lg:size-8";
+const iconClass = "size-9 lg:size-10";
 
 export default function Home() {
   return (
