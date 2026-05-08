@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
-/** Classic linear waveform: many thin capsuled bars (white on black). */
+/** Classic linear waveform — bars only, no tray behind them. */
 const BAR_COUNT = 36;
 const MIN_BAR_HEIGHT = 4;
 const MAX_BAR_HEIGHT = 44;
@@ -104,7 +104,7 @@ export function VoiceBars({
 
   return (
     <div
-      className={`flex h-14 w-full max-w-[300px] items-center justify-center gap-[3px] rounded-xl bg-black px-3 py-2 ${className}`}
+      className={`flex w-full max-w-[300px] items-center justify-center gap-[3px] ${className}`}
       aria-hidden
     >
       {Array.from({ length: BAR_COUNT }, (_, i) => {
@@ -129,7 +129,7 @@ export function VoiceBars({
         return (
           <div
             key={i}
-            className="w-[3px] shrink-0 rounded-full bg-white transition-[height] duration-75 ease-out"
+            className="w-[3px] shrink-0 rounded-full bg-[var(--accent-orange)] transition-[height] duration-75 ease-out"
             style={{
               height: `${heightPx}px`,
               ...waveStyle,
