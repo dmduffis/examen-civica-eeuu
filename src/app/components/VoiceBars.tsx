@@ -6,6 +6,8 @@ import React, { useEffect, useRef, useState } from "react";
 const BAR_COUNT = 36;
 const MIN_BAR_HEIGHT = 4;
 const MAX_BAR_HEIGHT = 44;
+/** Fixed track height so bar animation never shifts content below (px). */
+const WAVE_TRACK_HEIGHT_PX = 52;
 
 function resolveActiveStream(
   stream: MediaStream | null | undefined,
@@ -104,7 +106,8 @@ export function VoiceBars({
 
   return (
     <div
-      className={`flex w-full max-w-[300px] items-center justify-center gap-[3px] ${className}`}
+      className={`flex w-full max-w-[300px] shrink-0 justify-center gap-[3px] overflow-hidden ${className}`}
+      style={{ height: WAVE_TRACK_HEIGHT_PX }}
       aria-hidden
     >
       {Array.from({ length: BAR_COUNT }, (_, i) => {
@@ -118,7 +121,7 @@ export function VoiceBars({
         } else if (showPlayingWave) {
           heightPx = MAX_BAR_HEIGHT;
           waveStyle = {
-            transformOrigin: "center center",
+            transformOrigin: "center bottom",
             animation: "voice-bar-wave 0.9s ease-in-out infinite",
             animationDelay: `${i * 0.035}s`,
           };
@@ -129,12 +132,17 @@ export function VoiceBars({
         return (
           <div
             key={i}
-            className="w-[3px] shrink-0 rounded-full bg-[var(--accent-orange)] transition-[height] duration-75 ease-out"
-            style={{
-              height: `${heightPx}px`,
-              ...waveStyle,
-            }}
-          />
+            className="flex h-full w-[3px] shrink-0 flex-col justify-end"
+          >
+            <div
+              className="w-full rounded-full bg-[var(--accent-orange)] transition-[height] duration-75 ease-out"
+              style={{
+                height: `${heightPx}px`,
+                maxHeight: WAVE_TRACK_HEIGHT_PX,
+                ...waveStyle,
+              }}
+            />
+          </div>
         );
       })}
     </div>

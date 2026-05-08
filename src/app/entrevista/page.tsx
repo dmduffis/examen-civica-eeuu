@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Mic, Check } from "lucide-react";
 import { BeatLoader } from "react-spinners";
@@ -132,6 +132,9 @@ function afterNextPaint(): Promise<void> {
 }
 
 /** Start generates 6 audios (15–45s); use at least 90s. */
+/** Longest single answer recording (matches typical oral-test pace). */
+const MAX_RECORDING_MS = 20_000;
+
 const VOICE_START_TIMEOUT_MS = 90_000;
 /** Respond does STT + TTS (5–15s); use at least 60s. */
 const VOICE_RESPOND_TIMEOUT_MS = 60_000;
@@ -183,7 +186,18 @@ export default function InterviewPage() {
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const recordingMimeRef = useRef<string>("audio/webm");
+  const maxRecordingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stopRecordingAndSendRef = useRef<() => Promise<void>>(async () => {});
   const { playBase64, stop } = useAudioPlayer();
+
+  useEffect(() => {
+    return () => {
+      if (maxRecordingTimerRef.current) {
+        clearTimeout(maxRecordingTimerRef.current);
+        maxRecordingTimerRef.current = null;
+      }
+    };
+  }, []);
 
   const startInterview = useCallback(async () => {
     setError(null);
@@ -244,6 +258,10 @@ export default function InterviewPage() {
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
+        if (maxRecordingTimerRef.current) {
+          clearTimeout(maxRecordingTimerRef.current);
+          maxRecordingTimerRef.current = null;
+        }
         streamRef.current = stream;
         setRecordingStream(stream);
         chunksRef.current = [];
@@ -261,6 +279,12 @@ export default function InterviewPage() {
         recorder.start();
         setRecordingRecorder(recorder);
         setStatus("recording");
+        maxRecordingTimerRef.current = setTimeout(() => {
+          maxRecordingTimerRef.current = null;
+          if (recorderRef.current?.state === "recording") {
+            void stopRecordingAndSendRef.current();
+          }
+        }, MAX_RECORDING_MS);
       })
       .catch((e) => {
         const msg =
@@ -275,6 +299,10 @@ export default function InterviewPage() {
   }, []);
 
   const stopRecordingAndSend = useCallback(async () => {
+    if (maxRecordingTimerRef.current) {
+      clearTimeout(maxRecordingTimerRef.current);
+      maxRecordingTimerRef.current = null;
+    }
     const recorder = recorderRef.current;
     const stream = streamRef.current;
     if (!recorder || recorder.state !== "recording") return;
@@ -342,6 +370,8 @@ export default function InterviewPage() {
       setStatus("error");
     }
   }, [sessionId, questionIndex, questions?.length, playBase64]);
+
+  stopRecordingAndSendRef.current = stopRecordingAndSend;
 
   const isStartScreen = status === "idle";
 
