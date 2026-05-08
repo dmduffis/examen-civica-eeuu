@@ -34,7 +34,7 @@ export default function LoginPage() {
     return (
       <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16 px-6">
         <div className="max-w-sm mx-auto text-center">
-          <h1 className="text-2xl font-bold text-[var(--title-blue)] mb-3 page-title-in">Cuenta</h1>
+          <h1 className="page-heading mb-3 page-title-in">Cuenta</h1>
           <p className="text-gray-600 mb-6">
             La sincronización entre dispositivos no está disponible. Puedes usar la app sin cuenta; tu progreso se guardará en este dispositivo.
           </p>
@@ -53,7 +53,7 @@ export default function LoginPage() {
     <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16 px-6">
       <div className="max-w-sm mx-auto w-full">
         <div className="page-title-in">
-          <h1 className="text-2xl font-bold text-[var(--title-blue)] mb-2">
+          <h1 className="page-heading mb-2">
             {mode === "login" ? "Iniciar sesión" : "Crear cuenta"}
           </h1>
           <p className="text-gray-600 mb-6 text-sm">

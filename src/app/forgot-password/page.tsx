@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
     return (
       <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16 px-6">
         <div className="max-w-sm mx-auto text-center">
-          <h1 className="text-2xl font-bold text-[var(--title-blue)] mb-3 page-title-in">
+          <h1 className="page-heading mb-3 page-title-in">
             Recuperar contraseña
           </h1>
           <p className="text-gray-600 mb-6">
@@ -54,7 +54,7 @@ export default function ForgotPasswordPage() {
       <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16 px-6">
         <div className="max-w-sm mx-auto w-full">
           <div className="page-title-in">
-            <h1 className="text-2xl font-bold text-[var(--title-blue)] mb-2">
+            <h1 className="page-heading mb-2">
               Revisa tu correo
             </h1>
             <p className="text-gray-600 mb-6">
@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
     <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16 px-6">
       <div className="max-w-sm mx-auto w-full">
         <div className="page-title-in">
-          <h1 className="text-2xl font-bold text-[var(--title-blue)] mb-2">
+          <h1 className="page-heading mb-2">
             ¿Olvidaste tu contraseña?
           </h1>
           <p className="text-gray-600 mb-6 text-sm">

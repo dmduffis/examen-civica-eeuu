@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Link from "next/link";
 import { CheckCheck, X, Check } from "lucide-react";
 import { BeatLoader } from "react-spinners";
 import {
@@ -19,6 +18,7 @@ import type { QuestionItem } from "../lib/question-types";
 import { questionDisplayText, answerDisplayText } from "../lib/question-types";
 import type { DisplayLang } from "../lib/question-types";
 import { backendUrl } from "../lib/backend-url";
+import QuestionsLoadError from "../components/QuestionsLoadError";
 
 export default function FlashcardsPage() {
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
@@ -156,19 +156,7 @@ export default function FlashcardsPage() {
   }
 
   if (error) {
-    return (
-      <main className="flex flex-col w-full justify-center mt-2 sm:mt-8">
-        <p className="text-center text-red-600">{error}</p>
-        <div className="flex justify-center mt-4">
-          <Link
-            href="/"
-            className="text-gray-600 hover:text-gray-900 hover:underline"
-          >
-            Volver al inicio
-          </Link>
-        </div>
-      </main>
-    );
+    return <QuestionsLoadError message={error} variant="repasar" />;
   }
 
   if (view === "study") {
@@ -210,7 +198,7 @@ export default function FlashcardsPage() {
       <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
         <div className="w-full px-6 sm:px-8">
           <div className="text-left mb-8 sm:mb-10 page-title-in">
-            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-3 leading-tight">
+            <h1 className="page-heading mb-3">
               Repasar
             </h1>
           </div>
@@ -394,7 +382,7 @@ export default function FlashcardsPage() {
       <div className="w-full px-6 sm:px-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8 sm:mb-10">
           <div className="text-left min-w-0 page-title-in">
-            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-3 leading-tight">
+            <h1 className="page-heading mb-3">
               Repasar
             </h1>
             <p className="text-gray-600">

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Mic, Check } from "lucide-react";
 import { BeatLoader } from "react-spinners";
 import { VoiceBars } from "../components/VoiceBars";
+import EntrevistaLoadErrorIllustration from "../components/EntrevistaLoadErrorIllustration";
 import { backendUrl } from "../lib/backend-url";
 import interviewHero from "../assets/images/officer_quiz.png";
 
@@ -17,8 +18,6 @@ type InterviewQuestion = {
 
 const CONNECTION_ERROR_ES =
   "No se pudo conectar. Comprueba tu conexión a internet e inténtalo de nuevo.";
-const CONNECTION_ERROR_EN =
-  "Couldn't connect. Check your internet connection and try again.";
 
 /** Show user-friendly message; hide technical details from backend/env. */
 function friendlyError(msg: string | undefined): string {
@@ -35,7 +34,7 @@ function friendlyError(msg: string | undefined): string {
  */
 function correctAnswerFromSuggestion(text: string): string {
   const t = text.trim();
-  const strongerMatch = t.match(/\b(?:A\s+)?stronger\s+answer\s*:?\s*(.*)/is);
+  const strongerMatch = t.match(/\b(?:A\s+)?stronger\s+answer\s*:?\s*([\s\S]*)/i);
   let out: string;
   if (strongerMatch) {
     let rest = strongerMatch[1].trim();
@@ -354,7 +353,7 @@ export default function InterviewPage() {
             {/* Content left */}
             <div className="order-2 sm:order-1 w-full min-w-0">
               <div className="page-title-in">
-                <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-2 leading-tight">
+                <h1 className="page-heading mb-2">
                   Entrevista de Práctica
                 </h1>
                 <p className="text-gray-600 mb-8">
@@ -402,7 +401,7 @@ export default function InterviewPage() {
         ) : (
           /* Interview in progress: no image, single column */
           <div className="max-w-2xl mx-auto w-full">
-            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-6 leading-tight text-center page-title-in">
+            <h1 className="page-heading mb-6 text-center page-title-in">
               Entrevista de Práctica
             </h1>
 
@@ -524,16 +523,21 @@ export default function InterviewPage() {
             )}
 
             {status === "error" && (
-              <div className="rounded-xl border-2 border-red-200 bg-red-50 p-4 text-red-800">
-                <p className="font-medium">{error}</p>
-                <p className="text-sm text-red-700 mt-1">Try again in a moment.</p>
-                <button
-                  type="button"
-                  onClick={() => { setStatus("idle"); setError(null); }}
-                  className="mt-3 rounded-lg bg-red-100 text-red-800 px-4 py-2 font-medium hover:bg-red-200"
-                >
-                  Reintentar / Retry
-                </button>
+              <div className="flex w-full flex-col items-center gap-6 text-center">
+                <EntrevistaLoadErrorIllustration />
+                <div className="w-full max-w-md rounded-xl border-2 border-red-200 bg-red-50 p-5 text-red-900 sm:p-6">
+                  <p className="font-semibold">{error}</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStatus("idle");
+                      setError(null);
+                    }}
+                    className="mt-4 w-full rounded-lg bg-red-100 px-4 py-2.5 font-semibold text-red-900 hover:bg-red-200 sm:w-auto"
+                  >
+                    Reintentar
+                  </button>
+                </div>
               </div>
             )}
           </div>

@@ -19,6 +19,7 @@ import type { QuestionItem } from "../lib/question-types";
 import { questionDisplayText, answerDisplayText } from "../lib/question-types";
 import type { DisplayLang } from "../lib/question-types";
 import { backendUrl } from "../lib/backend-url";
+import QuestionsLoadError from "../components/QuestionsLoadError";
 
 export default function PreguntasPage() {
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
@@ -98,16 +99,7 @@ export default function PreguntasPage() {
   }
 
   if (error) {
-    return (
-      <main className="flex flex-col w-full justify-center mt-2 sm:mt-8">
-        <p className="text-center text-red-600">{error}</p>
-        <div className="flex justify-center mt-4">
-          <Link href="/" className="text-blue-600 hover:underline">
-            Volver al inicio
-          </Link>
-        </div>
-      </main>
-    );
+    return <QuestionsLoadError message={error} />;
   }
 
   const handleStateChange = (stateCode: string | null) => {
@@ -123,7 +115,7 @@ export default function PreguntasPage() {
       <div className="w-full px-6 sm:px-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8 sm:mb-10">
           <div className="text-left min-w-0 page-title-in">
-            <h1 className="text-2xl sm:text-[2.5rem] font-bold text-[var(--title-blue)] mb-3 leading-tight">
+            <h1 className="page-heading mb-3">
               Lista de Preguntas
             </h1>
             <p className="text-gray-600">

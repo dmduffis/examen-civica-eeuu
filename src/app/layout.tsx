@@ -2,18 +2,21 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 
-import { Spline_Sans } from "next/font/google";
-import { GeistSans } from "geist/font/sans";
+import { Rubik, Space_Grotesk } from "next/font/google";
 import Nav from "./components/Nav";
 import { AuthProvider } from "./lib/auth-context";
 
-const splineSans = Spline_Sans({
+const rubik = Rubik({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-heading",
+  variable: "--font-sans",
 });
 
-const geistSans = GeistSans;
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-display",
+});
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://examencivica.com";
 
@@ -63,7 +66,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${splineSans.variable} ${geistSans.variable} ${geistSans.className} flex flex-col min-h-screen`}>
+      <body
+        className={`${rubik.variable} ${spaceGrotesk.variable} ${rubik.className} flex flex-col min-h-screen`}
+      >
         <AuthProvider>
           <Nav />
           <div className="flex flex-1 justify-center w-full">

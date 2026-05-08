@@ -7,6 +7,9 @@
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
   --title-blue: #1a2f6b;
+  /* Warm orange accent — aligns with study hero illustration */
+  --accent-orange: #ea580c;
+  --accent-orange-soft: color-mix(in srgb, var(--accent-orange) 12%, white);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,12 +21,37 @@
 }
 
 body {
-  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans), "Rubik", ui-sans-serif, system-ui, sans-serif;
   background-color: #ffffff;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-display), "Space Grotesk", var(--font-sans), sans-serif;
+}
+
+@layer components {
+  /* Primary page titles — one scale site-wide (between previous 2xl/2.5rem and the larger 3rem bump) */
+  .page-heading {
+    @apply text-[1.75rem] sm:text-[2.7rem] lg:text-[2.85rem] font-bold leading-[1.12] tracking-tight text-[var(--title-blue)];
+  }
+
+  /* Home nav list rows — matches --title-blue headings + --accent-orange (same family as nav amber CTAs) */
+  .home-nav-row {
+    @apply flex w-full items-center gap-4 rounded-xl border border-slate-200 bg-slate-100 px-4 py-3.5 transition-colors hover:border-slate-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-orange)] focus-visible:ring-offset-2 lg:px-5 lg:py-4;
+  }
+
+  .home-nav-icon-well {
+    @apply flex size-14 shrink-0 items-center justify-center rounded-xl transition-colors lg:size-[3.75rem];
+    background-color: var(--accent-orange-soft);
+    border: 1px solid color-mix(in srgb, var(--accent-orange) 28%, white);
+    color: var(--accent-orange);
+  }
+
+  .home-nav-row:hover .home-nav-icon-well {
+    background-color: color-mix(in srgb, var(--accent-orange) 17%, white);
+    border-color: color-mix(in srgb, var(--accent-orange) 42%, white);
+    color: color-mix(in srgb, var(--accent-orange) 88%, black);
+  }
 }
 
 @layer utilities {

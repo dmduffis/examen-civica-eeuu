@@ -94,7 +94,7 @@ export default function Results({
         </div>
       </div>
 
-      <h1 className="text-2xl font-semibold text-[var(--title-blue)] text-center mt-6 page-title-in opacity-0" style={{ animationDelay: "0.25s" }}>
+      <h1 className="page-heading text-center mt-6 page-title-in opacity-0" style={{ animationDelay: "0.25s" }}>
         {message}
       </h1>
 
