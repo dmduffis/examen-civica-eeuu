@@ -1,21 +1,28 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { LiveAudioVisualizer } from "react-audio-visualize";
 
-const BAR_COUNT = 5;
-const MIN_BAR_HEIGHT = 8;
-const MAX_BAR_HEIGHT = 48;
-const AMBER_BAR_COLOR = "rgba(214, 169, 54, 0.9)";
+/** Classic linear waveform: many thin capsuled bars (white on black). */
+const BAR_COUNT = 36;
+const MIN_BAR_HEIGHT = 4;
+const MAX_BAR_HEIGHT = 44;
+
+function resolveActiveStream(
+  stream: MediaStream | null | undefined,
+  mediaRecorder: MediaRecorder | null | undefined,
+): MediaStream | null {
+  if (stream?.active) return stream;
+  if (mediaRecorder?.stream?.active) return mediaRecorder.stream;
+  return null;
+}
 
 type VoiceBarsProps = {
-  /** When set, use library wave visualizer for this recorder (e.g. user speaking). */
+  /** Live mic capture — uses recorder stream for frequency levels. */
   mediaRecorder?: MediaRecorder | null;
-  /** When set (and no mediaRecorder), bars react to this stream's volume. Fallback if mediaRecorder not used. */
+  /** Optional separate active stream (e.g. playback). */
   stream?: MediaStream | null;
-  /** When true and no stream/recorder, show a gentle "playing" wave animation. */
+  /** Idle “playing” shimmer when no stream/recorder is hooked up. */
   isPlaying?: boolean;
-  /** CSS class for the container. */
   className?: string;
 };
 
@@ -25,14 +32,18 @@ export function VoiceBars({
   isPlaying = false,
   className = "",
 }: VoiceBarsProps) {
-  const [levels, setLevels] = useState<number[]>(() => Array(BAR_COUNT).fill(0));
+  const [levels, setLevels] = useState<number[]>(() =>
+    Array(BAR_COUNT).fill(0),
+  );
   const analyserRef = useRef<AnalyserNode | null>(null);
   const contextRef = useRef<AudioContext | null>(null);
   const rafRef = useRef<number>(0);
   const dataArrayRef = useRef<Uint8Array | null>(null);
 
+  const activeStream = resolveActiveStream(stream, mediaRecorder);
+
   useEffect(() => {
-    if (!stream?.active) {
+    if (!activeStream) {
       setLevels(Array(BAR_COUNT).fill(0));
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       if (contextRef.current?.state !== "closed") contextRef.current?.close();
@@ -43,10 +54,10 @@ export function VoiceBars({
     }
 
     const ctx = new AudioContext();
-    const source = ctx.createMediaStreamSource(stream);
+    const source = ctx.createMediaStreamSource(activeStream);
     const analyser = ctx.createAnalyser();
-    analyser.fftSize = 256;
-    analyser.smoothingTimeConstant = 0.6;
+    analyser.fftSize = 512;
+    analyser.smoothingTimeConstant = 0.55;
     source.connect(analyser);
 
     const bufferLength = analyser.frequencyBinCount;
@@ -55,18 +66,19 @@ export function VoiceBars({
     analyserRef.current = analyser;
     contextRef.current = ctx;
 
-    const bucketSize = Math.floor(bufferLength / BAR_COUNT);
+    const bucketSize = Math.max(1, Math.floor(bufferLength / BAR_COUNT));
 
     const tick = () => {
       if (!analyserRef.current || !dataArrayRef.current) return;
       analyserRef.current.getByteFrequencyData(dataArrayRef.current);
       const next: number[] = [];
       for (let i = 0; i < BAR_COUNT; i++) {
-        const start = i * bucketSize;
+        const start = Math.min(i * bucketSize, bufferLength - bucketSize);
         let sum = 0;
-        for (let j = 0; j < bucketSize; j++) sum += dataArrayRef.current[start + j];
+        for (let j = 0; j < bucketSize; j++)
+          sum += dataArrayRef.current[start + j] ?? 0;
         const avg = sum / bucketSize;
-        next.push(Math.min(1, avg / 128));
+        next.push(Math.min(1, avg / 140));
       }
       setLevels(next);
       rafRef.current = requestAnimationFrame(tick);
@@ -82,60 +94,45 @@ export function VoiceBars({
       contextRef.current = null;
       dataArrayRef.current = null;
     };
-  }, [stream]);
+  }, [activeStream]);
 
-  const useLibraryVisualizer = !!mediaRecorder;
-  const showLiveLevels = !useLibraryVisualizer && !!stream?.active;
-  const showPlayingWave = isPlaying && !stream?.active && !useLibraryVisualizer;
-  const containerRef = useRef<HTMLDivElement>(null);
+  const showLiveLevels = !!activeStream;
+  const showPlayingWave = isPlaying && !activeStream;
 
-  useEffect(() => {
-    if (!showPlayingWave) return;
-    const id = requestAnimationFrame(() => {
-      containerRef.current && void containerRef.current.offsetHeight;
-    });
-    return () => cancelAnimationFrame(id);
-  }, [showPlayingWave]);
-
-  if (useLibraryVisualizer) {
-    return (
-      <div className={`flex items-center justify-center h-12 w-full max-w-[280px] ${className}`} aria-hidden>
-        <LiveAudioVisualizer
-          mediaRecorder={mediaRecorder!}
-          width={280}
-          height={48}
-          barWidth={3}
-          gap={2}
-          barColor={AMBER_BAR_COLOR}
-          backgroundColor="transparent"
-        />
-      </div>
-    );
-  }
+  const idlePulse =
+    MIN_BAR_HEIGHT + (MAX_BAR_HEIGHT - MIN_BAR_HEIGHT) * 0.18;
 
   return (
     <div
-      ref={containerRef}
-      className={`flex items-end justify-center gap-1.5 h-12 ${className}`}
+      className={`flex h-14 w-full max-w-[300px] items-center justify-center gap-[3px] rounded-xl bg-black px-3 py-2 ${className}`}
       aria-hidden
     >
       {Array.from({ length: BAR_COUNT }, (_, i) => {
-        const height = showLiveLevels
-          ? MIN_BAR_HEIGHT + levels[i] * (MAX_BAR_HEIGHT - MIN_BAR_HEIGHT)
-          : MAX_BAR_HEIGHT * 0.35;
+        let heightPx: number;
+        let waveStyle: React.CSSProperties | undefined;
+
+        if (showLiveLevels) {
+          heightPx =
+            MIN_BAR_HEIGHT +
+            (levels[i] ?? 0) * (MAX_BAR_HEIGHT - MIN_BAR_HEIGHT);
+        } else if (showPlayingWave) {
+          heightPx = MAX_BAR_HEIGHT;
+          waveStyle = {
+            transformOrigin: "center center",
+            animation: "voice-bar-wave 0.9s ease-in-out infinite",
+            animationDelay: `${i * 0.035}s`,
+          };
+        } else {
+          heightPx = idlePulse;
+        }
+
         return (
           <div
             key={i}
-            className="w-2 rounded-t bg-amber-500 transition-all duration-75 ease-out origin-bottom"
+            className="w-[3px] shrink-0 rounded-full bg-white transition-[height] duration-75 ease-out"
             style={{
-              height: showLiveLevels ? height : MAX_BAR_HEIGHT * 0.4,
-              minHeight: MIN_BAR_HEIGHT,
-              ...(showPlayingWave
-                ? {
-                    animation: "voice-bar-wave 1.2s ease-in-out infinite",
-                    animationDelay: `${i * 0.1}s`,
-                  }
-                : {}),
+              height: `${heightPx}px`,
+              ...waveStyle,
             }}
           />
         );

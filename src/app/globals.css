@@ -136,9 +136,13 @@ h1, h2, h3, h4, h5, h6 {
   animation: voice-breathe 1.8s ease-in-out infinite;
 }
 
+/* VoiceBars: pill bars scale from vertical center like a linear waveform */
 @keyframes voice-bar-wave {
-  0%, 100% { transform: scaleY(0.4); }
-  50% { transform: scaleY(1); }
+  0%, 100% { transform: scaleY(0.18); }
+  22% { transform: scaleY(0.72); }
+  45% { transform: scaleY(0.38); }
+  68% { transform: scaleY(0.95); }
+  82% { transform: scaleY(0.5); }
 }
 
 
