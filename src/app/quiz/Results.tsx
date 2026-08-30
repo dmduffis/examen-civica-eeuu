@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import Image from "next/image";
+import confetti from "canvas-confetti";
 
 type Props = {
   correctAnswers: number;
@@ -35,39 +36,33 @@ export default function Results({
   useEffect(() => {
     if (correctPercentage !== 100) return;
     let cancelled = false;
-    let confettiFn: null | (typeof import("canvas-confetti"))["default"] = null;
-
-    import("canvas-confetti").then(({ default: confetti }) => {
+    const duration = 2000;
+    const end = Date.now() + duration;
+    const frame = () => {
       if (cancelled) return;
-      confettiFn = confetti;
-      const duration = 2000;
-      const end = Date.now() + duration;
-      const frame = () => {
-        if (cancelled) return;
-        confetti({
-          particleCount: 3,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0 },
-        });
-        confetti({
-          particleCount: 3,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1 },
-        });
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        } else {
-          confetti.reset();
-        }
-      };
-      frame();
-    });
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+      });
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+      });
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      } else {
+        confetti.reset();
+      }
+    };
+    frame();
 
     return () => {
       cancelled = true;
-      confettiFn?.reset();
+      confetti.reset();
     };
   }, [correctPercentage]);
 
