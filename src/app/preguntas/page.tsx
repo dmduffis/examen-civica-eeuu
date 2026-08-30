@@ -167,7 +167,7 @@ export default function PreguntasPage() {
         </div>
 
         <div
-          className="mb-8 sm:mb-10 page-content-in opacity-0"
+          className="mb-8 sm:mb-10 page-content-in opacity-0 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:gap-4"
           style={{ animationDelay: "0.1s" }}
         >
           {/* Mobile: collapsible header */}
@@ -200,7 +200,7 @@ export default function PreguntasPage() {
 
           <div
             id="preguntas-filters"
-            className={`${filtersOpen ? "mt-4 flex" : "hidden"} sm:mt-0 sm:flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:gap-4`}
+            className={`${filtersOpen ? "flex" : "hidden"} sm:contents flex-col gap-4 w-full`}
           >
             <section className="min-w-0 w-full sm:w-auto sm:max-w-xs sm:min-w-[14rem]">
               <label
@@ -259,17 +259,17 @@ export default function PreguntasPage() {
                 </select>
               </section>
             </div>
+          </div>
 
-            <div className="w-full sm:w-auto sm:ml-auto shrink-0">
-              <button
-                type="button"
-                className="btn-brand w-full gap-2 px-4 py-2.5 font-medium sm:w-auto"
-                aria-label="Descargar PDF"
-              >
-                Descargar PDF
-                <FileDown size={18} aria-hidden />
-              </button>
-            </div>
+          <div className="w-full sm:w-auto sm:ml-auto shrink-0">
+            <button
+              type="button"
+              className="btn-brand w-full gap-2 px-4 py-2.5 font-medium sm:w-auto"
+              aria-label="Descargar PDF"
+            >
+              Descargar PDF
+              <FileDown size={18} aria-hidden />
+            </button>
           </div>
         </div>
 
