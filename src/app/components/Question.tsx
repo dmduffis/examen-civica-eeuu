@@ -9,7 +9,12 @@ type Props = {
   displayLang: "es" | "en";
   handleSelect: (answer: QuestionAnswer) => void;
   questionSelected: string | null;
-  answerClasses: { correct: string; incorrect: string; default: string; defaultAfter: string };
+  answerClasses: {
+    correct: string;
+    incorrect: string;
+    default: string;
+    defaultAfter: string;
+  };
   questionSubmitted: boolean;
   currentCorrect: boolean | null;
   feedbackClasses: { submitted: string; default: string };
@@ -42,9 +47,11 @@ function Question(props: Props) {
             ? answer.isCorrect
               ? answerClasses.correct
               : answerClasses.incorrect
-            : questionSubmitted
-              ? answerClasses.defaultAfter
-              : answerClasses.default
+            : questionSubmitted && answer.isCorrect
+              ? answerClasses.correct
+              : questionSubmitted
+                ? answerClasses.defaultAfter
+                : answerClasses.default
         }
         disabled={questionSubmitted}
       >
@@ -56,8 +63,22 @@ function Question(props: Props) {
         </span>
       </button>
       {isSelected ? (
-        <p className={questionSubmitted ? feedbackClasses.submitted : feedbackClasses.default}>
-          {questionSubmitted ? (currentCorrect ? "Correcto! 👏" : "Incorrecto 😥") : ""}
+        <p
+          className={
+            questionSubmitted
+              ? feedbackClasses.submitted
+              : feedbackClasses.default
+          }
+        >
+          {questionSubmitted
+            ? currentCorrect
+              ? displayLang === "en"
+                ? "Correct! 👏"
+                : "Correcto! 👏"
+              : displayLang === "en"
+                ? "Incorrect 😥"
+                : "Incorrecto 😥"
+            : ""}
         </p>
       ) : null}
     </div>

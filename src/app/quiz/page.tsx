@@ -47,6 +47,7 @@ export default function QuizPage() {
   const [questionSubmitted, setQuestionSubmitted] = useState(false);
   const [currentCorrect, setCurrentCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState<number>(0);
+  const [lastQuizCount, setLastQuizCount] = useState<number | null>(null);
   const { user, isAuthEnabled } = useAuth();
   const savedResultRef = useRef(false);
 
@@ -82,13 +83,13 @@ export default function QuizPage() {
 
   const answerClasses = {
     correct:
-      "btn-tile-gray flex flex-row justify-between w-full p-4 items-center mt-4 !border-green-500",
+      "btn-tile-gray flex flex-row justify-between w-full p-4 items-center mt-4 !border-green-500 disabled:!opacity-100",
     incorrect:
-      "btn-tile-gray flex flex-row justify-between w-full p-4 items-center mt-4 !border-red-500",
+      "btn-tile-gray flex flex-row justify-between w-full p-4 items-center mt-4 !border-red-500 disabled:!opacity-100",
     default:
       "btn-tile-gray flex flex-row justify-between w-full p-4 items-center mt-4",
     defaultAfter:
-      "btn-tile-gray flex flex-row justify-between w-full p-4 items-center mt-4 opacity-70",
+      "btn-tile-gray flex flex-row justify-between w-full p-4 items-center mt-4",
   };
 
   const feedbackClasses = {
@@ -107,6 +108,7 @@ export default function QuizPage() {
             0,
             Math.min(count, scorableQuestions.length),
           );
+    setLastQuizCount(count);
     setData(quizSet);
     setCurrentQuestionText(questionDisplayText(quizSet[0], displayLang));
     setSortedAnswersArray(shuffle(quizSet[0].answers));
@@ -115,7 +117,9 @@ export default function QuizPage() {
     setQuestionSelected(null);
     setCurrentCorrect(null);
     setScore(0);
+    setQuizSubmitted(false);
     setStarted(true);
+    savedResultRef.current = false;
   };
 
   const handleSelect = (item: QuestionItem["answers"][number], key: string) => {
@@ -143,7 +147,8 @@ export default function QuizPage() {
     }
   };
 
-  const restartQuiz = () => {
+  /** Back to size picker */
+  const chooseAnotherQuiz = () => {
     setData([]);
     setQuestionIndex(0);
     setScore(0);
@@ -153,6 +158,11 @@ export default function QuizPage() {
     setCurrentCorrect(null);
     setStarted(false);
     savedResultRef.current = false;
+  };
+
+  /** Same length, new shuffle */
+  const repeatQuiz = () => {
+    handleStart(lastQuizCount);
   };
 
   useEffect(() => {
@@ -183,7 +193,8 @@ export default function QuizPage() {
         correctAnswers={score}
         incorrectAnswers={data.length - score}
         totalQuestions={data.length}
-        restartQuiz={restartQuiz}
+        onRepeatQuiz={repeatQuiz}
+        onChooseAnother={chooseAnotherQuiz}
       />
     );
   }
@@ -262,12 +273,6 @@ export default function QuizPage() {
                           ),
                         )}
                       </div>
-                      <p
-                        className="text-sm text-brand-muted page-content-in opacity-0"
-                        style={{ animationDelay: "0.5s" }}
-                      >
-                        Test al azar con 10, 20 o 50 preguntas
-                      </p>
                     </>
                   );
                 })()}
@@ -279,63 +284,80 @@ export default function QuizPage() {
     </main>
   ) : (
     <main className="flex flex-col w-full justify-center page-top pb-16">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="page-heading">Quiz</h1>
-        <button
-          type="button"
-          onClick={() => restartQuiz()}
-          className="text-brand-muted hover:text-ink p-1 rounded-full hover:bg-coral-soft transition-colors"
-          aria-label="Salir"
-        >
-          <XCircle size={24} className="shrink-0" aria-hidden />
-        </button>
-      </div>
-      <div>
-        <ProgressBar progressPercentage={progressPercentage} />
-
-        <div className="mt-6 flex flex-wrap items-center gap-3">
-          <p className="text-lg font-bold flex-1 min-w-0">
-            {currentQuestionText}
-          </p>
-          <LangSelect value={displayLang} onChange={setDisplayLang} />
+      <div className="w-full px-6 sm:px-8">
+        <div className="flex justify-between items-center gap-3 mb-6">
+          <h1 className="page-heading min-w-0">Quiz</h1>
+          <div className="flex shrink-0 items-center gap-2">
+            <LangSelect value={displayLang} onChange={setDisplayLang} />
+            <button
+              type="button"
+              onClick={() => chooseAnotherQuiz()}
+              className="text-brand-muted hover:text-ink p-1 rounded-full hover:bg-coral-soft transition-colors"
+              aria-label="Salir"
+            >
+              <XCircle size={32} className="shrink-0" aria-hidden />
+            </button>
+          </div>
         </div>
+        <div>
+          <ProgressBar progressPercentage={progressPercentage} />
 
-        {sortedAnswersArray.map((answer, idx) => {
-          const answerKey = answer._id ?? `idx-${idx}`;
-          return (
-            <Question
-              key={answerKey}
-              answer={answer}
-              answerKey={answerKey}
-              displayLang={displayLang}
-              handleSelect={(a) => handleSelect(a, answerKey)}
-              questionSelected={questionSelected}
-              answerClasses={answerClasses}
-              questionSubmitted={questionSubmitted}
-              currentCorrect={currentCorrect}
-              feedbackClasses={feedbackClasses}
-              loading={loading}
-            />
-          );
-        })}
+          <p className="mt-6 text-lg font-bold">{currentQuestionText}</p>
 
-        <div className="mt-6 flex flex-row items-center w-full text-sm justify-between">
-          <p>
-            Pregunta <span className="font-bold">{questionIndex + 1}</span> de{" "}
-            {data.length}
-          </p>
+          {sortedAnswersArray.map((answer, idx) => {
+            const answerKey = answer._id ?? `idx-${idx}`;
+            return (
+              <Question
+                key={answerKey}
+                answer={answer}
+                answerKey={answerKey}
+                displayLang={displayLang}
+                handleSelect={(a) => handleSelect(a, answerKey)}
+                questionSelected={questionSelected}
+                answerClasses={answerClasses}
+                questionSubmitted={questionSubmitted}
+                currentCorrect={currentCorrect}
+                feedbackClasses={feedbackClasses}
+                loading={loading}
+              />
+            );
+          })}
 
-          <button
-            onClick={() => handleNext()}
-            className={
-              questionSubmitted
-                ? "btn-brand py-2 px-4"
-                : "btn-tile py-2 px-4 opacity-50 cursor-not-allowed"
-            }
-            disabled={!questionSubmitted}
-          >
-            {questionIndex === data.length - 1 ? "Submit" : "Next"}
-          </button>
+          <div className="mt-6 flex flex-row items-center w-full text-sm justify-between">
+            <p>
+              {displayLang === "en" ? (
+                <>
+                  Question{" "}
+                  <span className="font-bold">{questionIndex + 1}</span> of{" "}
+                  {data.length}
+                </>
+              ) : (
+                <>
+                  Pregunta{" "}
+                  <span className="font-bold">{questionIndex + 1}</span> de{" "}
+                  {data.length}
+                </>
+              )}
+            </p>
+
+            <button
+              onClick={() => handleNext()}
+              className={
+                questionSubmitted
+                  ? "btn-brand py-2 px-4"
+                  : "btn-tile py-2 px-4 opacity-50 cursor-not-allowed"
+              }
+              disabled={!questionSubmitted}
+            >
+              {questionIndex === data.length - 1
+                ? displayLang === "en"
+                  ? "Submit"
+                  : "Enviar"
+                : displayLang === "en"
+                  ? "Next"
+                  : "Siguiente"}
+            </button>
+          </div>
         </div>
       </div>
     </main>

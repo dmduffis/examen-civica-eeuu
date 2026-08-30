@@ -3,7 +3,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Download } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  FileDown,
+  Settings2,
+} from "lucide-react";
 import { BeatLoader } from "react-spinners";
 import {
   getStoredStateCode,
@@ -32,6 +38,7 @@ export default function PreguntasPage() {
   const [displayLang, setDisplayLang] = useState<DisplayLang>("es");
   const [pageSize, setPageSize] = useState<PageSize>(10);
   const [page, setPage] = useState(1);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [states, setStates] = useState<StateOption[]>([]);
   const [selectedStateCode, setSelectedStateCode] = useState<string | null>(
     null,
@@ -138,6 +145,16 @@ export default function PreguntasPage() {
     setPage(1);
   };
 
+  const selectedStateName =
+    states.find((s) => s.stateCode === selectedStateCode)?.name ?? null;
+  const pageSizeLabel = pageSize === "all" ? "Todas" : String(pageSize);
+  const langLabel = displayLang === "es" ? "Español" : "English";
+  const filtersSummary = [
+    selectedStateName ?? "Sin estado",
+    langLabel,
+    `${pageSizeLabel} / pág.`,
+  ].join(" · ");
+
   return (
     <main className="flex flex-col w-full justify-center page-top pb-16">
       <div className="w-full px-6 sm:px-8">
@@ -145,19 +162,55 @@ export default function PreguntasPage() {
           <PageHeadingWithIcon
             iconSrc="/icon_quiz_questions.png"
             title="Lista de Preguntas"
-            subtitle="Hay 100 preguntas en total; en la entrevista te harán 20 de forma oral. Aquí puedes estudiarlas todas con sus respuestas correctas."
+            subtitle="Hay 100 preguntas en total; en la entrevista te harán 20 de forma oral."
           />
         </div>
+
         <div
-          className="flex flex-col sm:flex-row gap-8 justify-between items-end w-full mb-10 page-content-in opacity-0"
+          className="mb-8 sm:mb-10 page-content-in opacity-0"
           style={{ animationDelay: "0.1s" }}
         >
-          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 w-full sm:w-auto min-w-0">
+          {/* Mobile: collapsible header */}
+          <button
+            type="button"
+            className="sm:hidden flex w-full items-center justify-between gap-3 rounded-xl border-2 border-[var(--border-paper)] bg-white px-3.5 py-3 text-left"
+            onClick={() => setFiltersOpen((open) => !open)}
+            aria-expanded={filtersOpen}
+            aria-controls="preguntas-filters"
+          >
+            <span className="flex min-w-0 items-center gap-2.5">
+              <Settings2 size={18} className="shrink-0 text-ink" aria-hidden />
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold text-ink">
+                  Configuración
+                </span>
+                {!filtersOpen ? (
+                  <span className="mt-0.5 block truncate text-xs text-brand-muted">
+                    {filtersSummary}
+                  </span>
+                ) : null}
+              </span>
+            </span>
+            <ChevronDown
+              size={20}
+              className={`shrink-0 text-ink transition-transform ${filtersOpen ? "rotate-180" : ""}`}
+              aria-hidden
+            />
+          </button>
+
+          <div
+            id="preguntas-filters"
+            className={`${filtersOpen ? "mt-4 flex" : "hidden"} sm:mt-0 sm:flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:gap-4`}
+          >
             <section className="min-w-0 w-full sm:w-auto sm:max-w-xs sm:min-w-[14rem]">
-              <label className="block text-sm font-medium text-ink mb-1.5">
+              <label
+                htmlFor="preguntas-state"
+                className="mb-1.5 block text-sm font-medium text-ink"
+              >
                 Tu estado
               </label>
               <select
+                id="preguntas-state"
                 value={selectedStateCode ?? ""}
                 onChange={(e) => handleStateChange(e.target.value || null)}
                 className="select-raised"
@@ -170,45 +223,53 @@ export default function PreguntasPage() {
                 ))}
               </select>
             </section>
-            <section className="shrink-0 w-full sm:w-auto">
-              <label className="block text-sm font-medium text-ink mb-1.5">
-                Idioma
-              </label>
-              <LangSelect value={displayLang} onChange={setDisplayLang} />
-            </section>
-            <section className="shrink-0 w-full sm:w-auto">
-              <label
-                htmlFor="preguntas-page-size"
-                className="block text-sm font-medium text-ink mb-1.5"
+
+            <div className="grid grid-cols-2 gap-3 w-full sm:contents">
+              <section className="min-w-0 sm:w-auto">
+                <label className="mb-1.5 block text-sm font-medium text-ink">
+                  Idioma
+                </label>
+                <LangSelect
+                  value={displayLang}
+                  onChange={setDisplayLang}
+                  className="w-full min-w-0 sm:w-auto"
+                />
+              </section>
+              <section className="min-w-0 sm:w-auto">
+                <label
+                  htmlFor="preguntas-page-size"
+                  className="mb-1.5 block text-sm font-medium text-ink"
+                >
+                  Por página
+                </label>
+                <select
+                  id="preguntas-page-size"
+                  value={pageSize === "all" ? "all" : String(pageSize)}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    handlePageSizeChange(
+                      v === "all" ? "all" : (Number(v) as 10 | 20),
+                    );
+                  }}
+                  className="select-raised w-full min-w-0 sm:w-auto"
+                >
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="all">Todas</option>
+                </select>
+              </section>
+            </div>
+
+            <div className="w-full sm:w-auto sm:ml-auto shrink-0">
+              <button
+                type="button"
+                className="btn-brand w-full gap-2 px-4 py-2.5 font-medium sm:w-auto"
+                aria-label="Descargar PDF"
               >
-                Por página
-              </label>
-              <select
-                id="preguntas-page-size"
-                value={pageSize === "all" ? "all" : String(pageSize)}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  handlePageSizeChange(
-                    v === "all" ? "all" : (Number(v) as 10 | 20),
-                  );
-                }}
-                className="select-raised select-raised--lang"
-              >
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="all">Todas</option>
-              </select>
-            </section>
-          </div>
-          <div className="w-full sm:w-auto shrink-0">
-            <button
-              type="button"
-              className="btn-tile w-full sm:w-auto py-2.5 px-4 font-medium gap-2"
-              aria-label="Descargar PDF"
-            >
-              <Download size={18} aria-hidden />
-              Descargar PDF
-            </button>
+                Descargar PDF
+                <FileDown size={18} aria-hidden />
+              </button>
+            </div>
           </div>
         </div>
 

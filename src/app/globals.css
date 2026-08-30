@@ -93,13 +93,14 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--surface-ink);
   }
   .page-title-with-icon {
-    @apply flex w-full items-center gap-4 sm:gap-5 text-left;
+    @apply flex w-full flex-col items-start gap-3 text-left;
     padding-bottom: 1.25rem;
     border-bottom: 1px solid color-mix(in srgb, var(--surface-ink) 10%, transparent);
     margin-bottom: calc(2rem * 4 / 3);
   }
   @media (min-width: 640px) {
     .page-title-with-icon {
+      @apply flex-row-reverse items-center gap-5;
       margin-bottom: calc(2.5rem * 4 / 3);
     }
   }
@@ -475,12 +476,13 @@ h1, h2, h3, h4, h5, h6 {
     color: color-mix(in srgb, var(--surface-coral) 55%, black);
   }
 
-  /* Top navigation — ink panel + grain */
+  /* Top navigation — ink panel + grain; above page content so mobile drawer wins */
   .nav-bar {
     @apply grain w-full border-b;
     background-color: var(--surface-ink);
     border-color: var(--border-ink);
     color: var(--text-on-dark);
+    z-index: 50;
   }
   .nav-bar .nav-link {
     @apply text-sm font-medium transition-colors;
@@ -543,8 +545,13 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 0 0 var(--btn-tile-shadow);
   }
   .select-raised--lang {
-    width: auto;
-    min-width: 8.5rem;
+    min-width: 0;
+  }
+  @media (min-width: 640px) {
+    .select-raised--lang {
+      width: auto;
+      min-width: 8.5rem;
+    }
   }
 
   /* Site footer — dark canvas strip */
@@ -577,6 +584,15 @@ h1, h2, h3, h4, h5, h6 {
   .page-shell > * {
     position: relative;
     z-index: 1;
+  }
+  /* Nav must sit above page content */
+  .page-shell > .nav-bar {
+    z-index: 100;
+  }
+  /* Mobile drawer is portaled onto body.page-shell — escape the sibling z-index:1 rule */
+  .page-shell > .mobile-nav-drawer {
+    position: fixed;
+    z-index: 200;
   }
 }
 
