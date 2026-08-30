@@ -9,9 +9,16 @@ type UserDropdownProps = {
   email: string;
   onLogout: () => void;
   className?: string;
+  /** Light avatar ring on dark nav bar */
+  triggerOnDark?: boolean;
 };
 
-export function UserDropdown({ email, onLogout, className }: UserDropdownProps) {
+export function UserDropdown({
+  email,
+  onLogout,
+  className,
+  triggerOnDark = false,
+}: UserDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -34,42 +41,52 @@ export function UserDropdown({ email, onLogout, className }: UserDropdownProps) 
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="rounded-full outline-none ring-amber-500 focus:ring-2 focus:ring-offset-2"
+        className={cn(
+          "rounded-full outline-none focus:ring-2 focus:ring-offset-2",
+          triggerOnDark
+            ? "ring-royal-glow focus:ring-offset-[var(--surface-ink)]"
+            : "ring-royal-glow focus:ring-offset-white",
+        )}
         aria-label="Abrir menú de cuenta"
         aria-expanded={open}
         aria-haspopup="true"
       >
-        <Avatar className="h-9 w-9 border-2 border-slate-200">
-          <AvatarFallback className="bg-amber-100 text-amber-800 text-sm font-semibold">
+        <Avatar
+          className={cn(
+            "h-9 w-9 border-2",
+            triggerOnDark ? "border-white/25" : "border-[var(--border-paper)]",
+          )}
+        >
+          <AvatarFallback className="bg-coral-soft text-ink text-sm font-semibold">
             {email.slice(0, 1).toUpperCase()}
           </AvatarFallback>
         </Avatar>
       </button>
       {open && (
         <div
-          className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-md border border-slate-200 bg-white p-1 text-gray-800 shadow-lg"
+          className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-md border border-[var(--border-paper)] bg-white p-1 text-ink shadow-lg"
           role="menu"
         >
-          <div className="px-2 py-1.5 text-sm text-gray-500 truncate">
+          <div className="px-2 py-1.5 text-sm text-brand-muted truncate">
             {email}
           </div>
-          <div className="my-1 h-px bg-slate-200" />
+          <div className="my-1 h-px bg-[var(--border-paper)]" />
           <Link
             href="/progress"
             onClick={() => setOpen(false)}
-            className="block rounded-sm px-2 py-1.5 text-sm text-gray-800 hover:bg-orange-50 hover:text-amber-900"
+            className="block rounded-sm px-2 py-1.5 text-sm text-ink hover:bg-coral-soft hover:text-ink-deep"
             role="menuitem"
           >
             Mi progreso
           </Link>
-          <div className="my-1 h-px bg-slate-200" />
+          <div className="my-1 h-px bg-[var(--border-paper)]" />
           <button
             type="button"
             onClick={() => {
               setOpen(false);
               onLogout();
             }}
-            className="w-full rounded-sm px-2 py-1.5 text-left text-sm text-gray-700 hover:bg-red-50 hover:text-red-700"
+            className="w-full rounded-sm px-2 py-1.5 text-left text-sm text-ink hover:bg-coral-soft hover:text-coral"
             role="menuitem"
           >
             Cerrar sesión

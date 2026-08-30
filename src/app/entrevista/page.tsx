@@ -2,12 +2,19 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Mic, Check } from "lucide-react";
+import {
+  Mic,
+  Check,
+  Headphones,
+  ClipboardCheck,
+  type LucideIcon,
+} from "lucide-react";
 import { BeatLoader } from "react-spinners";
 import { VoiceBars } from "../components/VoiceBars";
 import EntrevistaLoadErrorIllustration from "../components/EntrevistaLoadErrorIllustration";
+import PageHeadingWithIcon from "../components/PageHeadingWithIcon";
+import ProDiamond from "../components/ProDiamond";
 import { backendUrl } from "../lib/backend-url";
-import interviewHero from "../assets/images/officer_quiz.png";
 
 type InterviewQuestion = {
   id: string;
@@ -19,12 +26,68 @@ type InterviewQuestion = {
 const CONNECTION_ERROR_ES =
   "No se pudo conectar. Comprueba tu conexión a internet e inténtalo de nuevo.";
 
+const interviewSteps: {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}[] = [
+  {
+    icon: Headphones,
+    title: "Escucha",
+    description:
+      "La pregunta se reproduce en inglés, como en la entrevista real.",
+  },
+  {
+    icon: Mic,
+    title: "Responde",
+    description: "Habla en voz alta con el micrófono cuando sea tu turno.",
+  },
+  {
+    icon: ClipboardCheck,
+    title: "Revisa",
+    description: "Al final verás cómo te fue y qué puedes mejorar.",
+  },
+];
+
 /** Show user-friendly message; hide technical details from backend/env. */
 function friendlyError(msg: string | undefined): string {
   if (!msg?.trim()) return CONNECTION_ERROR_ES;
   const m = msg.toLowerCase();
-  if (m.includes("backend") || m.includes("next_public") || m.includes("configurado") || m.includes("desplegado") || m.includes("timeout") || m.includes("not configured")) return CONNECTION_ERROR_ES;
-  if (m.includes("voice") && (m.includes("not available") || m.includes("no está"))) return "El servicio de voz no está disponible en este momento.";
+  if (
+    m.includes("backend") ||
+    m.includes("next_public") ||
+    m.includes("configurado") ||
+    m.includes("desplegado") ||
+    m.includes("timeout") ||
+    m.includes("not configured")
+  )
+    return CONNECTION_ERROR_ES;
+  if (
+    m.includes("elevenlabs") ||
+    m.includes("tts") ||
+    m.includes("stt") ||
+    m.includes("payment_required") ||
+    m.includes("payment_issue") ||
+    m.includes("payment") ||
+    m.includes("subscription") ||
+    m.includes("invoice") ||
+    m.includes('"detail"') ||
+    m.includes("request_id") ||
+    (m.includes("voice") &&
+      (m.includes("not available") ||
+        m.includes("no está") ||
+        m.includes("401") ||
+        m.includes("402") ||
+        m.includes("403") ||
+        m.includes("429") ||
+        m.includes("500") ||
+        m.includes("502") ||
+        m.includes("503")))
+  )
+    return "El servicio de voz no está disponible en este momento. Inténtalo de nuevo más tarde.";
+  // Hide raw JSON / provider dumps
+  if (m.includes("{") || m.includes("http") || /:\s*\d{3}\b/.test(m))
+    return "El servicio de voz no está disponible en este momento. Inténtalo de nuevo más tarde.";
   return msg;
 }
 
@@ -34,7 +97,9 @@ function friendlyError(msg: string | undefined): string {
  */
 function correctAnswerFromSuggestion(text: string): string {
   const t = text.trim();
-  const strongerMatch = t.match(/\b(?:A\s+)?stronger\s+answer\s*:?\s*([\s\S]*)/i);
+  const strongerMatch = t.match(
+    /\b(?:A\s+)?stronger\s+answer\s*:?\s*([\s\S]*)/i,
+  );
   let out: string;
   if (strongerMatch) {
     let rest = strongerMatch[1].trim();
@@ -44,9 +109,17 @@ function correctAnswerFromSuggestion(text: string): string {
     }
     out = rest.trim() || t;
   } else {
-    out = t.replace(/^.*?(?:Your\s+answer|Answer)\s*:?\s*["\u201C\u201D]?[^"]*["\u201C\u201D]?\.?\s*/i, "").trim() || t;
+    out =
+      t
+        .replace(
+          /^.*?(?:Your\s+answer|Answer)\s*:?\s*["\u201C\u201D]?[^"]*["\u201C\u201D]?\.?\s*/i,
+          "",
+        )
+        .trim() || t;
   }
-  return out.replace(/\b(?:A\s+)?stronger\s+answer\s*:?\s*/gi, "").trim() || out;
+  return (
+    out.replace(/\b(?:A\s+)?stronger\s+answer\s*:?\s*/gi, "").trim() || out
+  );
 }
 
 /** Interview is in English only: backend questionText is Spanish, so we show questionTextEn when present. */
@@ -147,7 +220,7 @@ const RETRY_DELAYS_MS = [0, 2000, 4000];
 async function fetchWithRetry(
   url: string,
   options: RequestInit = {},
-  opts: { retries?: number; timeoutMs?: number } = {}
+  opts: { retries?: number; timeoutMs?: number } = {},
 ): Promise<Response> {
   const { retries = 3, timeoutMs = VOICE_START_TIMEOUT_MS } = opts;
   let lastRes: Response | null = null;
@@ -172,21 +245,37 @@ async function fetchWithRetry(
 }
 
 export default function InterviewPage() {
-  const [status, setStatus] = useState<"idle" | "loading" | "greeting" | "question" | "ready_to_record" | "recording" | "sending" | "officer" | "review" | "error">("idle");
+  const [status, setStatus] = useState<
+    | "idle"
+    | "loading"
+    | "greeting"
+    | "question"
+    | "ready_to_record"
+    | "recording"
+    | "sending"
+    | "officer"
+    | "review"
+    | "error"
+  >("idle");
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
   const [userName, setUserName] = useState("");
-  const [recordingStream, setRecordingStream] = useState<MediaStream | null>(null);
-  const [recordingRecorder, setRecordingRecorder] = useState<MediaRecorder | null>(null);
+  const [recordingStream, setRecordingStream] = useState<MediaStream | null>(
+    null,
+  );
+  const [recordingRecorder, setRecordingRecorder] =
+    useState<MediaRecorder | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const recordingMimeRef = useRef<string>("audio/webm");
-  const maxRecordingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const maxRecordingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const stopRecordingAndSendRef = useRef<() => Promise<void>>(async () => {});
   const { playBase64, stop } = useAudioPlayer();
 
@@ -210,7 +299,7 @@ export default function InterviewPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(userName ? { userName } : {}),
         },
-        { retries: 3, timeoutMs: VOICE_START_TIMEOUT_MS }
+        { retries: 3, timeoutMs: VOICE_START_TIMEOUT_MS },
       );
       const data = (await res.json()) as StartResponse & { message?: string };
       if (res.status === 503 && data.message) {
@@ -251,7 +340,9 @@ export default function InterviewPage() {
 
   const startRecording = useCallback(() => {
     if (!navigator.mediaDevices?.getUserMedia) {
-      setError("El micrófono no está disponible. Abre la página con HTTPS (no HTTP).");
+      setError(
+        "El micrófono no está disponible. Abre la página con HTTPS (no HTTP).",
+      );
       setStatus("error");
       return;
     }
@@ -271,7 +362,10 @@ export default function InterviewPage() {
             ? "audio/webm"
             : "";
         recordingMimeRef.current = mimeType || "audio/webm";
-        const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+        const recorder = new MediaRecorder(
+          stream,
+          mimeType ? { mimeType } : undefined,
+        );
         recorderRef.current = recorder;
         recorder.ondataavailable = (e) => {
           if (e.data.size) chunksRef.current.push(e.data);
@@ -316,7 +410,9 @@ export default function InterviewPage() {
     setStatus("sending");
     try {
       await new Promise<void>((r) => setTimeout(r, 300));
-      const blob = new Blob(chunksRef.current, { type: recordingMimeRef.current });
+      const blob = new Blob(chunksRef.current, {
+        type: recordingMimeRef.current,
+      });
       const audioBase64 = await blobToBase64(blob);
       const res = await fetchWithRetry(
         backendUrl("/api/voice/interview/respond"),
@@ -329,7 +425,7 @@ export default function InterviewPage() {
             audio: audioBase64,
           }),
         },
-        { retries: 3, timeoutMs: VOICE_RESPOND_TIMEOUT_MS }
+        { retries: 3, timeoutMs: VOICE_RESPOND_TIMEOUT_MS },
       );
       const data = (await res.json()) as RespondResponse & { message?: string };
       if (res.status === 503 && data.message) {
@@ -376,76 +472,121 @@ export default function InterviewPage() {
   const isStartScreen = status === "idle";
 
   return (
-    <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
+    <main className="flex flex-col w-full justify-center page-top pb-16">
       <div className="w-full min-w-0 px-6 sm:px-8">
         {isStartScreen ? (
-          <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] gap-8 sm:gap-[5rem] items-start w-full min-w-0">
-            {/* Content left */}
-            <div className="order-2 sm:order-1 w-full min-w-0">
-              <div className="page-title-in">
-                <h1 className="page-heading mb-2">
-                  Entrevista de Práctica
-                </h1>
-                <p className="text-gray-600 mb-8">
-                  Prepárate con confianza: practica en inglés y en audio, escucha las preguntas y responde en voz alta con el micrófono, igual que en la entrevista de naturalización.
-                </p>
+          <>
+            <div className="w-full mb-0 page-title-in">
+              <PageHeadingWithIcon
+                iconSrc="/icon_quiz_interview.png"
+                title="Entrevista de Práctica"
+                subtitle="Prepárate con confianza: practica en inglés y en audio, escucha las preguntas y responde en voz alta con el micrófono, igual que en la entrevista de naturalización."
+                priority
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] gap-8 sm:gap-32 items-start w-full min-w-0">
+              <div className="order-2 sm:order-1 w-full min-w-0">
+                {status === "idle" && (
+                  <div
+                    className="flex flex-col gap-6 page-content-in opacity-0"
+                    style={{ animationDelay: "0.15s" }}
+                  >
+                    <ol
+                      className="list-none m-0 p-0 mb-4 sm:mb-6"
+                      aria-label="Cómo funciona la entrevista"
+                    >
+                      {interviewSteps.map(
+                        ({ icon: Icon, title, description }) => (
+                          <li
+                            key={title}
+                            className="home-step home-step--compact"
+                          >
+                            <span className="home-step-icon" aria-hidden>
+                              <Icon size={18} strokeWidth={2.25} />
+                            </span>
+                            <div className="min-w-0">
+                              <p className="home-step-title text-ink">
+                                {title}
+                              </p>
+                              <p className="home-step-desc">{description}</p>
+                            </div>
+                          </li>
+                        ),
+                      )}
+                    </ol>
+
+                    <div>
+                      <label
+                        htmlFor="userName"
+                        className="block text-sm font-medium text-ink mb-1"
+                      >
+                        Tu nombre (opcional)
+                      </label>
+                      <input
+                        id="userName"
+                        type="text"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        className="w-full rounded-xl border-2 border-[var(--border-paper)] px-4 py-2 text-ink"
+                        placeholder="Ej. María"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={startInterview}
+                      className="btn-brand inline-flex items-center justify-center gap-2 py-4 px-6"
+                    >
+                      Iniciar entrevista
+                      <ProDiamond className="h-4 w-4 translate-y-0 text-white" />
+                    </button>
+                  </div>
+                )}
               </div>
 
-              {status === "idle" && (
-          <div className="flex flex-col gap-4 page-content-in opacity-0" style={{ animationDelay: "0.15s" }}>
-            <div>
-              <label htmlFor="userName" className="block text-sm font-medium text-gray-700 mb-1">
-                Tu nombre (opcional)
-              </label>
-              <input
-                id="userName"
-                type="text"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                className="w-full rounded-xl border-2 border-slate-200 px-4 py-2 text-gray-800"
-                placeholder="Ej. María"
-              />
+              <div
+                className="order-1 sm:order-2 flex justify-center sm:justify-start items-center min-w-0 home-fade-in"
+                style={{ animationDelay: "0.1s" }}
+              >
+                <Image
+                  src="/office_quiz_question.png"
+                  width={1122}
+                  height={1402}
+                  alt="Oficial de práctica para la entrevista"
+                  className="w-[min(100%,320px)] sm:w-[min(100%,440px)] h-auto object-contain"
+                  priority
+                />
+              </div>
             </div>
-            <button
-              type="button"
-              onClick={startInterview}
-              className="rounded-xl bg-amber-500 text-white font-semibold py-4 px-6 hover:bg-amber-600 transition-colors"
-            >
-              Iniciar entrevista
-            </button>
-          </div>
-            )}
-            </div>
-
-            {/* Hero right - only on start screen */}
-            <div className="order-1 sm:order-2 flex justify-center sm:justify-start items-center min-w-0 home-fade-in" style={{ animationDelay: "0.1s" }}>
-              <Image
-                src={interviewHero}
-                width={interviewHero.width}
-                height={interviewHero.height}
-                alt="Oficial de práctica para la entrevista"
-                className="w-[min(100%,320px)] sm:w-[min(100%,440px)] h-auto object-contain"
-              />
-            </div>
-          </div>
+          </>
         ) : (
           /* Interview in progress: no image, single column */
           <div className="max-w-2xl mx-auto w-full">
-            <h1 className="page-heading mb-6 text-center page-title-in">
-              Entrevista de Práctica
-            </h1>
+            <div className="w-full mb-0 page-title-in">
+              <PageHeadingWithIcon
+                iconSrc="/icon_quiz_interview.png"
+                title="Entrevista de Práctica"
+                titleClassName="page-heading mb-0"
+              />
+            </div>
 
             {status === "loading" && (
               <div className="flex flex-col items-center gap-6">
-                <BeatLoader color="rgba(214, 169, 54, 0.6)" speedMultiplier={0.5} />
-                <p className="text-gray-600">Preparando tu entrevista…</p>
+                <BeatLoader
+                  color="rgba(214, 169, 54, 0.6)"
+                  speedMultiplier={0.5}
+                />
+                <p className="text-brand-muted">Preparando tu entrevista…</p>
               </div>
             )}
 
             {(status === "greeting" || status === "question") && (
               <div className="flex flex-col items-center gap-6">
-                <VoiceBars isPlaying={isPlayingAudio} className="flex-shrink-0" />
-                <p className="text-gray-600">
+                <VoiceBars
+                  isPlaying={isPlayingAudio}
+                  className="flex-shrink-0"
+                />
+                <p className="text-brand-muted">
                   {status === "greeting" && "Reproduciendo bienvenida…"}
                   {status === "question" && "Reproduciendo pregunta…"}
                 </p>
@@ -457,22 +598,31 @@ export default function InterviewPage() {
                 <div className="flex justify-center">
                   <VoiceBars className="flex-shrink-0" />
                 </div>
-                <p className="text-gray-700 font-medium">
+                <p className="text-ink font-medium">
                   Pregunta {questionIndex + 1} de {questions.length}
                 </p>
                 {(() => {
-                  const label = interviewQuestionLabel(questions[questionIndex]);
+                  const label = interviewQuestionLabel(
+                    questions[questionIndex],
+                  );
                   return label ? (
-                    <p className="text-gray-600 italic">&quot;{label}&quot;</p>
+                    <p className="text-brand-muted italic">
+                      &quot;{label}&quot;
+                    </p>
                   ) : (
-                    <p className="text-gray-600">Escucha la pregunta en inglés en el audio y responde con el micrófono.</p>
+                    <p className="text-brand-muted">
+                      Escucha la pregunta en inglés en el audio y responde con
+                      el micrófono.
+                    </p>
                   );
                 })()}
-                <p className="text-gray-600 text-sm">Haz clic para abrir el micrófono y grabar tu respuesta.</p>
+                <p className="text-brand-muted text-sm">
+                  Haz clic para abrir el micrófono y grabar tu respuesta.
+                </p>
                 <button
                   type="button"
                   onClick={startRecording}
-                  className="rounded-xl bg-green-600 text-white font-semibold py-4 px-6 hover:bg-green-700 transition-colors inline-flex items-center justify-center gap-2"
+                  className="btn-royal py-4 px-6 gap-2"
                   aria-label="Abrir micrófono"
                 >
                   <Mic size={22} aria-hidden />
@@ -484,21 +634,32 @@ export default function InterviewPage() {
             {status === "recording" && (
               <div className="flex flex-col gap-4">
                 <div className="flex justify-center">
-                  <VoiceBars mediaRecorder={recordingRecorder} className="flex-shrink-0" />
+                  <VoiceBars
+                    mediaRecorder={recordingRecorder}
+                    className="flex-shrink-0"
+                  />
                 </div>
-                <p className="text-gray-700 font-medium">
-                  Pregunta {questionIndex + 1} de {questions.length}: grabando tu respuesta.
+                <p className="text-ink font-medium">
+                  Pregunta {questionIndex + 1} de {questions.length}: grabando
+                  tu respuesta.
                 </p>
-                {questions[questionIndex] && interviewQuestionLabel(questions[questionIndex]) && (
-                  <p className="text-gray-600 italic">&quot;{interviewQuestionLabel(questions[questionIndex])}&quot;</p>
-                )}
+                {questions[questionIndex] &&
+                  interviewQuestionLabel(questions[questionIndex]) && (
+                    <p className="text-brand-muted italic">
+                      &quot;{interviewQuestionLabel(questions[questionIndex])}
+                      &quot;
+                    </p>
+                  )}
                 <button
                   type="button"
                   onClick={stopRecordingAndSend}
-                  className="rounded-xl bg-red-600 text-white font-semibold py-4 px-6 hover:bg-red-700 transition-colors inline-flex items-center justify-center gap-2"
+                  className="btn-danger py-4 px-6 gap-2"
                   aria-label="Dejar de grabar y enviar"
                 >
-                  <span className="inline-flex h-2.5 w-2.5 rounded-full bg-white animate-pulse" aria-hidden />
+                  <span
+                    className="inline-flex h-2.5 w-2.5 rounded-full bg-white animate-pulse"
+                    aria-hidden
+                  />
                   Grabando
                 </button>
               </div>
@@ -506,35 +667,60 @@ export default function InterviewPage() {
 
             {status === "sending" && (
               <div className="flex flex-col items-center gap-6">
-                <BeatLoader color="rgba(214, 169, 54, 0.6)" speedMultiplier={0.5} />
-                <p className="text-gray-600">Enviando respuesta…</p>
+                <BeatLoader
+                  color="rgba(214, 169, 54, 0.6)"
+                  speedMultiplier={0.5}
+                />
+                <p className="text-brand-muted">Enviando respuesta…</p>
               </div>
             )}
 
             {status === "officer" && (
               <div className="flex flex-col items-center gap-6">
-                <VoiceBars isPlaying={isPlayingAudio} className="flex-shrink-0" />
-                <p className="text-gray-600">Respuesta del oficial…</p>
+                <VoiceBars
+                  isPlaying={isPlayingAudio}
+                  className="flex-shrink-0"
+                />
+                <p className="text-brand-muted">Respuesta del oficial…</p>
               </div>
             )}
 
             {status === "review" && reviewItems.length > 0 && (
               <div className="space-y-8 w-full">
-                <h2 className="text-xl font-bold text-[var(--title-blue)] page-title-in">Resumen de la entrevista</h2>
+                <h2 className="text-xl font-bold text-[var(--title-blue)] page-title-in">
+                  Resumen de la entrevista
+                </h2>
                 <ul className="space-y-4 w-full">
                   {reviewItems.map((item, i) => {
-                    const correctAnswer = correctAnswerFromSuggestion(item.suggestionEn);
-                    const isCorrect = !/\bstronger\s+answer\b/i.test(item.suggestionEn);
+                    const correctAnswer = correctAnswerFromSuggestion(
+                      item.suggestionEn,
+                    );
+                    const isCorrect = !/\bstronger\s+answer\b/i.test(
+                      item.suggestionEn,
+                    );
                     return (
-                      <li key={i} className="rounded-xl border-2 border-slate-200 bg-white p-4 w-full flex items-start gap-3">
+                      <li
+                        key={i}
+                        className="rounded-xl border-2 border-[var(--border-paper)] bg-white p-4 w-full flex items-start gap-3"
+                      >
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm text-gray-600 mb-2">Tu respuesta: {item.userAnswer || "(no se detectó voz)"}</p>
-                          <p className="text-sm text-gray-700">
-                            Respuesta correcta: {isCorrect ? "Tu respuesta es aceptable." : correctAnswer}
+                          <p className="text-sm text-brand-muted mb-2">
+                            Tu respuesta:{" "}
+                            {item.userAnswer || "(no se detectó voz)"}
+                          </p>
+                          <p className="text-sm text-ink">
+                            Respuesta correcta:{" "}
+                            {isCorrect
+                              ? "Tu respuesta es aceptable."
+                              : correctAnswer}
                           </p>
                         </div>
                         {isCorrect && (
-                          <Check size={24} className="shrink-0 text-green-600 self-center" aria-label="Correcto" />
+                          <Check
+                            size={24}
+                            className="shrink-0 text-green-600 self-center"
+                            aria-label="Correcto"
+                          />
                         )}
                       </li>
                     );
@@ -543,8 +729,14 @@ export default function InterviewPage() {
                 <div className="flex gap-3 pt-4">
                   <button
                     type="button"
-                    onClick={() => { setStatus("idle"); setSessionId(null); setQuestions([]); setQuestionIndex(0); setReviewItems([]); }}
-                    className="rounded-xl bg-amber-500 text-white font-semibold py-3 px-6 hover:bg-amber-600 transition-colors"
+                    onClick={() => {
+                      setStatus("idle");
+                      setSessionId(null);
+                      setQuestions([]);
+                      setQuestionIndex(0);
+                      setReviewItems([]);
+                    }}
+                    className="btn-brand py-3 px-6"
                   >
                     Hacer otra entrevista
                   </button>
@@ -555,15 +747,18 @@ export default function InterviewPage() {
             {status === "error" && (
               <div className="flex w-full flex-col items-center gap-6 text-center">
                 <EntrevistaLoadErrorIllustration />
-                <div className="w-full max-w-md rounded-xl border-2 border-red-200 bg-red-50 p-5 text-red-900 sm:p-6">
-                  <p className="font-semibold">{error}</p>
+                <div className="w-full max-w-md">
+                  <h1 className="page-heading text-ink">
+                    ¡Ups! Algo salió mal.
+                  </h1>
+                  <p className="mt-3 font-medium text-[#b4534a]">{error}</p>
                   <button
                     type="button"
                     onClick={() => {
                       setStatus("idle");
                       setError(null);
                     }}
-                    className="mt-4 w-full rounded-lg bg-red-100 px-4 py-2.5 font-semibold text-red-900 hover:bg-red-200 sm:w-auto"
+                    className="btn-brand mt-6 w-full py-2.5 px-4 sm:w-auto"
                   >
                     Reintentar
                   </button>

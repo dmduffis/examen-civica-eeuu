@@ -1,18 +1,24 @@
-import React from 'react'
+import React from "react";
 
 type Props = {
-    progressPercentage: number
-}
+  progressPercentage: number;
+};
 
-function ProgressBar(props:Props) {
-
-    const { progressPercentage } = props;
-
+function ProgressBar({ progressPercentage }: Props) {
   return (
-    <div className='w-full h-2 bg-gray-300 mb-4'>
-    <div className='h-2 bg-yellow-500 mb-4' style={{width:`${progressPercentage}%`}}></div>
+    <div
+      className="mb-4 h-2 w-full overflow-hidden rounded-full"
+      style={{ backgroundColor: "var(--accent-ink-soft)" }}
+    >
+      <div
+        className="h-2 rounded-full transition-[width] duration-300"
+        style={{
+          width: `${progressPercentage}%`,
+          backgroundColor: "var(--surface-coral)",
+        }}
+      />
     </div>
-  )
+  );
 }
 
-export default ProgressBar
+export default ProgressBar;
