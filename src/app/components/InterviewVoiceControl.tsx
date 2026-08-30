@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Mic, ArrowUp, X } from "lucide-react";
+import { Mic, ArrowUp, Volume2, X } from "lucide-react";
 import { BeatLoader } from "react-spinners";
-import { VoiceBars } from "./VoiceBars";
 
 export type InterviewVoiceMode =
   | "loading"
@@ -21,10 +20,8 @@ type InterviewVoiceControlProps = {
   statusLabel?: string;
   /** e.g. "1/5" shown under the circle */
   progressLabel?: string;
-  /** When listening: soft shimmer until real levels arrive. */
+  /** Soft pulse on the speaker icon while TTS plays. */
   isPlaying?: boolean;
-  /** Live 0–1 bar levels from Meyda (TTS). */
-  levels?: number[] | null;
 };
 
 function formatCountdown(remainingSec: number): string {
@@ -53,7 +50,6 @@ export default function InterviewVoiceControl({
   statusLabel,
   progressLabel,
   isPlaying = false,
-  levels = null,
 }: InterviewVoiceControlProps) {
   const [remaining, setRemaining] = useState(maxSeconds);
 
@@ -103,7 +99,6 @@ export default function InterviewVoiceControl({
           </button>
         ) : null}
 
-        {/* Fixed-height status slot so the orb never shifts */}
         <div className="flex h-[4.25rem] w-full flex-col items-center justify-end gap-1.5 pb-1">
           {isRecording ? (
             <>
@@ -124,7 +119,6 @@ export default function InterviewVoiceControl({
         </div>
 
         <div className="relative mt-5 flex h-[10.5rem] w-[10.5rem] shrink-0 items-center justify-center sm:mt-6 sm:h-[11.5rem] sm:w-[11.5rem]">
-          {/* Soft pulsing halos behind the shrunk recording orb */}
           <span
             aria-hidden
             className={`pointer-events-none absolute rounded-full border-0 transition-[width,height,opacity] duration-300 ease-out ${
@@ -187,11 +181,11 @@ export default function InterviewVoiceControl({
             {isLoading || isSending ? (
               <OrbLoader />
             ) : isListening ? (
-              <VoiceBars
-                isPlaying={isPlaying}
-                levels={levels}
-                variant="onColor"
-                className="!max-w-[7.5rem]"
+              <Volume2
+                size={40}
+                strokeWidth={2.25}
+                className={isPlaying ? "animate-pulse" : undefined}
+                aria-hidden
               />
             ) : isReady ? (
               <Mic size={40} strokeWidth={2.25} aria-hidden />

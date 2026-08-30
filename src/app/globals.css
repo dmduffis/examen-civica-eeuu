@@ -697,15 +697,6 @@ h1, h2, h3, h4, h5, h6 {
   animation: voice-breathe 1.8s ease-in-out infinite;
 }
 
-/* VoiceBars: capsule bars scale from vertical center */
-@keyframes voice-bar-wave {
-  0%, 100% { transform: scaleY(0.22); }
-  22% { transform: scaleY(0.78); }
-  45% { transform: scaleY(0.42); }
-  68% { transform: scaleY(1); }
-  82% { transform: scaleY(0.55); }
-}
-
 /* Soft raised circle for entrevista voice control (not neo-brutalist depth) */
 .interview-voice-orb {
   box-shadow:

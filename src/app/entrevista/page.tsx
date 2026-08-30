@@ -14,7 +14,6 @@ import EntrevistaLoadErrorIllustration from "../components/EntrevistaLoadErrorIl
 import PageHeadingWithIcon from "../components/PageHeadingWithIcon";
 import ProDiamond from "../components/ProDiamond";
 import { backendUrl } from "../lib/backend-url";
-import { attachMeydaLevels, VOICE_BAR_COUNT } from "../lib/audio-levels";
 
 type InterviewQuestion = {
   id: string;
@@ -149,114 +148,29 @@ type RespondResponse = {
 
 function useAudioPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const meydaRef = useRef<ReturnType<typeof attachMeydaLevels>>(null);
-  const levelsRafRef = useRef<number>(0);
-  const pendingLevelsRef = useRef<number[]>(Array(VOICE_BAR_COUNT).fill(0));
-  const [playbackLevels, setPlaybackLevels] = useState<number[]>(() =>
-    Array(VOICE_BAR_COUNT).fill(0),
-  );
 
-  const pushLevels = useCallback((next: number[]) => {
-    pendingLevelsRef.current = next;
-    if (levelsRafRef.current) return;
-    levelsRafRef.current = requestAnimationFrame(() => {
-      levelsRafRef.current = 0;
-      setPlaybackLevels(pendingLevelsRef.current);
+  const playBase64 = useCallback((base64: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      try {
+        const audio = new Audio(`data:audio/mp3;base64,${base64}`);
+        audioRef.current = audio;
+        audio.onended = () => resolve();
+        audio.onerror = () => reject(new Error("Playback failed"));
+        audio.play().catch(reject);
+      } catch (e) {
+        reject(e);
+      }
     });
   }, []);
-
-  const teardownAnalysis = useCallback(() => {
-    try {
-      meydaRef.current?.stop();
-    } catch {
-      /* ignore */
-    }
-    meydaRef.current = null;
-    if (levelsRafRef.current) {
-      cancelAnimationFrame(levelsRafRef.current);
-      levelsRafRef.current = 0;
-    }
-    setPlaybackLevels(Array(VOICE_BAR_COUNT).fill(0));
-  }, []);
-
-  const playBase64 = useCallback(
-    (base64: string): Promise<void> => {
-      return new Promise(async (resolve, reject) => {
-        try {
-          teardownAnalysis();
-          if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current = null;
-          }
-
-          const ctx =
-            audioCtxRef.current && audioCtxRef.current.state !== "closed"
-              ? audioCtxRef.current
-              : new AudioContext();
-          audioCtxRef.current = ctx;
-          if (ctx.state === "suspended") {
-            await ctx.resume();
-          }
-
-          const audio = new Audio(`data:audio/mp3;base64,${base64}`);
-          audio.crossOrigin = "anonymous";
-          audioRef.current = audio;
-
-          // Wire Web Audio + Meyda *before* play so levels track speech.
-          const source = ctx.createMediaElementSource(audio);
-          source.connect(ctx.destination);
-          meydaRef.current = attachMeydaLevels({
-            audioContext: ctx,
-            source,
-            onLevels: pushLevels,
-          });
-
-          const clear = () => {
-            if (audioRef.current === audio) {
-              teardownAnalysis();
-            }
-          };
-          audio.onended = () => {
-            clear();
-            resolve();
-          };
-          audio.onerror = () => {
-            clear();
-            reject(new Error("Playback failed"));
-          };
-          await audio.play();
-        } catch (e) {
-          teardownAnalysis();
-          reject(e);
-        }
-      });
-    },
-    [teardownAnalysis, pushLevels],
-  );
 
   const stop = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
-    teardownAnalysis();
-  }, [teardownAnalysis]);
+  }, []);
 
-  useEffect(() => {
-    return () => {
-      teardownAnalysis();
-      if (audioCtxRef.current?.state !== "closed") {
-        try {
-          audioCtxRef.current?.close();
-        } catch {
-          /* ignore */
-        }
-      }
-    };
-  }, [teardownAnalysis]);
-
-  return { playBase64, stop, playbackLevels };
+  return { playBase64, stop };
 }
 
 async function blobToBase64(blob: Blob): Promise<string> {
@@ -372,7 +286,7 @@ export default function InterviewPage() {
   );
   const stopRecordingAndSendRef = useRef<() => Promise<void>>(async () => {});
   const interviewGenerationRef = useRef(0);
-  const { playBase64, stop, playbackLevels } = useAudioPlayer();
+  const { playBase64, stop } = useAudioPlayer();
 
   useEffect(() => {
     return () => {
@@ -782,7 +696,6 @@ export default function InterviewPage() {
                             : "listening"
                   }
                   isPlaying={isPlayingAudio}
-                  levels={playbackLevels}
                   onRecord={startRecording}
                   onSend={stopRecordingAndSend}
                   onClose={stopInterview}
