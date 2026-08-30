@@ -46,12 +46,12 @@ export default function ResetPasswordPage() {
           <h1 className="page-heading mb-3 page-title-in">
             Restablecer contraseña
           </h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-brand-muted mb-6">
             El servicio de cuenta no está disponible.
           </p>
           <Link
             href="/"
-            className="inline-flex rounded-xl bg-amber-500 text-white font-semibold px-4 py-2 hover:bg-amber-600 transition-colors"
+            className="btn-brand px-4 py-2"
           >
             Volver al inicio
           </Link>
@@ -68,18 +68,18 @@ export default function ResetPasswordPage() {
             <h1 className="page-heading mb-2">
               Enlace no válido
             </h1>
-            <p className="text-gray-600 mb-6">
+            <p className="text-brand-muted mb-6">
               Falta el enlace de restablecimiento o no es válido. Solicita uno nuevo.
             </p>
           </div>
           <div className="flex flex-col gap-3">
             <Link
               href="/forgot-password"
-              className="inline-flex justify-center rounded-xl bg-amber-500 text-white font-semibold px-4 py-2 hover:bg-amber-600 transition-colors"
+              className="btn-brand justify-center px-4 py-2"
             >
               Solicitar enlace
             </Link>
-            <Link href="/login" className="text-sm text-amber-700 font-medium hover:underline">
+            <Link href="/login" className="text-sm text-coral font-medium hover:underline">
               Volver a iniciar sesión
             </Link>
           </div>
@@ -95,14 +95,14 @@ export default function ResetPasswordPage() {
           <h1 className="page-heading mb-2">
             Nueva contraseña
           </h1>
-          <p className="text-gray-600 mb-6 text-sm">
+          <p className="text-brand-muted mb-6 text-sm">
             Elige una contraseña de al menos 6 caracteres.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 page-content-in opacity-0" style={{ animationDelay: "0.1s" }}>
           <div>
-            <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="newPassword" className="block text-sm font-medium text-ink mb-1">
               Nueva contraseña
             </label>
             <input
@@ -113,12 +113,12 @@ export default function ResetPasswordPage() {
               onChange={(e) => setNewPassword(e.target.value)}
               required
               minLength={6}
-              className="w-full h-11 rounded-xl border-2 border-slate-200 bg-white px-3 text-[var(--title-blue)] shadow-sm"
+              className="input-field h-11"
             />
-            <p className="text-xs text-gray-500 mt-1">Mínimo 6 caracteres</p>
+            <p className="text-xs text-brand-muted mt-1">Mínimo 6 caracteres</p>
           </div>
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-ink mb-1">
               Confirmar contraseña
             </label>
             <input
@@ -129,18 +129,18 @@ export default function ResetPasswordPage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               minLength={6}
-              className="w-full h-11 rounded-xl border-2 border-slate-200 bg-white px-3 text-[var(--title-blue)] shadow-sm"
+              className="input-field h-11"
             />
             {confirmPassword.length > 0 && !match && (
               <p className="text-xs text-red-600 mt-1">Las contraseñas no coinciden</p>
             )}
           </div>
-          <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+          <label className="flex items-center gap-2 text-sm text-ink cursor-pointer">
             <input
               type="checkbox"
               checked={showPassword}
               onChange={(e) => setShowPassword(e.target.checked)}
-              className="rounded border-slate-300"
+              className="rounded border-[var(--border-paper)]"
             />
             Mostrar contraseña
           </label>
@@ -152,14 +152,14 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={!canSubmit || submitting}
-            className="h-11 rounded-xl bg-amber-500 text-white font-semibold hover:bg-amber-600 disabled:opacity-50 transition-colors"
+            className="btn-brand h-11 w-full"
           >
             {submitting ? "Guardando…" : "Guardar contraseña"}
           </button>
         </form>
 
         <div className="mt-6 text-center">
-          <Link href="/forgot-password" className="text-sm text-amber-700 font-medium hover:underline">
+          <Link href="/forgot-password" className="text-sm text-coral font-medium hover:underline">
             ¿No tienes enlace? Solicita uno nuevo
           </Link>
         </div>

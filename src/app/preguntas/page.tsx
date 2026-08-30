@@ -115,19 +115,17 @@ export default function PreguntasPage() {
       <div className="w-full px-6 sm:px-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8 sm:mb-10">
           <div className="text-left min-w-0 page-title-in">
-            <h1 className="page-heading mb-3">
-              Lista de Preguntas
-            </h1>
-            <p className="text-gray-600">
+            <h1 className="page-heading mb-3">Lista de Preguntas</h1>
+            <p className="text-brand-muted">
               Hay 100 preguntas en total; en la entrevista te harán 20 de forma
               oral. Aquí puedes estudiarlas todas con sus respuestas correctas.
             </p>
           </div>
-          <span className="flex items-center gap-1 text-sm text-gray-500 shrink-0 sm:pt-1">
+          <span className="flex items-center gap-1 text-sm text-brand-muted shrink-0 sm:pt-1">
             <button
               type="button"
               onClick={() => setDisplayLang("es")}
-              className={`px-2 py-1 rounded ${displayLang === "es" ? "bg-amber-100 text-amber-800 font-medium" : "hover:bg-slate-100"}`}
+              className={`px-2 py-1 rounded ${displayLang === "es" ? "bg-coral-soft text-ink font-medium" : "hover:bg-coral-soft"}`}
             >
               ES
             </button>
@@ -135,21 +133,24 @@ export default function PreguntasPage() {
             <button
               type="button"
               onClick={() => setDisplayLang("en")}
-              className={`px-2 py-1 rounded ${displayLang === "en" ? "bg-amber-100 text-amber-800 font-medium" : "hover:bg-slate-100"}`}
+              className={`px-2 py-1 rounded ${displayLang === "en" ? "bg-coral-soft text-ink font-medium" : "hover:bg-coral-soft"}`}
             >
               EN
             </button>
           </span>
         </div>
-        <div className="flex flex-col sm:flex-row gap-8 justify-between items-end w-full mb-10 page-content-in opacity-0" style={{ animationDelay: "0.1s" }}>
+        <div
+          className="flex flex-col sm:flex-row gap-8 justify-between items-end w-full mb-10 page-content-in opacity-0"
+          style={{ animationDelay: "0.1s" }}
+        >
           <section className="min-w-0 w-full sm:max-w-xs">
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="block text-sm font-medium text-ink mb-1.5">
               Tu estado (para las 4 preguntas específicas de tu estado)
             </label>
             <select
               value={selectedStateCode ?? ""}
               onChange={(e) => handleStateChange(e.target.value || null)}
-              className="w-full h-11 rounded-xl border-2 border-slate-200 bg-white py-2.5 px-3 text-gray-800 shadow-sm"
+              className="input-field h-11"
             >
               <option value="">— Seleccionar estado —</option>
               {states.map((s) => (
@@ -162,7 +163,7 @@ export default function PreguntasPage() {
           <div className="w-full sm:w-auto shrink-0">
             <button
               type="button"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border-2 border-slate-200 bg-white py-2.5 px-4 text-gray-800 shadow-sm font-medium hover:bg-orange-50 hover:border-orange-200 transition-colors"
+              className="btn-tile w-full sm:w-auto py-2.5 px-4 font-medium gap-2"
               aria-label="Descargar PDF"
             >
               <Download size={18} aria-hidden />
@@ -171,23 +172,23 @@ export default function PreguntasPage() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-8 page-content-in opacity-0" style={{ animationDelay: "0.2s" }}>
+        <div
+          className="flex flex-col gap-8 page-content-in opacity-0"
+          style={{ animationDelay: "0.2s" }}
+        >
           {questions.map((q, index) => (
-            <article
-              key={q._id}
-              className="border border-slate-200 rounded-lg p-4 bg-white shadow-sm"
-            >
-              <p className="font-semibold text-gray-800 mb-3">
+            <article key={q._id} className="card-raised p-4 sm:p-5">
+              <p className="font-semibold mb-3">
                 {index + 1}. {questionDisplayText(q, displayLang)}
               </p>
               {q.isStateSpecific && (
-                <div className="mb-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
-                  <p className="text-sm text-amber-800 font-medium mb-1">
+                <div className="mb-3 p-3 rounded-lg bg-coral-soft border border-coral/40">
+                  <p className="text-sm text-ink font-medium mb-1">
                     Pregunta de tu estado — busca la respuesta según donde
                     vives.
                   </p>
                   {stateDetails ? (
-                    <ul className="text-sm text-gray-700 space-y-0.5">
+                    <ul className="text-sm text-ink space-y-0.5">
                       {stateDetails.senators.length > 0 ? (
                         <li>Senadores: {stateDetails.senators.join(", ")}</li>
                       ) : (
@@ -218,7 +219,7 @@ export default function PreguntasPage() {
                       <li>Representante: busca por distrito.</li>
                     </ul>
                   ) : (
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-brand-muted">
                       Elige tu estado arriba para ver las respuestas de tu
                       estado aquí.
                     </p>
@@ -231,7 +232,7 @@ export default function PreguntasPage() {
                   .map((answer, aIdx) => (
                     <li
                       key={answer._id ?? `a-${aIdx}`}
-                      className="pl-3 py-1 rounded text-gray-800"
+                      className="pl-3 py-1 rounded"
                     >
                       {answerDisplayText(answer, displayLang)}
                     </li>
@@ -247,18 +248,26 @@ export default function PreguntasPage() {
             onClick={() =>
               window.scrollTo({ top: 0, left: 0, behavior: "smooth" })
             }
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg text-gray-700 py-2 px-4 bg-slate-200 border border-slate-300 hover:bg-slate-300 transition-colors font-medium"
+            className="btn-tile w-full sm:w-auto py-2 px-4 font-medium gap-2"
             aria-label="Volver arriba"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
               <path d="m18 15-6-6-6 6" />
             </svg>
             Volver arriba
           </button>
-          <Link
-            href="/quiz"
-            className="w-full sm:w-auto inline-flex items-center justify-center rounded-lg text-gray-900 py-2 px-4 bg-slate-200 border border-slate-300 hover:bg-yellow-500 transition-colors font-medium"
-          >
+          <Link href="/quiz" className="btn-brand w-full sm:w-auto py-2 px-4">
             Tomar el Quiz
           </Link>
         </div>

@@ -58,7 +58,28 @@ const config: Config = {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
-  			}
+  			},
+  			/* Grungy editorial brand tokens */
+  			ink: {
+  				DEFAULT: 'var(--surface-ink)',
+  				deep: 'var(--surface-ink-deep)',
+  				soft: 'var(--accent-ink-soft)',
+  			},
+  			coral: {
+  				DEFAULT: 'var(--surface-coral)',
+  				soft: 'var(--accent-coral-soft)',
+  				hover: 'var(--accent-coral-hover)',
+  			},
+  			royal: {
+  				DEFAULT: 'var(--surface-blue)',
+  				soft: 'var(--accent-blue-soft)',
+  				glow: 'var(--accent-glow)',
+  			},
+  			paper: {
+  				DEFAULT: 'var(--surface-paper)',
+  				elevated: 'var(--surface-paper-elevated)',
+  			},
+  			canvas: 'var(--surface-canvas)',
   		}
   	}
   },

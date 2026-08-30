@@ -35,12 +35,13 @@ export default function LoginPage() {
       <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16 px-6">
         <div className="max-w-sm mx-auto text-center">
           <h1 className="page-heading mb-3 page-title-in">Cuenta</h1>
-          <p className="text-gray-600 mb-6">
-            La sincronización entre dispositivos no está disponible. Puedes usar la app sin cuenta; tu progreso se guardará en este dispositivo.
+          <p className="text-brand-muted mb-6">
+            La sincronización entre dispositivos no está disponible. Puedes usar
+            la app sin cuenta; tu progreso se guardará en este dispositivo.
           </p>
           <Link
             href="/"
-            className="inline-flex rounded-xl bg-amber-500 text-white font-semibold px-4 py-2 hover:bg-amber-600 transition-colors"
+            className="btn-brand px-4 py-2"
           >
             Volver al inicio
           </Link>
@@ -56,16 +57,23 @@ export default function LoginPage() {
           <h1 className="page-heading mb-2">
             {mode === "login" ? "Iniciar sesión" : "Crear cuenta"}
           </h1>
-          <p className="text-gray-600 mb-6 text-sm">
+          <p className="text-brand-muted mb-6 text-sm">
             {mode === "login"
               ? "Entra para ver tu progreso en todos tus dispositivos."
               : "Regístrate para guardar tu historial de quizzes y estado."}
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 page-content-in opacity-0" style={{ animationDelay: "0.1s" }}>
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-4 page-content-in opacity-0"
+          style={{ animationDelay: "0.1s" }}
+        >
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-ink mb-1"
+            >
               Correo
             </label>
             <input
@@ -75,16 +83,22 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full h-11 rounded-xl border-2 border-slate-200 bg-white px-3 text-[var(--title-blue)] shadow-sm"
+              className="input-field h-11"
             />
           </div>
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-ink"
+              >
                 Contraseña
               </label>
               {mode === "login" && (
-                <Link href="/forgot-password" className="text-sm text-amber-700 font-medium hover:underline">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-coral font-medium hover:underline"
+                >
                   ¿Olvidaste tu contraseña?
                 </Link>
               )}
@@ -92,15 +106,19 @@ export default function LoginPage() {
             <input
               id="password"
               type="password"
-              autoComplete={mode === "login" ? "current-password" : "new-password"}
+              autoComplete={
+                mode === "login" ? "current-password" : "new-password"
+              }
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="w-full h-11 rounded-xl border-2 border-slate-200 bg-white px-3 text-[var(--title-blue)] shadow-sm"
+              className="input-field h-11"
             />
             {mode === "register" && (
-              <p className="text-xs text-gray-500 mt-1">Mínimo 6 caracteres</p>
+              <p className="text-xs text-brand-muted mt-1">
+                Mínimo 6 caracteres
+              </p>
             )}
           </div>
           {error && (
@@ -111,20 +129,20 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="h-11 rounded-xl bg-amber-500 text-white font-semibold hover:bg-amber-600 disabled:opacity-50 transition-colors"
+            className="btn-brand h-11 w-full"
           >
             {submitting ? "..." : mode === "login" ? "Entrar" : "Registrarme"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-600">
+        <p className="mt-6 text-center text-sm text-brand-muted">
           {mode === "login" ? (
             <>
               ¿No tienes cuenta?{" "}
               <button
                 type="button"
                 onClick={() => setMode("register")}
-                className="text-amber-700 font-medium hover:underline"
+                className="text-coral font-medium hover:underline"
               >
                 Regístrate
               </button>
@@ -135,7 +153,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setMode("login")}
-                className="text-amber-700 font-medium hover:underline"
+                className="text-coral font-medium hover:underline"
               >
                 Inicia sesión
               </button>
@@ -144,7 +162,7 @@ export default function LoginPage() {
         </p>
 
         <div className="mt-8 text-center">
-          <Link href="/" className="text-sm text-gray-500 hover:text-gray-700">
+          <Link href="/" className="text-sm text-brand-muted hover:text-ink">
             ← Volver al inicio
           </Link>
         </div>

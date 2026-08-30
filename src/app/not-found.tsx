@@ -20,13 +20,13 @@ export default function NotFound() {
           priority
         />
         <h1 className="page-heading mb-3 mt-8">Página no encontrada</h1>
-        <p className="mb-8 max-w-sm text-gray-600">
+        <p className="mb-8 max-w-sm text-brand-muted">
           Esa ruta no existe. Vuelve al inicio para seguir practicando el examen
           cívico.
         </p>
         <Link
           href="/"
-          className="inline-flex rounded-xl border-2 border-slate-300 bg-slate-200 px-6 py-4 font-semibold text-gray-800 transition-colors hover:border-orange-200 hover:bg-orange-100"
+          className="btn-tile px-6 py-4 font-semibold text-ink"
         >
           Volver al inicio
         </Link>

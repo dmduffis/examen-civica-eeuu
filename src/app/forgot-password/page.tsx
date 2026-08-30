@@ -35,12 +35,12 @@ export default function ForgotPasswordPage() {
           <h1 className="page-heading mb-3 page-title-in">
             Recuperar contraseña
           </h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-brand-muted mb-6">
             La sincronización entre dispositivos no está disponible.
           </p>
           <Link
             href="/login"
-            className="inline-flex rounded-xl bg-amber-500 text-white font-semibold px-4 py-2 hover:bg-amber-600 transition-colors"
+            className="btn-brand px-4 py-2"
           >
             Volver a iniciar sesión
           </Link>
@@ -57,16 +57,16 @@ export default function ForgotPasswordPage() {
             <h1 className="page-heading mb-2">
               Revisa tu correo
             </h1>
-            <p className="text-gray-600 mb-6">
+            <p className="text-brand-muted mb-6">
               Si ese correo está registrado, recibirás un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada y la carpeta de spam.
             </p>
           </div>
-          <p className="text-sm text-gray-500 mb-6">
+          <p className="text-sm text-brand-muted mb-6">
             El enlace es válido durante 1 hora.
           </p>
           <Link
             href="/login"
-            className="inline-flex rounded-xl bg-amber-500 text-white font-semibold px-4 py-2 hover:bg-amber-600 transition-colors"
+            className="btn-brand px-4 py-2"
           >
             Volver a iniciar sesión
           </Link>
@@ -82,14 +82,14 @@ export default function ForgotPasswordPage() {
           <h1 className="page-heading mb-2">
             ¿Olvidaste tu contraseña?
           </h1>
-          <p className="text-gray-600 mb-6 text-sm">
+          <p className="text-brand-muted mb-6 text-sm">
             Introduce tu correo y te enviaremos un enlace para restablecerla.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 page-content-in opacity-0" style={{ animationDelay: "0.1s" }}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-ink mb-1">
               Correo
             </label>
             <input
@@ -99,7 +99,7 @@ export default function ForgotPasswordPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full h-11 rounded-xl border-2 border-slate-200 bg-white px-3 text-[var(--title-blue)] shadow-sm"
+              className="input-field h-11"
             />
           </div>
           {error && (
@@ -110,14 +110,14 @@ export default function ForgotPasswordPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="h-11 rounded-xl bg-amber-500 text-white font-semibold hover:bg-amber-600 disabled:opacity-50 transition-colors"
+            className="btn-brand h-11 w-full"
           >
             {submitting ? "Enviando…" : "Enviar enlace"}
           </button>
         </form>
 
         <div className="mt-6 text-center">
-          <Link href="/login" className="text-sm text-amber-700 font-medium hover:underline">
+          <Link href="/login" className="text-sm text-coral font-medium hover:underline">
             ← Volver a iniciar sesión
           </Link>
         </div>

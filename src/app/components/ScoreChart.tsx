@@ -29,7 +29,7 @@ export function ScoreChart({
   cutoff.setDate(cutoff.getDate() - LAST_DAYS);
   const last7 = entries.filter((e) => new Date(e.date) >= cutoff);
   const sorted = [...last7].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
   if (sorted.length === 0) return null;
 
@@ -44,21 +44,24 @@ export function ScoreChart({
     MARGIN.top + innerHeight - (p / (maxScore - minScore)) * innerHeight;
 
   const pathD = sorted
-    .map((e, i) => `${i === 0 ? "M" : "L"} ${xScale(i)} ${yScale(e.scorePercent)}`)
+    .map(
+      (e, i) => `${i === 0 ? "M" : "L"} ${xScale(i)} ${yScale(e.scorePercent)}`,
+    )
     .join(" ");
 
-  const xTicks = sorted.length <= TICK_COUNT_X
-    ? sorted.map((_, i) => i)
-    : Array.from({ length: TICK_COUNT_X }, (_, i) =>
-        Math.round((i / (TICK_COUNT_X - 1)) * (sorted.length - 1))
-      );
+  const xTicks =
+    sorted.length <= TICK_COUNT_X
+      ? sorted.map((_, i) => i)
+      : Array.from({ length: TICK_COUNT_X }, (_, i) =>
+          Math.round((i / (TICK_COUNT_X - 1)) * (sorted.length - 1)),
+        );
   const yTicks = Array.from(
     { length: TICK_COUNT_Y + 1 },
-    (_, i) => minScore + (i / TICK_COUNT_Y) * (maxScore - minScore)
+    (_, i) => minScore + (i / TICK_COUNT_Y) * (maxScore - minScore),
   );
 
   return (
-    <div className="rounded-xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+    <div className="rounded-xl border-2 border-[var(--border-paper)] bg-white p-4 shadow-sm">
       <h2 className="text-sm font-semibold text-[var(--title-blue)] mb-3">
         Puntuación (últimos 7 días)
       </h2>
@@ -103,7 +106,7 @@ export function ScoreChart({
             y={yScale(v)}
             textAnchor="end"
             dominantBaseline="middle"
-            className="fill-gray-500 text-[10px]"
+            className="fill-[var(--text-muted)] text-[10px]"
           >
             {v}%
           </text>
@@ -115,7 +118,7 @@ export function ScoreChart({
             x={xScale(i)}
             y={height - MARGIN.bottom + 20}
             textAnchor="middle"
-            className="fill-gray-500 text-[10px]"
+            className="fill-[var(--text-muted)] text-[10px]"
           >
             {formatAxisDate(sorted[i].date)}
           </text>
@@ -124,7 +127,7 @@ export function ScoreChart({
         <path
           d={pathD}
           fill="none"
-          stroke="rgb(234 179 8)"
+          stroke="var(--surface-coral)"
           strokeWidth={2.5}
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -136,7 +139,7 @@ export function ScoreChart({
             cx={xScale(i)}
             cy={yScale(e.scorePercent)}
             r={4}
-            fill="rgb(234 179 8)"
+            fill="var(--surface-coral)"
             stroke="white"
             strokeWidth={2}
           />

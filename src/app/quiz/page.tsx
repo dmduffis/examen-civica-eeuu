@@ -10,7 +10,6 @@ import Link from "next/link";
 import ProgressBar from "../components/ProgressBar";
 import Results from "./Results";
 import Question from "../components/Question";
-import quizHero from "../assets/images/repasar.png";
 import { BeatLoader } from "react-spinners";
 import type { QuestionItem } from "../lib/question-types";
 import { questionDisplayText } from "../lib/question-types";
@@ -74,13 +73,13 @@ export default function QuizPage() {
 
   const answerClasses = {
     correct:
-      "flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border-2 border-green-500 rounded-lg",
+      "btn-tile flex flex-row justify-between w-full p-4 items-center mt-4 border-2 border-green-500",
     incorrect:
-      "flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border-2 border-red-500 rounded-lg",
+      "btn-tile flex flex-row justify-between w-full p-4 items-center mt-4 border-2 border-red-500",
     default:
-      "flex flex-row justify-between w-full p-4 items-center bg-white mt-4 border border-slate-300 hover:border-blue-700 rounded-lg",
+      "btn-tile flex flex-row justify-between w-full p-4 items-center mt-4",
     defaultAfter:
-      "flex flex-row justify-between w-full p-4 items-center bg-gray-100 mt-4 border border-slate-300 rounded-lg",
+      "btn-tile flex flex-row justify-between w-full p-4 items-center mt-4 opacity-70",
   };
 
   const feedbackClasses = {
@@ -188,10 +187,8 @@ export default function QuizPage() {
         ) : (
           <div className="w-full px-6 sm:px-8">
             <div className="text-left mb-8 sm:mb-10 page-title-in">
-              <h1 className="page-heading mb-3">
-                Practica el Quiz
-              </h1>
-              <p className="text-gray-600">
+              <h1 className="page-heading mb-3">Practica el Quiz</h1>
+              <p className="text-brand-muted">
                 Elige todas las preguntas o un test al azar para prepararte para
                 la entrevista de naturalización.
               </p>
@@ -199,13 +196,17 @@ export default function QuizPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-8 sm:gap-[5rem] items-center w-full min-w-0">
               {/* Mobile: image first. Desktop: right column */}
-              <div className="order-1 sm:order-2 flex justify-center items-center home-fade-in" style={{ animationDelay: "0.1s" }}>
+              <div
+                className="order-1 sm:order-2 flex justify-center items-center home-fade-in"
+                style={{ animationDelay: "0.1s" }}
+              >
                 <Image
-                  src={quizHero}
-                  width={quizHero.width}
-                  height={quizHero.height}
-                  alt="Person studying"
+                  src="/illustration_practice_quiz.png"
+                  width={1448}
+                  height={1086}
+                  alt="Person studying for the US civics quiz"
                   className="w-[min(100%,387px)] sm:w-[min(100%,532px)] h-auto object-contain"
+                  priority
                 />
               </div>
 
@@ -217,7 +218,7 @@ export default function QuizPage() {
                       (q) => !q.isStateSpecific,
                     ).length;
                     const rowClass =
-                      "rounded-xl text-gray-800 py-4 px-5 sm:py-5 sm:px-6 bg-slate-200 border-2 border-slate-300 hover:bg-orange-100 hover:border-orange-200 text-left text-lg sm:text-xl font-semibold transition-colors min-w-0 page-content-in";
+                      "btn-tile py-4 px-5 sm:py-5 sm:px-6 text-left text-lg sm:text-xl min-w-0 page-content-in";
                     return (
                       <>
                         <div className="flex flex-col gap-3 w-full">
@@ -241,7 +242,10 @@ export default function QuizPage() {
                             ),
                           )}
                         </div>
-                        <p className="text-sm text-gray-500 page-content-in opacity-0" style={{ animationDelay: "0.5s" }}>
+                        <p
+                          className="text-sm text-brand-muted page-content-in opacity-0"
+                          style={{ animationDelay: "0.5s" }}
+                        >
                           Test al azar con 10, 20 o 50 preguntas
                         </p>
                       </>
@@ -257,17 +261,13 @@ export default function QuizPage() {
       <main className="flex flex-col w-full justify-center mt-2 sm:mt-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="page-heading flex items-center gap-2">
-            <FileText
-              size={40}
-              className="shrink-0 text-gray-700"
-              aria-hidden
-            />
+            <FileText size={40} className="shrink-0 text-ink" aria-hidden />
             Quiz
           </h1>
           <button
             type="button"
             onClick={() => restartQuiz()}
-            className="text-gray-500 hover:text-gray-800 p-1 rounded-full hover:bg-slate-100 transition-colors"
+            className="text-brand-muted hover:text-ink p-1 rounded-full hover:bg-coral-soft transition-colors"
             aria-label="Salir"
           >
             <XCircle size={24} className="shrink-0" aria-hidden />
@@ -280,11 +280,11 @@ export default function QuizPage() {
             <p className="text-lg font-bold flex-1 min-w-0">
               {currentQuestionText}
             </p>
-            <span className="flex items-center gap-1 text-sm text-gray-500">
+            <span className="flex items-center gap-1 text-sm text-brand-muted">
               <button
                 type="button"
                 onClick={() => setDisplayLang("es")}
-                className={`px-2 py-1 rounded ${displayLang === "es" ? "bg-amber-100 text-amber-800 font-medium" : "hover:bg-slate-100"}`}
+                className={`px-2 py-1 rounded ${displayLang === "es" ? "bg-coral-soft text-ink font-medium" : "hover:bg-coral-soft"}`}
               >
                 ES
               </button>
@@ -292,7 +292,7 @@ export default function QuizPage() {
               <button
                 type="button"
                 onClick={() => setDisplayLang("en")}
-                className={`px-2 py-1 rounded ${displayLang === "en" ? "bg-amber-100 text-amber-800 font-medium" : "hover:bg-slate-100"}`}
+                className={`px-2 py-1 rounded ${displayLang === "en" ? "bg-coral-soft text-ink font-medium" : "hover:bg-coral-soft"}`}
               >
                 EN
               </button>
@@ -328,8 +328,8 @@ export default function QuizPage() {
               onClick={() => handleNext()}
               className={
                 questionSubmitted
-                  ? "text-gray-900 py-2 px-4 bg-slate-200 rounded-lg hover:bg-yellow-500"
-                  : "text-gray-400 py-2 px-4 bg-slate-200 rounded-lg"
+                  ? "btn-brand py-2 px-4"
+                  : "btn-tile py-2 px-4 opacity-50 cursor-not-allowed"
               }
               disabled={!questionSubmitted}
             >

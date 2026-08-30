@@ -28,10 +28,10 @@ export default function QuestionsLoadError({
       <div className="mx-auto flex w-full max-w-lg flex-col items-center text-center">
         {illustration}
         <h1 className="page-heading mb-3 mt-8">{title}</h1>
-        <p className="mb-8 max-w-sm text-gray-600">{message}</p>
+        <p className="mb-8 max-w-sm text-brand-muted">{message}</p>
         <Link
           href="/"
-          className="inline-flex rounded-xl border-2 border-slate-300 bg-slate-200 px-6 py-4 font-semibold text-gray-800 transition-colors hover:border-orange-200 hover:bg-orange-100"
+          className="btn-tile px-6 py-4 font-semibold text-ink"
         >
           Volver al inicio
         </Link>

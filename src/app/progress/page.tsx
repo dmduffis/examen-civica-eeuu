@@ -49,12 +49,12 @@ export default function ProgressPage() {
       <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
         <div className="w-full px-6 sm:px-8 text-center max-w-md mx-auto">
           <h1 className="page-heading mb-3 page-title-in">Mi progreso</h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-brand-muted mb-6">
             La sincronización entre dispositivos no está disponible. Tu historial se guarda solo en este dispositivo.
           </p>
           <Link
             href="/"
-            className="inline-flex rounded-xl bg-amber-500 text-white font-semibold px-4 py-2 hover:bg-amber-600 transition-colors"
+            className="btn-brand px-4 py-2"
           >
             Volver al inicio
           </Link>
@@ -78,12 +78,12 @@ export default function ProgressPage() {
       <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
         <div className="w-full px-6 sm:px-8 text-center max-w-md mx-auto">
           <h1 className="page-heading mb-3 page-title-in">Mi progreso</h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-brand-muted mb-6">
             Inicia sesión para ver tu historial de quizzes.
           </p>
           <Link
             href="/login"
-            className="inline-flex rounded-xl bg-amber-500 text-white font-semibold px-4 py-2 hover:bg-amber-600 transition-colors"
+            className="btn-brand px-4 py-2"
           >
             Iniciar sesión
           </Link>
@@ -98,7 +98,7 @@ export default function ProgressPage() {
         <div className="w-full px-6 sm:px-8">
           <p className="text-center text-red-600">{error}</p>
           <div className="flex justify-center mt-4">
-            <Link href="/" className="text-amber-700 hover:underline">
+            <Link href="/" className="text-coral hover:underline">
               Volver al inicio
             </Link>
           </div>
@@ -114,7 +114,7 @@ export default function ProgressPage() {
           <h1 className="page-heading mb-2">
             Mi progreso
           </h1>
-          <p className="text-gray-600 mb-8">
+          <p className="text-brand-muted mb-8">
           Historial de tus quizzes. Inicia sesión en otro dispositivo para ver el mismo historial.
           </p>
         </div>
@@ -125,11 +125,11 @@ export default function ProgressPage() {
             <BeatLoader color="rgba(214, 169, 54, 0.6)" speedMultiplier={0.5} />
           </div>
         ) : history.length === 0 ? (
-          <div className="rounded-xl border-2 border-slate-200 bg-slate-50 p-8 text-center">
-            <p className="text-gray-600 mb-4">Aún no hay quizzes guardados.</p>
+          <div className="rounded-xl border-2 border-[var(--border-paper)] bg-paper-elevated p-8 text-center">
+            <p className="text-brand-muted mb-4">Aún no hay quizzes guardados.</p>
             <Link
               href="/quiz"
-              className="inline-flex rounded-xl bg-amber-500 text-white font-semibold px-4 py-2 hover:bg-amber-600 transition-colors"
+              className="btn-brand px-4 py-2"
             >
               Tomar Quiz
             </Link>
@@ -143,17 +143,17 @@ export default function ProgressPage() {
             {history.map((entry) => (
               <li
                 key={entry.id}
-                className="flex flex-wrap items-center justify-between gap-4 rounded-xl border-2 border-slate-200 bg-white p-4 shadow-sm"
+                className="flex flex-wrap items-center justify-between gap-4 rounded-xl border-2 border-[var(--border-paper)] bg-white p-4 shadow-sm"
               >
                 <div>
                   <p className="font-semibold text-[var(--title-blue)]">
                     {entry.scorePercent}% — {entry.correct} de {entry.total} correctas
                   </p>
-                  <p className="text-sm text-gray-500 mt-0.5">
+                  <p className="text-sm text-brand-muted mt-0.5">
                     {formatDate(entry.date)}
                   </p>
                 </div>
-                <div className="flex h-8 w-24 overflow-hidden rounded-full bg-slate-200">
+                <div className="flex h-8 w-24 overflow-hidden rounded-full bg-white">
                   <div
                     className="h-full bg-green-500 transition-all"
                     style={{ width: `${entry.scorePercent}%` }}
@@ -168,7 +168,7 @@ export default function ProgressPage() {
         <div className="mt-8">
           <Link
             href="/quiz"
-            className="inline-flex rounded-xl bg-amber-500 text-white font-semibold px-4 py-2 hover:bg-amber-600 transition-colors"
+            className="btn-brand px-4 py-2"
           >
             Tomar otro Quiz
           </Link>
