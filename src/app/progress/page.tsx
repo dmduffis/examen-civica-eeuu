@@ -46,7 +46,7 @@ export default function ProgressPage() {
 
   if (!isAuthEnabled) {
     return (
-      <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
+      <main className="flex flex-col w-full justify-center page-top pb-16">
         <div className="w-full px-6 sm:px-8 text-center max-w-md mx-auto">
           <h1 className="page-heading mb-3 page-title-in">Mi progreso</h1>
           <p className="text-brand-muted mb-6">
@@ -65,7 +65,7 @@ export default function ProgressPage() {
 
   if (authLoading) {
     return (
-      <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
+      <main className="flex flex-col w-full justify-center page-top pb-16">
         <div className="flex min-h-[40vh] items-center justify-center">
           <BeatLoader color="rgba(214, 169, 54, 0.6)" speedMultiplier={0.5} />
         </div>
@@ -75,7 +75,7 @@ export default function ProgressPage() {
 
   if (!user) {
     return (
-      <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
+      <main className="flex flex-col w-full justify-center page-top pb-16">
         <div className="w-full px-6 sm:px-8 text-center max-w-md mx-auto">
           <h1 className="page-heading mb-3 page-title-in">Mi progreso</h1>
           <p className="text-brand-muted mb-6">
@@ -94,7 +94,7 @@ export default function ProgressPage() {
 
   if (error) {
     return (
-      <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
+      <main className="flex flex-col w-full justify-center page-top pb-16">
         <div className="w-full px-6 sm:px-8">
           <p className="text-center text-red-600">{error}</p>
           <div className="flex justify-center mt-4">
@@ -108,7 +108,7 @@ export default function ProgressPage() {
   }
 
   return (
-    <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
+    <main className="flex flex-col w-full justify-center page-top pb-16">
       <div className="w-full px-6 sm:px-8">
         <div className="page-title-in">
           <h1 className="page-heading mb-2">

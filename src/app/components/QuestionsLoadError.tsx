@@ -24,7 +24,7 @@ export default function QuestionsLoadError({
       : "No se pudo cargar el contenido";
 
   return (
-    <main className="flex w-full flex-col items-center justify-center px-6 pb-16 pt-6 mt-2 sm:mt-8 sm:pt-12">
+    <main className="flex w-full flex-col items-center justify-center px-6 pb-16 page-top">
       <div className="mx-auto flex w-full max-w-lg flex-col items-center text-center">
         {illustration}
         <h1 className="page-heading mb-3 mt-8">{title}</h1>

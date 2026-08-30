@@ -57,7 +57,7 @@ export default function Results({
   }, [correctPercentage]);
 
   return (
-    <main className="flex flex-col w-full justify-center pt-4 sm:pt-12 pb-16">
+    <main className="flex flex-col w-full justify-center page-top pb-16">
       {correctPercentage === 100 && (
         <div className="flex justify-center mb-6 home-fade-in">
           <Image
@@ -73,11 +73,17 @@ export default function Results({
       <p className="text-5xl font-bold text-ink text-center page-title-in">
         {correctPercentage}%
       </p>
-      <p className="text-brand-muted text-center text-sm mt-3 page-content-in opacity-0" style={{ animationDelay: "0.1s" }}>
+      <p
+        className="text-brand-muted text-center text-sm mt-3 page-content-in opacity-0"
+        style={{ animationDelay: "0.1s" }}
+      >
         {correctAnswers} de {totalQuestions} correctas
       </p>
 
-      <div className="w-full max-w-xs mx-auto mt-8 page-content-in opacity-0" style={{ animationDelay: "0.2s" }}>
+      <div
+        className="w-full max-w-xs mx-auto mt-8 page-content-in opacity-0"
+        style={{ animationDelay: "0.2s" }}
+      >
         <div className="flex h-2 overflow-hidden bg-white">
           <div
             className="bg-green-500 transition-all duration-500"
@@ -94,11 +100,17 @@ export default function Results({
         </div>
       </div>
 
-      <h1 className="page-heading text-center mt-6 page-title-in opacity-0" style={{ animationDelay: "0.25s" }}>
+      <h1
+        className="page-heading text-center mt-6 page-title-in opacity-0"
+        style={{ animationDelay: "0.25s" }}
+      >
         {message}
       </h1>
 
-      <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12 max-w-sm mx-auto w-full page-content-in opacity-0" style={{ animationDelay: "0.35s" }}>
+      <div
+        className="flex flex-col sm:flex-row gap-4 justify-center mt-12 max-w-sm mx-auto w-full page-content-in opacity-0"
+        style={{ animationDelay: "0.35s" }}
+      >
         <button
           onClick={() => restartQuiz()}
           className="btn-tile py-4 px-6 font-semibold"

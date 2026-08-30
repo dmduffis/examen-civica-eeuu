@@ -81,7 +81,7 @@ const customIconClass = "size-[4.25rem] sm:size-[5.25rem] lg:size-24";
 
 export default function Home() {
   return (
-    <main className="flex flex-col w-full items-center justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16 lg:items-stretch">
+    <main className="flex flex-col w-full items-center justify-center page-top pb-16 lg:items-stretch">
       <div className="w-full min-w-0 px-6 sm:px-8 max-w-6xl lg:max-w-none mx-auto lg:mx-0">
         {/* 1. Hero header */}
         <header className="page-title-in mb-4 sm:mb-5 lg:mb-6 text-left max-w-3xl">
@@ -197,7 +197,7 @@ export default function Home() {
         {/* 4. Statistics */}
         <section
           aria-labelledby="home-stats-heading"
-          className="mt-16 sm:mt-20 pt-12 sm:pt-14 border-t border-[var(--border-paper)] page-content-in opacity-0"
+          className="mt-16 sm:mt-20 pt-12 sm:pt-14 page-content-in opacity-0"
           style={{ animationDelay: "0.75s" }}
         >
           <h2

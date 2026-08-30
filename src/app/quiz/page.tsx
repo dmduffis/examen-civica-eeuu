@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { FileText, XCircle } from "lucide-react";
+import { XCircle } from "lucide-react";
 import { useAuth } from "../lib/auth-context";
 import { addQuizResult } from "../lib/profile-api";
 import Image from "next/image";
@@ -15,6 +15,8 @@ import type { QuestionItem } from "../lib/question-types";
 import { questionDisplayText } from "../lib/question-types";
 import type { DisplayLang } from "../lib/question-types";
 import { backendUrl } from "../lib/backend-url";
+import LangSelect from "../components/LangSelect";
+import PageHeadingWithIcon from "../components/PageHeadingWithIcon";
 
 function shuffle<T>(arr: T[]): T[] {
   const out = [...arr];
@@ -73,13 +75,13 @@ export default function QuizPage() {
 
   const answerClasses = {
     correct:
-      "btn-tile flex flex-row justify-between w-full p-4 items-center mt-4 border-2 border-green-500",
+      "btn-tile-gray flex flex-row justify-between w-full p-4 items-center mt-4 !border-green-500",
     incorrect:
-      "btn-tile flex flex-row justify-between w-full p-4 items-center mt-4 border-2 border-red-500",
+      "btn-tile-gray flex flex-row justify-between w-full p-4 items-center mt-4 !border-red-500",
     default:
-      "btn-tile flex flex-row justify-between w-full p-4 items-center mt-4",
+      "btn-tile-gray flex flex-row justify-between w-full p-4 items-center mt-4",
     defaultAfter:
-      "btn-tile flex flex-row justify-between w-full p-4 items-center mt-4 opacity-70",
+      "btn-tile-gray flex flex-row justify-between w-full p-4 items-center mt-4 opacity-70",
   };
 
   const feedbackClasses = {
@@ -179,19 +181,20 @@ export default function QuizPage() {
     );
   } else {
     return !started ? (
-      <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
+      <main className="flex flex-col w-full justify-center page-top pb-16">
         {loading ? (
           <div className="flex min-h-[70vh] w-full flex-col items-center justify-center">
             <BeatLoader color="rgba(214, 169, 54, 0.6)" speedMultiplier={0.5} />
           </div>
         ) : (
           <div className="w-full px-6 sm:px-8">
-            <div className="text-left mb-8 sm:mb-10 page-title-in">
-              <h1 className="page-heading mb-3">Practica el Quiz</h1>
-              <p className="text-brand-muted">
-                Elige todas las preguntas o un test al azar para prepararte para
-                la entrevista de naturalización.
-              </p>
+            <div className="w-full mb-0 page-title-in">
+              <PageHeadingWithIcon
+                iconSrc="/icon_quiz_practice.png"
+                title="Practica el Quiz"
+                subtitle="Elige todas las preguntas o un test al azar para prepararte para la entrevista de naturalización."
+                priority
+              />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-8 sm:gap-[5rem] items-center w-full min-w-0">
@@ -258,12 +261,9 @@ export default function QuizPage() {
         )}
       </main>
     ) : (
-      <main className="flex flex-col w-full justify-center mt-2 sm:mt-8">
+      <main className="flex flex-col w-full justify-center page-top pb-16">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="page-heading flex items-center gap-2">
-            <FileText size={40} className="shrink-0 text-ink" aria-hidden />
-            Quiz
-          </h1>
+          <h1 className="page-heading">Quiz</h1>
           <button
             type="button"
             onClick={() => restartQuiz()}
@@ -280,23 +280,7 @@ export default function QuizPage() {
             <p className="text-lg font-bold flex-1 min-w-0">
               {currentQuestionText}
             </p>
-            <span className="flex items-center gap-1 text-sm text-brand-muted">
-              <button
-                type="button"
-                onClick={() => setDisplayLang("es")}
-                className={`px-2 py-1 rounded ${displayLang === "es" ? "bg-coral-soft text-ink font-medium" : "hover:bg-coral-soft"}`}
-              >
-                ES
-              </button>
-              <span aria-hidden>|</span>
-              <button
-                type="button"
-                onClick={() => setDisplayLang("en")}
-                className={`px-2 py-1 rounded ${displayLang === "en" ? "bg-coral-soft text-ink font-medium" : "hover:bg-coral-soft"}`}
-              >
-                EN
-              </button>
-            </span>
+            <LangSelect value={displayLang} onChange={setDisplayLang} />
           </div>
 
           {sortedAnswersArray.map((answer, idx) => {

@@ -41,7 +41,7 @@ export default function ResetPasswordPage() {
 
   if (!isAuthEnabled) {
     return (
-      <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16 px-6">
+      <main className="flex flex-col w-full justify-center page-top pb-16 px-6">
         <div className="max-w-sm mx-auto text-center">
           <h1 className="page-heading mb-3 page-title-in">
             Restablecer contraseña
@@ -62,7 +62,7 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16 px-6">
+      <main className="flex flex-col w-full justify-center page-top pb-16 px-6">
         <div className="max-w-sm mx-auto w-full text-center">
           <div className="page-title-in">
             <h1 className="page-heading mb-2">
@@ -89,7 +89,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16 px-6">
+    <main className="flex flex-col w-full justify-center page-top pb-16 px-6">
       <div className="max-w-sm mx-auto w-full">
         <div className="page-title-in">
           <h1 className="page-heading mb-2">

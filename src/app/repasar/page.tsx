@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { CheckCheck, X, Check } from "lucide-react";
+import { X, Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { BeatLoader } from "react-spinners";
 import {
   getStoredStateCode,
@@ -19,6 +19,8 @@ import { questionDisplayText, answerDisplayText } from "../lib/question-types";
 import type { DisplayLang } from "../lib/question-types";
 import { backendUrl } from "../lib/backend-url";
 import QuestionsLoadError from "../components/QuestionsLoadError";
+import LangSelect from "../components/LangSelect";
+import PageHeadingWithIcon from "../components/PageHeadingWithIcon";
 
 export default function FlashcardsPage() {
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
@@ -37,6 +39,7 @@ export default function FlashcardsPage() {
   const [flipped, setFlipped] = useState(false);
   const [displayLang, setDisplayLang] = useState<DisplayLang>("es");
   const { user, isAuthEnabled } = useAuth();
+  const selectionInitialized = useRef(false);
 
   useEffect(() => {
     setSelectedStateCode(getStoredStateCode());
@@ -86,7 +89,11 @@ export default function FlashcardsPage() {
           fetchStates().catch(() => []),
         ]);
         setQuestions(response.data);
-        setSelectedIds(new Set(response.data.map((q: QuestionItem) => q._id)));
+        setSelectedIds((prev) => {
+          if (selectionInitialized.current) return prev;
+          selectionInitialized.current = true;
+          return new Set(response.data.map((q: QuestionItem) => q._id));
+        });
         setStates(statesList);
       } catch (err) {
         console.error(err);
@@ -114,6 +121,9 @@ export default function FlashcardsPage() {
   const deselectAll = () => {
     setSelectedIds(new Set());
   };
+
+  const allSelected =
+    questions.length > 0 && selectedIds.size === questions.length;
 
   const selectedQuestions = questions.filter((q) => selectedIds.has(q._id));
 
@@ -162,7 +172,7 @@ export default function FlashcardsPage() {
   if (view === "study") {
     if (selectedQuestions.length === 0) {
       return (
-        <main className="flex flex-col w-full justify-center mt-2 sm:mt-8">
+        <main className="flex flex-col w-full justify-center page-top">
           <p className="text-center text-brand-muted">
             No hay preguntas seleccionadas.
           </p>
@@ -195,10 +205,13 @@ export default function FlashcardsPage() {
     };
 
     return (
-      <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
+      <main className="flex flex-col w-full justify-center page-top pb-16">
         <div className="w-full px-6 sm:px-8">
-          <div className="text-left mb-8 sm:mb-10 page-title-in">
-            <h1 className="page-heading mb-3">Repasar</h1>
+          <div className="w-full mb-0 page-title-in">
+            <PageHeadingWithIcon
+              iconSrc="/icon_quiz_review.png"
+              title="Repasar"
+            />
           </div>
           <div
             className="flex flex-wrap items-center justify-between gap-2 mb-4 page-content-in opacity-0"
@@ -207,23 +220,6 @@ export default function FlashcardsPage() {
             <span className="text-sm text-brand-muted">
               {currentIndex + 1} / {studyQueue.length}
               {showWrongOnly && " (solo incorrectas)"}
-            </span>
-            <span className="flex items-center gap-1 text-sm text-brand-muted">
-              <button
-                type="button"
-                onClick={() => setDisplayLang("es")}
-                className={`px-2 py-1 rounded ${displayLang === "es" ? "bg-coral-soft text-ink font-medium" : "hover:bg-coral-soft"}`}
-              >
-                ES
-              </button>
-              <span aria-hidden>|</span>
-              <button
-                type="button"
-                onClick={() => setDisplayLang("en")}
-                className={`px-2 py-1 rounded ${displayLang === "en" ? "bg-coral-soft text-ink font-medium" : "hover:bg-coral-soft"}`}
-              >
-                EN
-              </button>
             </span>
             <button
               onClick={() => setView("select")}
@@ -234,7 +230,7 @@ export default function FlashcardsPage() {
           </div>
 
           <div
-            className="min-h-[200px] rounded-xl border-2 border-[var(--border-paper)] bg-white shadow-sm flex flex-col items-center justify-center p-6 cursor-pointer select-none touch-manipulation page-content-in opacity-0"
+            className="card-raised min-h-[200px] flex flex-col items-center justify-center p-6 cursor-pointer select-none touch-manipulation page-content-in opacity-0"
             style={{ animationDelay: "0.2s" }}
             onClick={() => setFlipped((f) => !f)}
           >
@@ -306,53 +302,66 @@ export default function FlashcardsPage() {
             </p>
           </div>
 
-          {flipped && (
-            <div className="flex gap-3 justify-center mt-5">
+          <div className="flex flex-wrap items-center justify-between gap-3 mt-5">
+            <div className="flex gap-2">
               <button
                 type="button"
+                disabled={!flipped}
                 onClick={(e) => {
                   e.stopPropagation();
                   markCurrent(true);
                 }}
-                className="btn-success-soft py-2.5 px-5"
+                className="btn-success-soft py-2.5 px-4 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Correcto
               </button>
               <button
                 type="button"
+                disabled={!flipped}
                 onClick={(e) => {
                   e.stopPropagation();
                   markCurrent(false);
                 }}
-                className="btn-danger-soft py-2.5 px-5"
+                className="btn-danger-soft py-2.5 px-4 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Incorrecto
               </button>
             </div>
-          )}
 
-          <div className="flex justify-between items-center mt-8 gap-4">
-            <button
-              onClick={() => {
-                setCurrentIndex((i) => Math.max(0, i - 1));
-                setFlipped(false);
-              }}
-              disabled={currentIndex === 0}
-              className="btn-tile py-2.5 px-5 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Anterior
-            </button>
-            <button
-              onClick={() => {
-                setCurrentIndex((i) =>
-                  i >= studyQueue.length - 1 ? 0 : i + 1,
-                );
-                setFlipped(false);
-              }}
-              className="btn-tile py-2.5 px-5 font-medium"
-            >
-              {currentIndex >= studyQueue.length - 1 ? "Primera" : "Siguiente"}
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <LangSelect value={displayLang} onChange={setDisplayLang} />
+              <div className="flex gap-2 ml-3 sm:ml-5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCurrentIndex((i) => Math.max(0, i - 1));
+                    setFlipped(false);
+                  }}
+                  disabled={currentIndex === 0}
+                  className="btn-tile h-11 w-11 p-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Anterior"
+                >
+                  <ChevronLeft size={22} aria-hidden />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCurrentIndex((i) =>
+                      i >= studyQueue.length - 1 ? 0 : i + 1,
+                    );
+                    setFlipped(false);
+                  }}
+                  className="btn-tile h-11 w-11 p-0"
+                  aria-label={
+                    currentIndex >= studyQueue.length - 1
+                      ? "Primera"
+                      : "Siguiente"
+                  }
+                >
+                  <ChevronRight size={22} aria-hidden />
+                </button>
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-center mt-6 pt-4 border-t border-[var(--border-paper)]">
@@ -379,77 +388,85 @@ export default function FlashcardsPage() {
   }
 
   return (
-    <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
+    <main className="flex flex-col w-full justify-center page-top pb-16">
       <div className="w-full px-6 sm:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8 sm:mb-10">
-          <div className="text-left min-w-0 page-title-in">
-            <h1 className="page-heading mb-3">Repasar</h1>
-            <p className="text-brand-muted">
-              Elige las preguntas que quieres repasar y estudia con tarjetas.
-            </p>
-          </div>
-          <span className="flex items-center gap-1 text-sm text-brand-muted shrink-0 sm:pt-1">
-            <button
-              type="button"
-              onClick={() => setDisplayLang("es")}
-              className={`px-2 py-1 rounded ${displayLang === "es" ? "bg-coral-soft text-ink font-medium" : "hover:bg-coral-soft"}`}
-            >
-              ES
-            </button>
-            <span aria-hidden>|</span>
-            <button
-              type="button"
-              onClick={() => setDisplayLang("en")}
-              className={`px-2 py-1 rounded ${displayLang === "en" ? "bg-coral-soft text-ink font-medium" : "hover:bg-coral-soft"}`}
-            >
-              EN
-            </button>
-          </span>
+        <div className="w-full mb-0 page-title-in">
+          <PageHeadingWithIcon
+            iconSrc="/icon_quiz_review.png"
+            title="Repasar"
+            subtitle="Elige las preguntas que quieres repasar y estudia con tarjetas."
+          />
         </div>
 
         <div
-          className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6 page-content-in opacity-0"
+          className="flex flex-col sm:flex-row sm:items-end sm:justify-start gap-4 mb-6 page-content-in opacity-0"
           style={{ animationDelay: "0.1s" }}
         >
-          <div className="flex gap-2 shrink-0 order-2 sm:order-1">
+          <div className="flex flex-col sm:flex-row gap-4 min-w-0">
+            <section className="min-w-0 sm:text-left">
+              <label className="block text-sm font-medium text-ink mb-1.5">
+                Tu estado
+              </label>
+              <select
+                value={selectedStateCode ?? ""}
+                onChange={(e) => {
+                  const code = e.target.value || null;
+                  setSelectedStateCode(code);
+                  setStoredStateCode(code);
+                  if (isAuthEnabled && user)
+                    updateProfileState(code).catch(() => {});
+                }}
+                className="select-raised sm:max-w-xs"
+              >
+                <option value="">— Seleccionar estado —</option>
+                {states.map((s) => (
+                  <option key={s.stateCode} value={s.stateCode}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </section>
+            <section className="min-w-0">
+              <label className="block text-sm font-medium text-ink mb-1.5">
+                Idioma
+              </label>
+              <LangSelect value={displayLang} onChange={setDisplayLang} />
+            </section>
+          </div>
+          <div className="flex gap-2 shrink-0 sm:pb-0">
             <button
+              type="button"
               onClick={selectAll}
-              className="btn-tile h-11 px-3 text-sm font-medium gap-1.5"
+              aria-pressed={allSelected}
+              className="btn-tile h-11 px-3.5 text-sm font-medium gap-2"
             >
-              <CheckCheck size={16} className="shrink-0" aria-hidden />
               Todas
+              <span
+                className={`inline-flex size-5 shrink-0 items-center justify-center rounded-full ${
+                  allSelected
+                    ? "bg-emerald-500 text-white"
+                    : "border-2 border-current text-current opacity-45"
+                }`}
+                aria-hidden
+              >
+                <Check size={12} strokeWidth={3} />
+              </span>
             </button>
             <button
+              type="button"
               onClick={deselectAll}
-              className="btn-tile h-11 px-3 text-sm font-medium gap-1.5"
+              disabled={selectedIds.size === 0}
+              className="btn-tile h-11 px-3.5 text-sm font-medium gap-2"
             >
-              <X size={16} className="shrink-0" aria-hidden />
               Quitar todas
+              <span
+                className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--surface-coral)] text-white"
+                aria-hidden
+              >
+                <X size={12} strokeWidth={3} />
+              </span>
             </button>
           </div>
-          <section className="min-w-0 order-1 sm:order-2 sm:text-right">
-            <label className="block text-sm font-medium text-ink mb-1.5">
-              Tu estado (para las 4 preguntas de tu estado)
-            </label>
-            <select
-              value={selectedStateCode ?? ""}
-              onChange={(e) => {
-                const code = e.target.value || null;
-                setSelectedStateCode(code);
-                setStoredStateCode(code);
-                if (isAuthEnabled && user)
-                  updateProfileState(code).catch(() => {});
-              }}
-              className="w-full sm:max-w-xs h-11 rounded-xl border-2 border-[var(--border-paper)] bg-white py-2.5 px-3 text-ink shadow-sm sm:ml-auto"
-            >
-              <option value="">— Seleccionar estado —</option>
-              {states.map((s) => (
-                <option key={s.stateCode} value={s.stateCode}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          </section>
         </div>
 
         <p className="text-xs text-brand-muted mb-2">

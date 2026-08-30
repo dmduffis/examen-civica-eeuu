@@ -20,6 +20,8 @@ import { questionDisplayText, answerDisplayText } from "../lib/question-types";
 import type { DisplayLang } from "../lib/question-types";
 import { backendUrl } from "../lib/backend-url";
 import QuestionsLoadError from "../components/QuestionsLoadError";
+import LangSelect from "../components/LangSelect";
+import PageHeadingWithIcon from "../components/PageHeadingWithIcon";
 
 export default function PreguntasPage() {
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
@@ -111,55 +113,44 @@ export default function PreguntasPage() {
   };
 
   return (
-    <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
+    <main className="flex flex-col w-full justify-center page-top pb-16">
       <div className="w-full px-6 sm:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8 sm:mb-10">
-          <div className="text-left min-w-0 page-title-in">
-            <h1 className="page-heading mb-3">Lista de Preguntas</h1>
-            <p className="text-brand-muted">
-              Hay 100 preguntas en total; en la entrevista te harán 20 de forma
-              oral. Aquí puedes estudiarlas todas con sus respuestas correctas.
-            </p>
-          </div>
-          <span className="flex items-center gap-1 text-sm text-brand-muted shrink-0 sm:pt-1">
-            <button
-              type="button"
-              onClick={() => setDisplayLang("es")}
-              className={`px-2 py-1 rounded ${displayLang === "es" ? "bg-coral-soft text-ink font-medium" : "hover:bg-coral-soft"}`}
-            >
-              ES
-            </button>
-            <span aria-hidden>|</span>
-            <button
-              type="button"
-              onClick={() => setDisplayLang("en")}
-              className={`px-2 py-1 rounded ${displayLang === "en" ? "bg-coral-soft text-ink font-medium" : "hover:bg-coral-soft"}`}
-            >
-              EN
-            </button>
-          </span>
+        <div className="w-full mb-0 page-title-in">
+          <PageHeadingWithIcon
+            iconSrc="/icon_quiz_questions.png"
+            title="Lista de Preguntas"
+            subtitle="Hay 100 preguntas en total; en la entrevista te harán 20 de forma oral. Aquí puedes estudiarlas todas con sus respuestas correctas."
+          />
         </div>
         <div
           className="flex flex-col sm:flex-row gap-8 justify-between items-end w-full mb-10 page-content-in opacity-0"
           style={{ animationDelay: "0.1s" }}
         >
-          <section className="min-w-0 w-full sm:max-w-xs">
-            <label className="block text-sm font-medium text-ink mb-1.5">
-              Tu estado (para las 4 preguntas específicas de tu estado)
-            </label>
-            <select
-              value={selectedStateCode ?? ""}
-              onChange={(e) => handleStateChange(e.target.value || null)}
-              className="input-field h-11"
-            >
-              <option value="">— Seleccionar estado —</option>
-              {states.map((s) => (
-                <option key={s.stateCode} value={s.stateCode}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          </section>
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto min-w-0">
+            <section className="min-w-0 w-full sm:max-w-xs">
+              <label className="block text-sm font-medium text-ink mb-1.5">
+                Tu estado
+              </label>
+              <select
+                value={selectedStateCode ?? ""}
+                onChange={(e) => handleStateChange(e.target.value || null)}
+                className="select-raised"
+              >
+                <option value="">— Seleccionar estado —</option>
+                {states.map((s) => (
+                  <option key={s.stateCode} value={s.stateCode}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </section>
+            <section className="min-w-0 w-full sm:w-auto">
+              <label className="block text-sm font-medium text-ink mb-1.5">
+                Idioma
+              </label>
+              <LangSelect value={displayLang} onChange={setDisplayLang} />
+            </section>
+          </div>
           <div className="w-full sm:w-auto shrink-0">
             <button
               type="button"

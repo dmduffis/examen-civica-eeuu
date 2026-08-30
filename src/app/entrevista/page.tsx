@@ -2,10 +2,18 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Mic, Check } from "lucide-react";
+import {
+  Mic,
+  Check,
+  Headphones,
+  ClipboardCheck,
+  type LucideIcon,
+} from "lucide-react";
 import { BeatLoader } from "react-spinners";
 import { VoiceBars } from "../components/VoiceBars";
 import EntrevistaLoadErrorIllustration from "../components/EntrevistaLoadErrorIllustration";
+import PageHeadingWithIcon from "../components/PageHeadingWithIcon";
+import ProDiamond from "../components/ProDiamond";
 import { backendUrl } from "../lib/backend-url";
 import interviewHero from "../assets/images/officer_quiz.png";
 
@@ -18,6 +26,29 @@ type InterviewQuestion = {
 
 const CONNECTION_ERROR_ES =
   "No se pudo conectar. Comprueba tu conexión a internet e inténtalo de nuevo.";
+
+const interviewSteps: {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}[] = [
+  {
+    icon: Headphones,
+    title: "Escucha",
+    description:
+      "La pregunta se reproduce en inglés, como en la entrevista real.",
+  },
+  {
+    icon: Mic,
+    title: "Responde",
+    description: "Habla en voz alta con el micrófono cuando sea tu turno.",
+  },
+  {
+    icon: ClipboardCheck,
+    title: "Revisa",
+    description: "Al final verás cómo te fue y qué puedes mejorar.",
+  },
+];
 
 /** Show user-friendly message; hide technical details from backend/env. */
 function friendlyError(msg: string | undefined): string {
@@ -33,10 +64,31 @@ function friendlyError(msg: string | undefined): string {
   )
     return CONNECTION_ERROR_ES;
   if (
-    m.includes("voice") &&
-    (m.includes("not available") || m.includes("no está"))
+    m.includes("elevenlabs") ||
+    m.includes("tts") ||
+    m.includes("stt") ||
+    m.includes("payment_required") ||
+    m.includes("payment_issue") ||
+    m.includes("payment") ||
+    m.includes("subscription") ||
+    m.includes("invoice") ||
+    m.includes('"detail"') ||
+    m.includes("request_id") ||
+    (m.includes("voice") &&
+      (m.includes("not available") ||
+        m.includes("no está") ||
+        m.includes("401") ||
+        m.includes("402") ||
+        m.includes("403") ||
+        m.includes("429") ||
+        m.includes("500") ||
+        m.includes("502") ||
+        m.includes("503")))
   )
-    return "El servicio de voz no está disponible en este momento.";
+    return "El servicio de voz no está disponible en este momento. Inténtalo de nuevo más tarde.";
+  // Hide raw JSON / provider dumps
+  if (m.includes("{") || m.includes("http") || /:\s*\d{3}\b/.test(m))
+    return "El servicio de voz no está disponible en este momento. Inténtalo de nuevo más tarde.";
   return msg;
 }
 
@@ -421,73 +473,104 @@ export default function InterviewPage() {
   const isStartScreen = status === "idle";
 
   return (
-    <main className="flex flex-col w-full justify-center pt-6 mt-2 sm:pt-16 sm:mt-8 pb-16">
+    <main className="flex flex-col w-full justify-center page-top pb-16">
       <div className="w-full min-w-0 px-6 sm:px-8">
         {isStartScreen ? (
-          <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] gap-8 sm:gap-[5rem] items-start w-full min-w-0">
-            {/* Content left */}
-            <div className="order-2 sm:order-1 w-full min-w-0">
-              <div className="page-title-in">
-                <h1 className="page-heading mb-2">Entrevista de Práctica</h1>
-                <p className="text-brand-muted mb-8">
-                  Prepárate con confianza: practica en inglés y en audio,
-                  escucha las preguntas y responde en voz alta con el micrófono,
-                  igual que en la entrevista de naturalización.
-                </p>
-              </div>
-
-              {status === "idle" && (
-                <div
-                  className="flex flex-col gap-4 page-content-in opacity-0"
-                  style={{ animationDelay: "0.15s" }}
-                >
-                  <div>
-                    <label
-                      htmlFor="userName"
-                      className="block text-sm font-medium text-ink mb-1"
-                    >
-                      Tu nombre (opcional)
-                    </label>
-                    <input
-                      id="userName"
-                      type="text"
-                      value={userName}
-                      onChange={(e) => setUserName(e.target.value)}
-                      className="w-full rounded-xl border-2 border-[var(--border-paper)] px-4 py-2 text-ink"
-                      placeholder="Ej. María"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={startInterview}
-                    className="btn-brand py-4 px-6"
-                  >
-                    Iniciar entrevista
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Hero right - only on start screen */}
-            <div
-              className="order-1 sm:order-2 flex justify-center sm:justify-start items-center min-w-0 home-fade-in"
-              style={{ animationDelay: "0.1s" }}
-            >
-              <Image
-                src={interviewHero}
-                width={interviewHero.width}
-                height={interviewHero.height}
-                alt="Oficial de práctica para la entrevista"
-                className="w-[min(100%,320px)] sm:w-[min(100%,440px)] h-auto object-contain"
+          <>
+            <div className="w-full mb-0 page-title-in">
+              <PageHeadingWithIcon
+                iconSrc="/icon_quiz_interview.png"
+                title="Entrevista de Práctica"
+                subtitle="Prepárate con confianza: practica en inglés y en audio, escucha las preguntas y responde en voz alta con el micrófono, igual que en la entrevista de naturalización."
+                priority
               />
             </div>
-          </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] gap-8 sm:gap-[5rem] items-start w-full min-w-0">
+              {/* Content left */}
+              <div className="order-2 sm:order-1 w-full min-w-0">
+                {status === "idle" && (
+                  <div
+                    className="flex flex-col gap-6 page-content-in opacity-0"
+                    style={{ animationDelay: "0.15s" }}
+                  >
+                    <ol
+                      className="list-none m-0 p-0 mb-4 sm:mb-6"
+                      aria-label="Cómo funciona la entrevista"
+                    >
+                      {interviewSteps.map(
+                        ({ icon: Icon, title, description }) => (
+                          <li
+                            key={title}
+                            className="home-step home-step--compact"
+                          >
+                            <span className="home-step-icon" aria-hidden>
+                              <Icon size={18} strokeWidth={2.25} />
+                            </span>
+                            <div className="min-w-0">
+                              <p className="home-step-title text-ink">
+                                {title}
+                              </p>
+                              <p className="home-step-desc">{description}</p>
+                            </div>
+                          </li>
+                        ),
+                      )}
+                    </ol>
+
+                    <div>
+                      <label
+                        htmlFor="userName"
+                        className="block text-sm font-medium text-ink mb-1"
+                      >
+                        Tu nombre (opcional)
+                      </label>
+                      <input
+                        id="userName"
+                        type="text"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        className="w-full rounded-xl border-2 border-[var(--border-paper)] px-4 py-2 text-ink"
+                        placeholder="Ej. María"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={startInterview}
+                      className="btn-brand inline-flex items-center justify-center gap-2 py-4 px-6"
+                    >
+                      Iniciar entrevista
+                      <ProDiamond className="h-4 w-4 translate-y-0 text-white" />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Hero right - only on start screen */}
+              <div
+                className="order-1 sm:order-2 flex justify-center sm:justify-start items-center min-w-0 home-fade-in"
+                style={{ animationDelay: "0.1s" }}
+              >
+                <Image
+                  src={interviewHero}
+                  width={interviewHero.width}
+                  height={interviewHero.height}
+                  alt="Oficial de práctica para la entrevista"
+                  className="w-[min(100%,320px)] sm:w-[min(100%,440px)] h-auto object-contain"
+                />
+              </div>
+            </div>
+          </>
         ) : (
           /* Interview in progress: no image, single column */
           <div className="max-w-2xl mx-auto w-full">
-            <h1 className="page-heading mb-6 text-center page-title-in">
-              Entrevista de Práctica
-            </h1>
+            <div className="w-full mb-0 page-title-in">
+              <PageHeadingWithIcon
+                iconSrc="/icon_quiz_interview.png"
+                title="Entrevista de Práctica"
+                titleClassName="page-heading mb-0"
+              />
+            </div>
 
             {status === "loading" && (
               <div className="flex flex-col items-center gap-6">

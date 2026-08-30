@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../lib/auth-context";
 import { UserDropdown } from "./ui/user-dropdown";
 import { Avatar, AvatarFallback } from "./ui/avatar";
+import ProDiamond from "./ProDiamond";
 
 export default function Nav() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -56,8 +57,12 @@ export default function Nav() {
           <Link href="/quiz" className={linkClass}>
             Quiz
           </Link>
-          <Link href="/entrevista" className={linkClass}>
+          <Link
+            href="/entrevista"
+            className={`${linkClass} inline-flex items-center gap-1.5`}
+          >
             Entrevista
+            <ProDiamond />
           </Link>
           <span
             className="h-5 w-px shrink-0 self-center bg-white/20"
@@ -161,10 +166,11 @@ export default function Nav() {
               </Link>
               <Link
                 href="/entrevista"
-                className={drawerLinkClass}
+                className={`${drawerLinkClass} inline-flex items-center gap-1.5`}
                 onClick={closeDrawer}
               >
                 Entrevista
+                <ProDiamond />
               </Link>
             </div>
             <span className="h-px bg-[var(--border-paper)] my-4" aria-hidden />
