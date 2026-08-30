@@ -2,7 +2,17 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { X, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  X,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  RefreshCw,
+  RotateCcw,
+  Settings2,
+  ThumbsUp,
+} from "lucide-react";
 import { BeatLoader } from "react-spinners";
 import {
   getStoredStateCode,
@@ -34,10 +44,11 @@ export default function FlashcardsPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [view, setView] = useState<"select" | "study">("select");
   const [studyQueue, setStudyQueue] = useState<QuestionItem[]>([]);
-  const [marks, setMarks] = useState<Record<string, "right" | "wrong">>({});
+  const [knownIds, setKnownIds] = useState<Set<string>>(new Set());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [displayLang, setDisplayLang] = useState<DisplayLang>("es");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const { user, isAuthEnabled } = useAuth();
   const selectionInitialized = useRef(false);
 
@@ -128,34 +139,37 @@ export default function FlashcardsPage() {
   const selectedQuestions = questions.filter((q) => selectedIds.has(q._id));
 
   const startStudy = () => {
-    setMarks({});
+    setKnownIds(new Set());
     setStudyQueue(selectedQuestions);
     setCurrentIndex(0);
     setFlipped(false);
+    setFiltersOpen(false);
     setView("study");
   };
 
-  const markCurrent = (right: boolean) => {
+  const markAsKnown = () => {
     if (!currentQuestion) return;
-    setMarks((prev) => ({
-      ...prev,
-      [currentQuestion._id]: right ? "right" : "wrong",
-    }));
-    // Advance to next card (or first if at end)
-    setCurrentIndex((i) => (i >= studyQueue.length - 1 ? 0 : i + 1));
+    const id = currentQuestion._id;
+    const nextQueue = studyQueue.filter((q) => q._id !== id);
+    setKnownIds((prev) => new Set(prev).add(id));
+    setStudyQueue(nextQueue);
+    setCurrentIndex((i) =>
+      nextQueue.length === 0 ? 0 : i >= nextQueue.length ? 0 : i,
+    );
     setFlipped(false);
   };
 
-  const wrongCount = selectedQuestions.filter(
-    (q) => marks[q._id] === "wrong",
-  ).length;
-  const showWrongOnly =
-    studyQueue.length > 0 && studyQueue.length < selectedQuestions.length;
+  const resetProgress = () => {
+    setKnownIds(new Set());
+    setStudyQueue(selectedQuestions);
+    setCurrentIndex(0);
+    setFlipped(false);
+  };
 
+  const knownCount = knownIds.size;
   const currentQuestion = studyQueue[currentIndex];
   const correctAnswers =
     currentQuestion?.answers.filter((a) => a.isCorrect) ?? [];
-  const currentMark = currentQuestion ? marks[currentQuestion._id] : undefined;
 
   if (loading) {
     return (
@@ -188,21 +202,8 @@ export default function FlashcardsPage() {
       );
     }
 
-    const startWrongOnly = () => {
-      const wrongOnly = selectedQuestions.filter(
-        (q) => marks[q._id] === "wrong",
-      );
-      if (wrongOnly.length === 0) return;
-      setStudyQueue(wrongOnly);
-      setCurrentIndex(0);
-      setFlipped(false);
-    };
-
-    const backToAll = () => {
-      setStudyQueue(selectedQuestions);
-      setCurrentIndex(0);
-      setFlipped(false);
-    };
+    const allKnown = studyQueue.length === 0 && knownCount > 0;
+    const needsState = !!currentQuestion?.isStateSpecific && !selectedStateCode;
 
     return (
       <main className="flex flex-col w-full justify-center page-top pb-16">
@@ -214,37 +215,122 @@ export default function FlashcardsPage() {
             />
           </div>
           <div
-            className="flex flex-wrap items-center justify-between gap-2 mb-4 page-content-in opacity-0"
+            className="mb-4 page-content-in opacity-0"
             style={{ animationDelay: "0.1s" }}
           >
-            <span className="text-sm text-brand-muted">
-              {currentIndex + 1} / {studyQueue.length}
-              {showWrongOnly && " (solo incorrectas)"}
-            </span>
-            <button
-              onClick={() => setView("select")}
-              className="text-sm text-brand-muted hover:text-ink hover:underline"
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-sm text-brand-muted">
+                {displayLang === "en"
+                  ? `${knownCount} of ${selectedQuestions.length} known`
+                  : `${knownCount} de ${selectedQuestions.length} conocidas`}
+                {!allKnown && studyQueue.length > 0
+                  ? ` · ${currentIndex + 1}/${studyQueue.length}`
+                  : null}
+              </span>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 rounded-xl border-2 border-[var(--border-paper)] bg-white px-3 py-2 text-sm font-semibold text-ink"
+                onClick={() => setFiltersOpen((open) => !open)}
+                aria-expanded={filtersOpen}
+                aria-controls="repasar-study-config"
+              >
+                <Settings2 size={16} aria-hidden />
+                Configuración
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform ${filtersOpen ? "rotate-180" : ""}`}
+                  aria-hidden
+                />
+              </button>
+            </div>
+
+            <div
+              id="repasar-study-config"
+              className={`${filtersOpen ? "mt-3 flex" : "hidden"} flex-col gap-3 rounded-xl border-2 border-[var(--border-paper)] bg-white p-3`}
             >
-              Cambiar preguntas
-            </button>
+              <section className="min-w-0">
+                <label
+                  htmlFor="repasar-study-state"
+                  className="mb-1.5 block text-sm font-medium text-ink"
+                >
+                  Tu estado
+                </label>
+                <select
+                  id="repasar-study-state"
+                  value={selectedStateCode ?? ""}
+                  onChange={(e) => {
+                    const code = e.target.value || null;
+                    setSelectedStateCode(code);
+                    setStoredStateCode(code);
+                    if (isAuthEnabled && user)
+                      updateProfileState(code).catch(() => {});
+                  }}
+                  className="select-raised"
+                >
+                  <option value="">— Seleccionar estado —</option>
+                  {states.map((s) => (
+                    <option key={s.stateCode} value={s.stateCode}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </section>
+              <section className="min-w-0">
+                <label className="mb-1.5 block text-sm font-medium text-ink">
+                  Idioma
+                </label>
+                <LangSelect
+                  value={displayLang}
+                  onChange={setDisplayLang}
+                  className="w-full min-w-0"
+                />
+              </section>
+              <button
+                type="button"
+                onClick={() => setView("select")}
+                className="btn-tile w-full py-2.5 px-4 text-sm font-medium"
+              >
+                Cambiar preguntas
+              </button>
+            </div>
           </div>
 
-          <div
-            className="card-raised min-h-[200px] flex flex-col items-center justify-center p-6 cursor-pointer select-none touch-manipulation page-content-in opacity-0"
-            style={{ animationDelay: "0.2s" }}
-            onClick={() => setFlipped((f) => !f)}
-          >
-            {!flipped ? (
-              <p className="text-lg font-semibold text-ink text-center">
-                {questionDisplayText(currentQuestion, displayLang)}
+          {allKnown ? (
+            <div className="card-raised flex flex-col items-center justify-center gap-4 p-8 text-center page-content-in">
+              <p className="text-lg font-semibold text-ink">
+                {displayLang === "en"
+                  ? "You know them all — nice work!"
+                  : "¡Ya las sabes todas!"}
               </p>
-            ) : (
-              <div className="text-center w-full">
-                <p className="text-xs font-medium text-brand-muted/70 uppercase tracking-wide mb-3">
-                  Respuesta
-                </p>
-                {currentQuestion.isStateSpecific ? (
-                  <div className="p-3 rounded-lg bg-coral-soft border border-coral/40 text-left inline-block">
+              <p className="text-sm text-brand-muted">
+                {displayLang === "en"
+                  ? "Reset to practice again, or pick other questions."
+                  : "Reinicia para practicar de nuevo, o elige otras preguntas."}
+              </p>
+            </div>
+          ) : (
+            <div
+              className="card-raised min-h-[280px] sm:min-h-[320px] flex flex-col p-6 cursor-pointer select-none touch-manipulation page-content-in opacity-0"
+              style={{ animationDelay: "0.2s" }}
+              onClick={() => setFlipped((f) => !f)}
+            >
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-brand-muted text-center shrink-0">
+                {flipped
+                  ? displayLang === "en"
+                    ? "Answer"
+                    : "Respuesta"
+                  : displayLang === "en"
+                    ? "Question"
+                    : "Pregunta"}
+              </p>
+
+              <div className="flex flex-1 flex-col items-center justify-center px-1 py-6 min-h-0 w-full">
+                {!flipped ? (
+                  <p className="text-lg sm:text-xl font-semibold text-ink text-center text-pretty">
+                    {questionDisplayText(currentQuestion, displayLang)}
+                  </p>
+                ) : currentQuestion.isStateSpecific ? (
+                  <div className="p-3 rounded-lg bg-coral-soft border border-coral/40 text-center w-full max-w-md">
                     {stateDetails ? (
                       <ul className="text-sm text-ink space-y-0.5">
                         {stateDetails.senators.length > 0 ? (
@@ -284,11 +370,11 @@ export default function FlashcardsPage() {
                     )}
                   </div>
                 ) : (
-                  <ul className="space-y-1.5 text-left inline-block">
+                  <ul className="space-y-1.5 text-center w-full max-w-md">
                     {correctAnswers.map((a, aIdx) => (
                       <li
                         key={a._id ?? `a-${aIdx}`}
-                        className="text-base text-ink"
+                        className="text-base sm:text-lg text-ink text-pretty"
                       >
                         {answerDisplayText(a, displayLang)}
                       </li>
@@ -296,92 +382,84 @@ export default function FlashcardsPage() {
                   </ul>
                 )}
               </div>
-            )}
-            <p className="text-xs text-brand-muted/70 mt-4">
-              Toca la tarjeta para voltear
-            </p>
-          </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3 mt-5">
-            <div className="flex gap-2">
-              <button
-                type="button"
-                disabled={!flipped}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  markCurrent(true);
-                }}
-                className="btn-success-soft py-2.5 px-4 disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                Correcto
-              </button>
-              <button
-                type="button"
-                disabled={!flipped}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  markCurrent(false);
-                }}
-                className="btn-danger-soft py-2.5 px-4 disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                Incorrecto
-              </button>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <LangSelect value={displayLang} onChange={setDisplayLang} />
-              <div className="flex gap-2 ml-3 sm:ml-5">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCurrentIndex((i) => Math.max(0, i - 1));
-                    setFlipped(false);
-                  }}
-                  disabled={currentIndex === 0}
-                  className="btn-tile h-11 w-11 p-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                  aria-label="Anterior"
-                >
-                  <ChevronLeft size={22} aria-hidden />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCurrentIndex((i) =>
-                      i >= studyQueue.length - 1 ? 0 : i + 1,
-                    );
-                    setFlipped(false);
-                  }}
-                  className="btn-tile h-11 w-11 p-0"
-                  aria-label={
-                    currentIndex >= studyQueue.length - 1
-                      ? "Primera"
-                      : "Siguiente"
-                  }
-                >
-                  <ChevronRight size={22} aria-hidden />
-                </button>
+              <div className="flex shrink-0 items-center justify-center gap-2 pt-2 pb-0.5 text-brand-muted">
+                <RefreshCw size={16} className="shrink-0" aria-hidden />
+                <span className="text-[0.7rem] font-semibold uppercase tracking-[0.12em]">
+                  {flipped
+                    ? displayLang === "en"
+                      ? "Tap to flip back"
+                      : "Toca para voltear"
+                    : displayLang === "en"
+                      ? "Tap to flip"
+                      : "Toca para voltear"}
+                </span>
               </div>
             </div>
-          </div>
+          )}
 
-          <div className="flex justify-center mt-6 pt-4 border-t border-[var(--border-paper)]">
-            {wrongCount > 0 && !showWrongOnly && (
+          {!needsState ? (
+            <div className="mt-5 grid grid-cols-2 gap-2">
               <button
-                onClick={startWrongOnly}
-                className="btn-tile py-2 px-4 text-sm font-medium"
+                type="button"
+                disabled={allKnown || !flipped}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  markAsKnown();
+                }}
+                className="btn-success-soft w-full py-2.5 px-4 gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Repasar solo incorrectas ({wrongCount})
+                {displayLang === "en" ? "I know this" : "Lo sé"}
+                <ThumbsUp size={16} aria-hidden />
               </button>
-            )}
-            {showWrongOnly && (
               <button
-                onClick={backToAll}
-                className="btn-tile py-2 px-4 text-sm font-medium"
+                type="button"
+                disabled={knownCount === 0 && !allKnown}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  resetProgress();
+                }}
+                className="btn-tile w-full py-2.5 px-4 font-medium gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Volver a todas
+                {displayLang === "en" ? "Reset" : "Reiniciar"}
+                <RotateCcw size={16} aria-hidden />
               </button>
-            )}
-          </div>
+            </div>
+          ) : null}
+
+          {!allKnown && !needsState ? (
+            <div className="mt-4 flex justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentIndex((i) => Math.max(0, i - 1));
+                  setFlipped(false);
+                }}
+                disabled={currentIndex === 0}
+                className="btn-tile h-11 w-11 p-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Anterior"
+              >
+                <ChevronLeft size={22} aria-hidden />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentIndex((i) =>
+                    i >= studyQueue.length - 1 ? 0 : i + 1,
+                  );
+                  setFlipped(false);
+                }}
+                className="btn-tile h-11 w-11 p-0"
+                aria-label={
+                  currentIndex >= studyQueue.length - 1
+                    ? "Primera"
+                    : "Siguiente"
+                }
+              >
+                <ChevronRight size={22} aria-hidden />
+              </button>
+            </div>
+          ) : null}
         </div>
       </main>
     );
@@ -399,15 +477,53 @@ export default function FlashcardsPage() {
         </div>
 
         <div
-          className="flex flex-col sm:flex-row sm:items-end sm:justify-start gap-4 mb-6 page-content-in opacity-0"
+          className="mb-6 page-content-in opacity-0 flex flex-col gap-4 sm:flex-row sm:flex-nowrap sm:items-end sm:gap-4"
           style={{ animationDelay: "0.1s" }}
         >
-          <div className="flex flex-col sm:flex-row gap-4 min-w-0">
-            <section className="min-w-0 sm:text-left">
-              <label className="block text-sm font-medium text-ink mb-1.5">
+          <button
+            type="button"
+            className="sm:hidden flex w-full items-center justify-between gap-3 rounded-xl border-2 border-[var(--border-paper)] bg-white px-3.5 py-3 text-left"
+            onClick={() => setFiltersOpen((open) => !open)}
+            aria-expanded={filtersOpen}
+            aria-controls="repasar-filters"
+          >
+            <span className="flex min-w-0 items-center gap-2.5">
+              <Settings2 size={18} className="shrink-0 text-ink" aria-hidden />
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold text-ink">
+                  Configuración
+                </span>
+                {!filtersOpen ? (
+                  <span className="mt-0.5 block truncate text-xs text-brand-muted">
+                    {[
+                      states.find((s) => s.stateCode === selectedStateCode)
+                        ?.name ?? "Sin estado",
+                      displayLang === "es" ? "Español" : "English",
+                    ].join(" · ")}
+                  </span>
+                ) : null}
+              </span>
+            </span>
+            <ChevronDown
+              size={20}
+              className={`shrink-0 text-ink transition-transform ${filtersOpen ? "rotate-180" : ""}`}
+              aria-hidden
+            />
+          </button>
+
+          <div
+            id="repasar-filters"
+            className={`${filtersOpen ? "flex" : "hidden"} sm:contents flex-col gap-4 w-full`}
+          >
+            <section className="min-w-0 w-full sm:w-auto sm:max-w-xs sm:min-w-[12rem] shrink-0">
+              <label
+                htmlFor="repasar-state"
+                className="mb-1.5 block text-sm font-medium text-ink"
+              >
                 Tu estado
               </label>
               <select
+                id="repasar-state"
                 value={selectedStateCode ?? ""}
                 onChange={(e) => {
                   const code = e.target.value || null;
@@ -416,7 +532,7 @@ export default function FlashcardsPage() {
                   if (isAuthEnabled && user)
                     updateProfileState(code).catch(() => {});
                 }}
-                className="select-raised sm:max-w-xs"
+                className="select-raised"
               >
                 <option value="">— Seleccionar estado —</option>
                 {states.map((s) => (
@@ -426,19 +542,24 @@ export default function FlashcardsPage() {
                 ))}
               </select>
             </section>
-            <section className="min-w-0">
-              <label className="block text-sm font-medium text-ink mb-1.5">
+            <section className="min-w-0 w-full sm:w-auto shrink-0">
+              <label className="mb-1.5 block text-sm font-medium text-ink">
                 Idioma
               </label>
-              <LangSelect value={displayLang} onChange={setDisplayLang} />
+              <LangSelect
+                value={displayLang}
+                onChange={setDisplayLang}
+                className="w-full min-w-0 sm:w-auto"
+              />
             </section>
           </div>
-          <div className="flex gap-2 shrink-0 sm:pb-0">
+
+          <div className="grid grid-cols-2 gap-2 w-full shrink-0 sm:ml-auto sm:flex sm:w-auto sm:gap-2">
             <button
               type="button"
               onClick={selectAll}
               aria-pressed={allSelected}
-              className="btn-tile h-11 px-3.5 text-sm font-medium gap-2"
+              className="btn-tile h-11 w-full sm:w-auto px-3.5 text-sm font-medium gap-2"
             >
               Todas
               <span
@@ -456,7 +577,7 @@ export default function FlashcardsPage() {
               type="button"
               onClick={deselectAll}
               disabled={selectedIds.size === 0}
-              className="btn-tile h-11 px-3.5 text-sm font-medium gap-2"
+              className="btn-tile h-11 w-full sm:w-auto px-3.5 text-sm font-medium gap-2"
             >
               Quitar todas
               <span

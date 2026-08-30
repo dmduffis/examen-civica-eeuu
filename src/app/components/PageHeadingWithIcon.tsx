@@ -20,12 +20,6 @@ export default function PageHeadingWithIcon({
 }: PageHeadingWithIconProps) {
   return (
     <div className={`page-title-with-icon ${className}`.trim()}>
-      <div className="min-w-0 flex-1">
-        <h1 className={titleClassName}>{title}</h1>
-        {subtitle ? (
-          <p className="text-brand-muted text-pretty">{subtitle}</p>
-        ) : null}
-      </div>
       <span className="page-heading-icon-well" aria-hidden>
         <Image
           src={iconSrc}
@@ -36,6 +30,12 @@ export default function PageHeadingWithIcon({
           priority={priority}
         />
       </span>
+      <div className="min-w-0 flex-1 w-full">
+        <h1 className={titleClassName}>{title}</h1>
+        {subtitle ? (
+          <p className="text-brand-muted text-pretty">{subtitle}</p>
+        ) : null}
+      </div>
     </div>
   );
 }
