@@ -14,17 +14,14 @@ export default function LangSelect({
   className = "",
 }: LangSelectProps) {
   return (
-    <label className={`inline-flex flex-col gap-1 ${className}`.trim()}>
-      <span className="sr-only">Idioma</span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value as DisplayLang)}
-        className="select-raised select-raised--lang"
-        aria-label="Idioma"
-      >
-        <option value="es">Español</option>
-        <option value="en">English</option>
-      </select>
-    </label>
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value as DisplayLang)}
+      className={`select-raised select-raised--lang ${className}`.trim()}
+      aria-label="Idioma"
+    >
+      <option value="es">Español</option>
+      <option value="en">English</option>
+    </select>
   );
 }

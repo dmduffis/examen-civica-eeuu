@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
-import { Download } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { BeatLoader } from "react-spinners";
 import {
   getStoredStateCode,
@@ -23,11 +23,15 @@ import QuestionsLoadError from "../components/QuestionsLoadError";
 import LangSelect from "../components/LangSelect";
 import PageHeadingWithIcon from "../components/PageHeadingWithIcon";
 
+type PageSize = 10 | 20 | "all";
+
 export default function PreguntasPage() {
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [displayLang, setDisplayLang] = useState<DisplayLang>("es");
+  const [pageSize, setPageSize] = useState<PageSize>(10);
+  const [page, setPage] = useState(1);
   const [states, setStates] = useState<StateOption[]>([]);
   const [selectedStateCode, setSelectedStateCode] = useState<string | null>(
     null,
@@ -92,6 +96,23 @@ export default function PreguntasPage() {
     };
   }, [selectedStateCode]);
 
+  const totalPages =
+    pageSize === "all"
+      ? 1
+      : Math.max(1, Math.ceil(questions.length / pageSize));
+
+  const visibleQuestions = useMemo(() => {
+    if (pageSize === "all") return questions;
+    const start = (page - 1) * pageSize;
+    return questions.slice(start, start + pageSize);
+  }, [questions, page, pageSize]);
+
+  const pageStartIndex = pageSize === "all" ? 0 : (page - 1) * pageSize;
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
   if (loading) {
     return (
       <main className="flex min-h-[70vh] w-full flex-col items-center justify-center">
@@ -112,6 +133,11 @@ export default function PreguntasPage() {
     }
   };
 
+  const handlePageSizeChange = (size: PageSize) => {
+    setPageSize(size);
+    setPage(1);
+  };
+
   return (
     <main className="flex flex-col w-full justify-center page-top pb-16">
       <div className="w-full px-6 sm:px-8">
@@ -126,8 +152,8 @@ export default function PreguntasPage() {
           className="flex flex-col sm:flex-row gap-8 justify-between items-end w-full mb-10 page-content-in opacity-0"
           style={{ animationDelay: "0.1s" }}
         >
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto min-w-0">
-            <section className="min-w-0 w-full sm:max-w-xs">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 w-full sm:w-auto min-w-0">
+            <section className="min-w-0 w-full sm:w-auto sm:max-w-xs sm:min-w-[14rem]">
               <label className="block text-sm font-medium text-ink mb-1.5">
                 Tu estado
               </label>
@@ -144,11 +170,34 @@ export default function PreguntasPage() {
                 ))}
               </select>
             </section>
-            <section className="min-w-0 w-full sm:w-auto">
+            <section className="shrink-0 w-full sm:w-auto">
               <label className="block text-sm font-medium text-ink mb-1.5">
                 Idioma
               </label>
               <LangSelect value={displayLang} onChange={setDisplayLang} />
+            </section>
+            <section className="shrink-0 w-full sm:w-auto">
+              <label
+                htmlFor="preguntas-page-size"
+                className="block text-sm font-medium text-ink mb-1.5"
+              >
+                Por página
+              </label>
+              <select
+                id="preguntas-page-size"
+                value={pageSize === "all" ? "all" : String(pageSize)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  handlePageSizeChange(
+                    v === "all" ? "all" : (Number(v) as 10 | 20),
+                  );
+                }}
+                className="select-raised select-raised--lang"
+              >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="all">Todas</option>
+              </select>
             </section>
           </div>
           <div className="w-full sm:w-auto shrink-0">
@@ -164,22 +213,23 @@ export default function PreguntasPage() {
         </div>
 
         <div
-          className="flex flex-col gap-8 page-content-in opacity-0"
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 page-content-in opacity-0"
           style={{ animationDelay: "0.2s" }}
         >
-          {questions.map((q, index) => (
-            <article key={q._id} className="card-raised p-4 sm:p-5">
-              <p className="font-semibold mb-3">
-                {index + 1}. {questionDisplayText(q, displayLang)}
+          {visibleQuestions.map((q, index) => (
+            <article key={q._id} className="card-raised p-3 sm:p-4">
+              <p className="font-semibold text-sm sm:text-[0.9375rem] leading-snug mb-1.5">
+                {pageStartIndex + index + 1}.{" "}
+                {questionDisplayText(q, displayLang)}
               </p>
               {q.isStateSpecific && (
-                <div className="mb-3 p-3 rounded-lg bg-coral-soft border border-coral/40">
-                  <p className="text-sm text-ink font-medium mb-1">
+                <div className="mb-1.5 p-2.5 rounded-lg bg-coral-soft border border-coral/40">
+                  <p className="text-xs text-ink font-medium mb-1">
                     Pregunta de tu estado — busca la respuesta según donde
                     vives.
                   </p>
                   {stateDetails ? (
-                    <ul className="text-sm text-ink space-y-0.5">
+                    <ul className="text-xs text-ink space-y-0.5">
                       {stateDetails.senators.length > 0 ? (
                         <li>Senadores: {stateDetails.senators.join(", ")}</li>
                       ) : (
@@ -217,13 +267,13 @@ export default function PreguntasPage() {
                   )}
                 </div>
               )}
-              <ul className="space-y-2">
+              <ul className="space-y-0.5">
                 {q.answers
                   .filter((answer) => answer.isCorrect)
                   .map((answer, aIdx) => (
                     <li
                       key={answer._id ?? `a-${aIdx}`}
-                      className="pl-3 py-1 rounded"
+                      className="text-sm text-brand-muted leading-snug"
                     >
                       {answerDisplayText(answer, displayLang)}
                     </li>
@@ -232,6 +282,38 @@ export default function PreguntasPage() {
             </article>
           ))}
         </div>
+
+        {pageSize !== "all" && totalPages > 1 && (
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
+            <button
+              type="button"
+              onClick={() => {
+                setPage((p) => Math.max(1, p - 1));
+                window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+              }}
+              disabled={page <= 1}
+              className="btn-tile h-11 w-11 p-0 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Página anterior"
+            >
+              <ChevronLeft size={22} aria-hidden />
+            </button>
+            <span className="text-sm font-medium text-ink tabular-nums min-w-[5.5rem] text-center">
+              {page} / {totalPages}
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setPage((p) => Math.min(totalPages, p + 1));
+                window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+              }}
+              disabled={page >= totalPages}
+              className="btn-tile h-11 w-11 p-0 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Página siguiente"
+            >
+              <ChevronRight size={22} aria-hidden />
+            </button>
+          </div>
+        )}
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 mt-8 w-full">
           <button

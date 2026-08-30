@@ -15,7 +15,6 @@ import EntrevistaLoadErrorIllustration from "../components/EntrevistaLoadErrorIl
 import PageHeadingWithIcon from "../components/PageHeadingWithIcon";
 import ProDiamond from "../components/ProDiamond";
 import { backendUrl } from "../lib/backend-url";
-import interviewHero from "../assets/images/officer_quiz.png";
 
 type InterviewQuestion = {
   id: string;
@@ -486,8 +485,7 @@ export default function InterviewPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] gap-8 sm:gap-[5rem] items-start w-full min-w-0">
-              {/* Content left */}
+            <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] gap-8 sm:gap-32 items-start w-full min-w-0">
               <div className="order-2 sm:order-1 w-full min-w-0">
                 {status === "idle" && (
                   <div
@@ -546,17 +544,17 @@ export default function InterviewPage() {
                 )}
               </div>
 
-              {/* Hero right - only on start screen */}
               <div
                 className="order-1 sm:order-2 flex justify-center sm:justify-start items-center min-w-0 home-fade-in"
                 style={{ animationDelay: "0.1s" }}
               >
                 <Image
-                  src={interviewHero}
-                  width={interviewHero.width}
-                  height={interviewHero.height}
+                  src="/office_quiz_question.png"
+                  width={1122}
+                  height={1402}
                   alt="Oficial de práctica para la entrevista"
                   className="w-[min(100%,320px)] sm:w-[min(100%,440px)] h-auto object-contain"
+                  priority
                 />
               </div>
             </div>
