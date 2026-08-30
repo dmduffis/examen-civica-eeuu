@@ -221,7 +221,7 @@ export default function Nav() {
                   <Link
                     href="/login"
                     onClick={closeDrawer}
-                    className={drawerLinkClass}
+                    className="btn-tile text-sm w-full py-3 px-4 justify-center font-semibold"
                     aria-label="Iniciar sesión"
                   >
                     Login
