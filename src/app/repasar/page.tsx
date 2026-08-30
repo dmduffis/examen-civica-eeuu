@@ -477,7 +477,7 @@ export default function FlashcardsPage() {
         </div>
 
         <div
-          className="mb-6 page-content-in opacity-0"
+          className="mb-6 page-content-in opacity-0 flex flex-col gap-4 sm:flex-row sm:flex-nowrap sm:items-end sm:gap-4"
           style={{ animationDelay: "0.1s" }}
         >
           <button
@@ -513,7 +513,7 @@ export default function FlashcardsPage() {
 
           <div
             id="repasar-filters"
-            className={`${filtersOpen ? "mt-4 flex" : "hidden"} sm:mt-0 sm:flex flex-col gap-4 sm:flex-row sm:flex-nowrap sm:items-end sm:gap-4`}
+            className={`${filtersOpen ? "flex" : "hidden"} sm:contents flex-col gap-4 w-full`}
           >
             <section className="min-w-0 w-full sm:w-auto sm:max-w-xs sm:min-w-[12rem] shrink-0">
               <label
@@ -552,41 +552,41 @@ export default function FlashcardsPage() {
                 className="w-full min-w-0 sm:w-auto"
               />
             </section>
+          </div>
 
-            <div className="grid grid-cols-2 gap-2 w-full shrink-0 sm:ml-auto sm:flex sm:w-auto sm:gap-2">
-              <button
-                type="button"
-                onClick={selectAll}
-                aria-pressed={allSelected}
-                className="btn-tile h-11 w-full sm:w-auto px-3.5 text-sm font-medium gap-2"
+          <div className="grid grid-cols-2 gap-2 w-full shrink-0 sm:ml-auto sm:flex sm:w-auto sm:gap-2">
+            <button
+              type="button"
+              onClick={selectAll}
+              aria-pressed={allSelected}
+              className="btn-tile h-11 w-full sm:w-auto px-3.5 text-sm font-medium gap-2"
+            >
+              Todas
+              <span
+                className={`inline-flex size-5 shrink-0 items-center justify-center rounded-full ${
+                  allSelected
+                    ? "bg-emerald-500 text-white"
+                    : "border-2 border-current text-current opacity-45"
+                }`}
+                aria-hidden
               >
-                Todas
-                <span
-                  className={`inline-flex size-5 shrink-0 items-center justify-center rounded-full ${
-                    allSelected
-                      ? "bg-emerald-500 text-white"
-                      : "border-2 border-current text-current opacity-45"
-                  }`}
-                  aria-hidden
-                >
-                  <Check size={12} strokeWidth={3} />
-                </span>
-              </button>
-              <button
-                type="button"
-                onClick={deselectAll}
-                disabled={selectedIds.size === 0}
-                className="btn-tile h-11 w-full sm:w-auto px-3.5 text-sm font-medium gap-2"
+                <Check size={12} strokeWidth={3} />
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={deselectAll}
+              disabled={selectedIds.size === 0}
+              className="btn-tile h-11 w-full sm:w-auto px-3.5 text-sm font-medium gap-2"
+            >
+              Quitar todas
+              <span
+                className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--surface-coral)] text-white"
+                aria-hidden
               >
-                Quitar todas
-                <span
-                  className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--surface-coral)] text-white"
-                  aria-hidden
-                >
-                  <X size={12} strokeWidth={3} />
-                </span>
-              </button>
-            </div>
+                <X size={12} strokeWidth={3} />
+              </span>
+            </button>
           </div>
         </div>
 

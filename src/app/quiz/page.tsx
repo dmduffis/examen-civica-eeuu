@@ -236,7 +236,7 @@ export default function QuizPage() {
                 width={1448}
                 height={1086}
                 alt="Person studying for the US civics quiz"
-                className="w-[min(100%,387px)] sm:w-[min(100%,532px)] h-auto object-contain"
+                className="w-[min(100%,220px)] sm:w-[min(100%,532px)] h-auto object-contain"
                 priority
               />
             </div>
