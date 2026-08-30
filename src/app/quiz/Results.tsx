@@ -35,34 +35,46 @@ export default function Results({
 
   useEffect(() => {
     if (correctPercentage !== 100) return;
+
     let cancelled = false;
-    const duration = 2000;
-    const end = Date.now() + duration;
+    let rafId = 0;
+    const durationMs = 3500;
+    const end = Date.now() + durationMs;
+
+    // Opening burst, then light side streams — do not call confetti.reset()
+    // while particles are still falling (that clears the canvas abruptly).
+    confetti({
+      particleCount: 80,
+      spread: 70,
+      startVelocity: 45,
+      origin: { y: 0.65 },
+    });
+
     const frame = () => {
       if (cancelled) return;
       confetti({
-        particleCount: 3,
+        particleCount: 2,
         angle: 60,
         spread: 55,
         origin: { x: 0 },
+        startVelocity: 35,
       });
       confetti({
-        particleCount: 3,
+        particleCount: 2,
         angle: 120,
         spread: 55,
         origin: { x: 1 },
+        startVelocity: 35,
       });
       if (Date.now() < end) {
-        requestAnimationFrame(frame);
-      } else {
-        confetti.reset();
+        rafId = requestAnimationFrame(frame);
       }
     };
-    frame();
+    rafId = requestAnimationFrame(frame);
 
     return () => {
       cancelled = true;
-      confetti.reset();
+      cancelAnimationFrame(rafId);
     };
   }, [correctPercentage]);
 
