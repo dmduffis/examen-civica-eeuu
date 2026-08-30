@@ -84,8 +84,8 @@ export default function Home() {
     <main className="flex flex-col w-full items-center justify-center page-top pb-16 lg:items-stretch">
       <div className="w-full min-w-0 px-6 sm:px-8 max-w-6xl lg:max-w-none mx-auto lg:mx-0">
         {/* 1. Hero header */}
-        <header className="page-title-in mb-4 sm:mb-5 lg:mb-6 text-left max-w-3xl">
-          <h1 className="page-heading mb-1.5">
+        <header className="page-title-in mt-4 sm:mt-8 mb-4 sm:mb-5 lg:mb-6 text-left max-w-3xl">
+          <h1 className="page-heading mb-1.5 !text-[2rem] sm:!text-[2.7rem] lg:!text-[2.85rem]">
             Prepárate para tu examen de ciudadanía
           </h1>
           <p className="text-base sm:text-lg text-brand-muted leading-relaxed max-w-2xl">
@@ -131,7 +131,7 @@ export default function Home() {
               width={1254}
               height={1254}
               alt="Person studying for the US civics exam with a White House model on the desk"
-              className="w-[min(100%,320px)] lg:w-[min(100%,441px)] h-auto"
+              className="w-[min(100%,220px)] lg:w-[min(100%,441px)] h-auto"
               priority
             />
           </div>

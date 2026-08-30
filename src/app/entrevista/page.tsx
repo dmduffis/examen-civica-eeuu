@@ -480,7 +480,7 @@ export default function InterviewPage() {
               <PageHeadingWithIcon
                 iconSrc="/icon_quiz_interview.png"
                 title="Entrevista de Práctica"
-                subtitle="Prepárate con confianza: practica en inglés y en audio, escucha las preguntas y responde en voz alta con el micrófono, igual que en la entrevista de naturalización."
+                subtitle="Practica en inglés con audio: escucha y responde en voz alta."
                 priority
               />
             </div>
@@ -553,7 +553,7 @@ export default function InterviewPage() {
                   width={1122}
                   height={1402}
                   alt="Oficial de práctica para la entrevista"
-                  className="w-[min(100%,320px)] sm:w-[min(100%,440px)] h-auto object-contain"
+                  className="w-[min(100%,220px)] sm:w-[min(100%,440px)] h-auto object-contain"
                   priority
                 />
               </div>
