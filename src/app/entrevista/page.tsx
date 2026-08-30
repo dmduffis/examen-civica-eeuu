@@ -9,12 +9,12 @@ import {
   ClipboardCheck,
   type LucideIcon,
 } from "lucide-react";
-import { BeatLoader } from "react-spinners";
-import { VoiceBars } from "../components/VoiceBars";
+import InterviewVoiceControl from "../components/InterviewVoiceControl";
 import EntrevistaLoadErrorIllustration from "../components/EntrevistaLoadErrorIllustration";
 import PageHeadingWithIcon from "../components/PageHeadingWithIcon";
 import ProDiamond from "../components/ProDiamond";
 import { backendUrl } from "../lib/backend-url";
+import { attachMeydaLevels, VOICE_BAR_COUNT } from "../lib/audio-levels";
 
 type InterviewQuestion = {
   id: string;
@@ -122,12 +122,6 @@ function correctAnswerFromSuggestion(text: string): string {
   );
 }
 
-/** Interview is in English only: backend questionText is Spanish, so we show questionTextEn when present. */
-function interviewQuestionLabel(q: InterviewQuestion): string | null {
-  const en = q.questionTextEn?.trim();
-  return en || null;
-}
-
 type ReviewItem = {
   questionText: string;
   questionTextEn?: string;
@@ -155,29 +149,114 @@ type RespondResponse = {
 
 function useAudioPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const meydaRef = useRef<ReturnType<typeof attachMeydaLevels>>(null);
+  const levelsRafRef = useRef<number>(0);
+  const pendingLevelsRef = useRef<number[]>(Array(VOICE_BAR_COUNT).fill(0));
+  const [playbackLevels, setPlaybackLevels] = useState<number[]>(() =>
+    Array(VOICE_BAR_COUNT).fill(0),
+  );
 
-  const playBase64 = useCallback((base64: string): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      try {
-        const audio = new Audio(`data:audio/mp3;base64,${base64}`);
-        audioRef.current = audio;
-        audio.onended = () => resolve();
-        audio.onerror = () => reject(new Error("Playback failed"));
-        audio.play().catch(reject);
-      } catch (e) {
-        reject(e);
-      }
+  const pushLevels = useCallback((next: number[]) => {
+    pendingLevelsRef.current = next;
+    if (levelsRafRef.current) return;
+    levelsRafRef.current = requestAnimationFrame(() => {
+      levelsRafRef.current = 0;
+      setPlaybackLevels(pendingLevelsRef.current);
     });
   }, []);
+
+  const teardownAnalysis = useCallback(() => {
+    try {
+      meydaRef.current?.stop();
+    } catch {
+      /* ignore */
+    }
+    meydaRef.current = null;
+    if (levelsRafRef.current) {
+      cancelAnimationFrame(levelsRafRef.current);
+      levelsRafRef.current = 0;
+    }
+    setPlaybackLevels(Array(VOICE_BAR_COUNT).fill(0));
+  }, []);
+
+  const playBase64 = useCallback(
+    (base64: string): Promise<void> => {
+      return new Promise(async (resolve, reject) => {
+        try {
+          teardownAnalysis();
+          if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current = null;
+          }
+
+          const ctx =
+            audioCtxRef.current && audioCtxRef.current.state !== "closed"
+              ? audioCtxRef.current
+              : new AudioContext();
+          audioCtxRef.current = ctx;
+          if (ctx.state === "suspended") {
+            await ctx.resume();
+          }
+
+          const audio = new Audio(`data:audio/mp3;base64,${base64}`);
+          audio.crossOrigin = "anonymous";
+          audioRef.current = audio;
+
+          // Wire Web Audio + Meyda *before* play so levels track speech.
+          const source = ctx.createMediaElementSource(audio);
+          source.connect(ctx.destination);
+          meydaRef.current = attachMeydaLevels({
+            audioContext: ctx,
+            source,
+            onLevels: pushLevels,
+          });
+
+          const clear = () => {
+            if (audioRef.current === audio) {
+              teardownAnalysis();
+            }
+          };
+          audio.onended = () => {
+            clear();
+            resolve();
+          };
+          audio.onerror = () => {
+            clear();
+            reject(new Error("Playback failed"));
+          };
+          await audio.play();
+        } catch (e) {
+          teardownAnalysis();
+          reject(e);
+        }
+      });
+    },
+    [teardownAnalysis, pushLevels],
+  );
 
   const stop = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
-  }, []);
+    teardownAnalysis();
+  }, [teardownAnalysis]);
 
-  return { playBase64, stop };
+  useEffect(() => {
+    return () => {
+      teardownAnalysis();
+      if (audioCtxRef.current?.state !== "closed") {
+        try {
+          audioCtxRef.current?.close();
+        } catch {
+          /* ignore */
+        }
+      }
+    };
+  }, [teardownAnalysis]);
+
+  return { playBase64, stop, playbackLevels };
 }
 
 async function blobToBase64(blob: Blob): Promise<string> {
@@ -185,12 +264,27 @@ async function blobToBase64(blob: Blob): Promise<string> {
     const reader = new FileReader();
     reader.onloadend = () => {
       const dataUrl = reader.result as string;
-      const base64 = dataUrl.split(",")[1];
-      resolve(base64 ?? "");
+      if (typeof dataUrl !== "string" || !dataUrl.includes(",")) {
+        resolve("");
+        return;
+      }
+      const base64 = dataUrl.split(",")[1]?.trim() ?? "";
+      resolve(base64);
     };
     reader.onerror = reject;
     reader.readAsDataURL(blob);
   });
+}
+
+function pickRecordingMimeType(): string {
+  if (typeof MediaRecorder === "undefined") return "";
+  const candidates = [
+    "audio/mp4",
+    "audio/aac",
+    "audio/webm;codecs=opus",
+    "audio/webm",
+  ];
+  return candidates.find((t) => MediaRecorder.isTypeSupported(t)) ?? "";
 }
 
 /** Yield so the browser can paint the new screen and start CSS animations before we play audio. */
@@ -277,7 +371,8 @@ export default function InterviewPage() {
     null,
   );
   const stopRecordingAndSendRef = useRef<() => Promise<void>>(async () => {});
-  const { playBase64, stop } = useAudioPlayer();
+  const interviewGenerationRef = useRef(0);
+  const { playBase64, stop, playbackLevels } = useAudioPlayer();
 
   useEffect(() => {
     return () => {
@@ -288,7 +383,36 @@ export default function InterviewPage() {
     };
   }, []);
 
+  const stopInterview = useCallback(() => {
+    interviewGenerationRef.current += 1;
+    stop();
+    setIsPlayingAudio(false);
+    if (maxRecordingTimerRef.current) {
+      clearTimeout(maxRecordingTimerRef.current);
+      maxRecordingTimerRef.current = null;
+    }
+    try {
+      if (recorderRef.current?.state === "recording") {
+        recorderRef.current.stop();
+      }
+    } catch {
+      /* ignore */
+    }
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+    recorderRef.current = null;
+    setRecordingStream(null);
+    setRecordingRecorder(null);
+    setSessionId(null);
+    setQuestions([]);
+    setQuestionIndex(0);
+    setReviewItems([]);
+    setError(null);
+    setStatus("idle");
+  }, [stop]);
+
   const startInterview = useCallback(async () => {
+    const generation = ++interviewGenerationRef.current;
     setError(null);
     setStatus("loading");
     try {
@@ -301,7 +425,9 @@ export default function InterviewPage() {
         },
         { retries: 3, timeoutMs: VOICE_START_TIMEOUT_MS },
       );
+      if (interviewGenerationRef.current !== generation) return;
       const data = (await res.json()) as StartResponse & { message?: string };
+      if (interviewGenerationRef.current !== generation) return;
       if (res.status === 503 && data.message) {
         setError(friendlyError(data.message));
         setStatus("error");
@@ -320,19 +446,24 @@ export default function InterviewPage() {
       setStatus("greeting");
       setIsPlayingAudio(true);
       await afterNextPaint();
+      if (interviewGenerationRef.current !== generation) return;
       await playBase64(data.greetingAudio);
+      if (interviewGenerationRef.current !== generation) return;
       setIsPlayingAudio(false);
       if (data.questions?.length) {
         setStatus("question");
         setIsPlayingAudio(true);
         await afterNextPaint();
+        if (interviewGenerationRef.current !== generation) return;
         await playBase64(data.questions[0].questionAudio);
+        if (interviewGenerationRef.current !== generation) return;
         setIsPlayingAudio(false);
         setStatus("ready_to_record");
       } else {
         setStatus("idle");
       }
     } catch (e) {
+      if (interviewGenerationRef.current !== generation) return;
       setError(CONNECTION_ERROR_ES);
       setStatus("error");
     }
@@ -342,6 +473,13 @@ export default function InterviewPage() {
     if (!navigator.mediaDevices?.getUserMedia) {
       setError(
         "El micrófono no está disponible. Abre la página con HTTPS (no HTTP).",
+      );
+      setStatus("error");
+      return;
+    }
+    if (typeof MediaRecorder === "undefined") {
+      setError(
+        "Tu navegador no puede grabar audio. Prueba con Safari o Chrome actualizado.",
       );
       setStatus("error");
       return;
@@ -356,11 +494,7 @@ export default function InterviewPage() {
         streamRef.current = stream;
         setRecordingStream(stream);
         chunksRef.current = [];
-        const mimeType = MediaRecorder.isTypeSupported("audio/mp4")
-          ? "audio/mp4"
-          : MediaRecorder.isTypeSupported("audio/webm")
-            ? "audio/webm"
-            : "";
+        const mimeType = pickRecordingMimeType();
         recordingMimeRef.current = mimeType || "audio/webm";
         const recorder = new MediaRecorder(
           stream,
@@ -368,9 +502,10 @@ export default function InterviewPage() {
         );
         recorderRef.current = recorder;
         recorder.ondataavailable = (e) => {
-          if (e.data.size) chunksRef.current.push(e.data);
+          if (e.data && e.data.size > 0) chunksRef.current.push(e.data);
         };
-        recorder.start();
+        // Timeslice so mobile browsers flush chunks during recording, not only on stop.
+        recorder.start(250);
         setRecordingRecorder(recorder);
         setStatus("recording");
         maxRecordingTimerRef.current = setTimeout(() => {
@@ -400,20 +535,62 @@ export default function InterviewPage() {
     const recorder = recorderRef.current;
     const stream = streamRef.current;
     if (!recorder || recorder.state !== "recording") return;
+    const generation = interviewGenerationRef.current;
     stop();
-    recorder.stop();
-    stream?.getTracks().forEach((t) => t.stop());
-    streamRef.current = null;
-    setRecordingStream(null);
-    setRecordingRecorder(null);
-    recorderRef.current = null;
     setStatus("sending");
+
     try {
-      await new Promise<void>((r) => setTimeout(r, 300));
-      const blob = new Blob(chunksRef.current, {
-        type: recordingMimeRef.current,
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        const finish = () => {
+          resolve(
+            new Blob(chunksRef.current, {
+              type:
+                recordingMimeRef.current || recorder.mimeType || "audio/webm",
+            }),
+          );
+        };
+        recorder.addEventListener("stop", finish, { once: true });
+        recorder.addEventListener(
+          "error",
+          () => reject(new Error("Recording failed")),
+          { once: true },
+        );
+        try {
+          if (typeof recorder.requestData === "function") {
+            recorder.requestData();
+          }
+        } catch {
+          // Some mobile browsers throw if requestData is called near stop.
+        }
+        recorder.stop();
       });
+
+      if (interviewGenerationRef.current !== generation) return;
+
+      stream?.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+      setRecordingStream(null);
+      setRecordingRecorder(null);
+      recorderRef.current = null;
+
+      if (!blob.size) {
+        setError(
+          "No se capturó audio. Mantén pulsado un momento e inténtalo de nuevo.",
+        );
+        setStatus("ready_to_record");
+        return;
+      }
+
       const audioBase64 = await blobToBase64(blob);
+      if (interviewGenerationRef.current !== generation) return;
+      if (!audioBase64) {
+        setError(
+          "No se pudo procesar el audio. Prueba de nuevo o usa otro navegador.",
+        );
+        setStatus("ready_to_record");
+        return;
+      }
+
       const res = await fetchWithRetry(
         backendUrl("/api/voice/interview/respond"),
         {
@@ -423,11 +600,14 @@ export default function InterviewPage() {
             sessionId,
             questionIndex,
             audio: audioBase64,
+            mimeType: recordingMimeRef.current || blob.type || undefined,
           }),
         },
         { retries: 3, timeoutMs: VOICE_RESPOND_TIMEOUT_MS },
       );
+      if (interviewGenerationRef.current !== generation) return;
       const data = (await res.json()) as RespondResponse & { message?: string };
+      if (interviewGenerationRef.current !== generation) return;
       if (res.status === 503 && data.message) {
         setError(friendlyError(data.message));
         setStatus("error");
@@ -442,7 +622,9 @@ export default function InterviewPage() {
       setStatus("officer");
       setIsPlayingAudio(true);
       await afterNextPaint();
+      if (interviewGenerationRef.current !== generation) return;
       await playBase64(data.officerResponseAudio);
+      if (interviewGenerationRef.current !== generation) return;
       setIsPlayingAudio(false);
       if (data.isComplete && data.review?.items) {
         setReviewItems(data.review.items);
@@ -455,17 +637,25 @@ export default function InterviewPage() {
         setStatus("question");
         setIsPlayingAudio(true);
         await afterNextPaint();
+        if (interviewGenerationRef.current !== generation) return;
         await playBase64(data.nextQuestion.questionAudio);
+        if (interviewGenerationRef.current !== generation) return;
         setIsPlayingAudio(false);
         setStatus("ready_to_record");
       } else {
         setStatus("idle");
       }
     } catch (e) {
+      if (interviewGenerationRef.current !== generation) return;
+      stream?.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+      setRecordingStream(null);
+      setRecordingRecorder(null);
+      recorderRef.current = null;
       setError(CONNECTION_ERROR_ES);
       setStatus("error");
     }
-  }, [sessionId, questionIndex, questions?.length, playBase64]);
+  }, [sessionId, questionIndex, questions?.length, playBase64, stop]);
 
   stopRecordingAndSendRef.current = stopRecordingAndSend;
 
@@ -567,123 +757,61 @@ export default function InterviewPage() {
                 iconSrc="/icon_quiz_interview.png"
                 title="Entrevista de Práctica"
                 titleClassName="page-heading mb-0"
+                className="!mb-2 sm:!mb-3 !pb-3"
               />
             </div>
 
-            {status === "loading" && (
-              <div className="flex flex-col items-center gap-6">
-                <BeatLoader
-                  color="rgba(214, 169, 54, 0.6)"
-                  speedMultiplier={0.5}
-                />
-                <p className="text-brand-muted">Preparando tu entrevista…</p>
-              </div>
-            )}
-
-            {(status === "greeting" || status === "question") && (
-              <div className="flex flex-col items-center gap-6">
-                <VoiceBars
+            {status === "loading" ||
+            status === "greeting" ||
+            status === "question" ||
+            status === "ready_to_record" ||
+            status === "recording" ||
+            status === "sending" ||
+            status === "officer" ? (
+              <div className="mt-8 flex w-full justify-center sm:mt-10">
+                <InterviewVoiceControl
+                  mode={
+                    status === "loading"
+                      ? "loading"
+                      : status === "ready_to_record"
+                        ? "ready"
+                        : status === "recording"
+                          ? "recording"
+                          : status === "sending"
+                            ? "sending"
+                            : "listening"
+                  }
                   isPlaying={isPlayingAudio}
-                  className="flex-shrink-0"
+                  levels={playbackLevels}
+                  onRecord={startRecording}
+                  onSend={stopRecordingAndSend}
+                  onClose={stopInterview}
+                  maxSeconds={MAX_RECORDING_MS / 1000}
+                  progressLabel={
+                    status === "loading" ||
+                    status === "greeting" ||
+                    questions.length === 0
+                      ? undefined
+                      : `${Math.min(questionIndex + 1, questions.length)}/${questions.length}`
+                  }
+                  statusLabel={
+                    status === "loading"
+                      ? "Preparando tu entrevista…"
+                      : status === "greeting"
+                        ? "Escucha la bienvenida…"
+                        : status === "question"
+                          ? "Escucha la pregunta…"
+                          : status === "ready_to_record"
+                            ? "Toca el micrófono para grabar"
+                            : status === "officer"
+                              ? "Escucha la respuesta del oficial…"
+                              : status === "sending"
+                                ? "Enviando respuesta…"
+                                : undefined
+                  }
                 />
-                <p className="text-brand-muted">
-                  {status === "greeting" && "Reproduciendo bienvenida…"}
-                  {status === "question" && "Reproduciendo pregunta…"}
-                </p>
               </div>
-            )}
-
-            {status === "ready_to_record" && questions[questionIndex] && (
-              <div className="flex flex-col gap-4">
-                <div className="flex justify-center">
-                  <VoiceBars className="flex-shrink-0" />
-                </div>
-                <p className="text-ink font-medium">
-                  Pregunta {questionIndex + 1} de {questions.length}
-                </p>
-                {(() => {
-                  const label = interviewQuestionLabel(
-                    questions[questionIndex],
-                  );
-                  return label ? (
-                    <p className="text-brand-muted italic">
-                      &quot;{label}&quot;
-                    </p>
-                  ) : (
-                    <p className="text-brand-muted">
-                      Escucha la pregunta en inglés en el audio y responde con
-                      el micrófono.
-                    </p>
-                  );
-                })()}
-                <p className="text-brand-muted text-sm">
-                  Haz clic para abrir el micrófono y grabar tu respuesta.
-                </p>
-                <button
-                  type="button"
-                  onClick={startRecording}
-                  className="btn-royal py-4 px-6 gap-2"
-                  aria-label="Abrir micrófono"
-                >
-                  <Mic size={22} aria-hidden />
-                  Abrir micrófono
-                </button>
-              </div>
-            )}
-
-            {status === "recording" && (
-              <div className="flex flex-col gap-4">
-                <div className="flex justify-center">
-                  <VoiceBars
-                    mediaRecorder={recordingRecorder}
-                    className="flex-shrink-0"
-                  />
-                </div>
-                <p className="text-ink font-medium">
-                  Pregunta {questionIndex + 1} de {questions.length}: grabando
-                  tu respuesta.
-                </p>
-                {questions[questionIndex] &&
-                  interviewQuestionLabel(questions[questionIndex]) && (
-                    <p className="text-brand-muted italic">
-                      &quot;{interviewQuestionLabel(questions[questionIndex])}
-                      &quot;
-                    </p>
-                  )}
-                <button
-                  type="button"
-                  onClick={stopRecordingAndSend}
-                  className="btn-danger py-4 px-6 gap-2"
-                  aria-label="Dejar de grabar y enviar"
-                >
-                  <span
-                    className="inline-flex h-2.5 w-2.5 rounded-full bg-white animate-pulse"
-                    aria-hidden
-                  />
-                  Grabando
-                </button>
-              </div>
-            )}
-
-            {status === "sending" && (
-              <div className="flex flex-col items-center gap-6">
-                <BeatLoader
-                  color="rgba(214, 169, 54, 0.6)"
-                  speedMultiplier={0.5}
-                />
-                <p className="text-brand-muted">Enviando respuesta…</p>
-              </div>
-            )}
-
-            {status === "officer" && (
-              <div className="flex flex-col items-center gap-6">
-                <VoiceBars
-                  isPlaying={isPlayingAudio}
-                  className="flex-shrink-0"
-                />
-                <p className="text-brand-muted">Respuesta del oficial…</p>
-              </div>
-            )}
+            ) : null}
 
             {status === "review" && reviewItems.length > 0 && (
               <div className="space-y-8 w-full">

@@ -697,14 +697,40 @@ h1, h2, h3, h4, h5, h6 {
   animation: voice-breathe 1.8s ease-in-out infinite;
 }
 
-/* VoiceBars: pill bars scale from vertical center like a linear waveform */
+/* VoiceBars: capsule bars scale from vertical center */
 @keyframes voice-bar-wave {
-  0%, 100% { transform: scaleY(0.18); }
-  22% { transform: scaleY(0.72); }
-  45% { transform: scaleY(0.38); }
-  68% { transform: scaleY(0.95); }
-  82% { transform: scaleY(0.5); }
+  0%, 100% { transform: scaleY(0.22); }
+  22% { transform: scaleY(0.78); }
+  45% { transform: scaleY(0.42); }
+  68% { transform: scaleY(1); }
+  82% { transform: scaleY(0.55); }
 }
+
+/* Soft raised circle for entrevista voice control (not neo-brutalist depth) */
+.interview-voice-orb {
+  box-shadow:
+    0 10px 28px color-mix(in srgb, var(--surface-blue) 32%, transparent),
+    0 2px 8px color-mix(in srgb, var(--surface-ink) 12%, transparent);
+}
+
+.interview-voice-orb-recording {
+  box-shadow:
+    0 6px 18px color-mix(in srgb, var(--surface-coral) 28%, transparent),
+    0 1px 4px color-mix(in srgb, var(--surface-ink) 10%, transparent);
+}
+
+@keyframes interview-halo-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 
 
 
