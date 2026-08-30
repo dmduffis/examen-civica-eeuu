@@ -747,15 +747,18 @@ export default function InterviewPage() {
             {status === "error" && (
               <div className="flex w-full flex-col items-center gap-6 text-center">
                 <EntrevistaLoadErrorIllustration />
-                <div className="w-full max-w-md rounded-xl border-2 border-red-200 bg-red-50 p-5 text-red-900 sm:p-6">
-                  <p className="font-semibold">{error}</p>
+                <div className="w-full max-w-md">
+                  <h1 className="page-heading text-ink">
+                    ¡Ups! Algo salió mal.
+                  </h1>
+                  <p className="mt-3 font-medium text-[#b4534a]">{error}</p>
                   <button
                     type="button"
                     onClick={() => {
                       setStatus("idle");
                       setError(null);
                     }}
-                    className="btn-brand mt-4 w-full py-2.5 px-4 sm:w-auto"
+                    className="btn-brand mt-6 w-full py-2.5 px-4 sm:w-auto"
                   >
                     Reintentar
                   </button>
