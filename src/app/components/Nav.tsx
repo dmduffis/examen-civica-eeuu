@@ -8,6 +8,7 @@ import { createPortal } from "react-dom";
 import { useAuth } from "../lib/auth-context";
 import { UserDropdown } from "./ui/user-dropdown";
 import { Avatar, AvatarFallback } from "./ui/avatar";
+import { SHOW_AUTH_UI } from "../lib/feature-flags";
 import ProDiamond from "./ProDiamond";
 
 export default function Nav() {
@@ -16,6 +17,7 @@ export default function Nav() {
   const { user, isAuthEnabled, logout } = useAuth();
 
   const closeDrawer = () => setDrawerOpen(false);
+  const showAuth = SHOW_AUTH_UI && isAuthEnabled;
 
   useEffect(() => {
     setPortalReady(true);
@@ -52,7 +54,6 @@ export default function Nav() {
           Examen Civica
         </Link>
 
-        {/* Desktop: full nav */}
         <div className="hidden sm:flex items-center gap-6 sm:gap-8">
           <Link href="/preguntas" className={linkClass}>
             Preguntas
@@ -70,36 +71,42 @@ export default function Nav() {
             Entrevista
             <ProDiamond />
           </Link>
-          <span
-            className="h-5 w-px shrink-0 self-center bg-white/20"
-            aria-hidden
-          />
-          {isAuthEnabled && user ? (
-            <UserDropdown email={user.email} onLogout={logout} triggerOnDark />
+          {showAuth ? (
+            <>
+              <span
+                className="h-5 w-px shrink-0 self-center bg-white/20"
+                aria-hidden
+              />
+              {user ? (
+                <UserDropdown
+                  email={user.email}
+                  onLogout={logout}
+                  triggerOnDark
+                />
+              ) : (
+                <div className="inline-flex items-center gap-3">
+                  <Link
+                    href="/login"
+                    className={linkClass}
+                    aria-label="Iniciar sesión"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/login"
+                    className="btn-brand text-sm px-4 py-2"
+                    aria-label="Registrarse"
+                  >
+                    Sign up
+                  </Link>
+                </div>
+              )}
+            </>
           ) : null}
-          {(!isAuthEnabled || !user) && (
-            <div className="inline-flex items-center gap-3">
-              <Link
-                href="/login"
-                className={linkClass}
-                aria-label="Iniciar sesión"
-              >
-                Login
-              </Link>
-              <Link
-                href="/login"
-                className="btn-brand text-sm px-4 py-2"
-                aria-label="Registrarse"
-              >
-                Sign up
-              </Link>
-            </div>
-          )}
         </div>
 
-        {/* Mobile: avatar (when signed in) + hamburger */}
         <div className="sm:hidden flex items-center gap-2">
-          {isAuthEnabled && user ? (
+          {showAuth && user ? (
             <Avatar
               className="h-9 w-9 border-2 border-white/25 shrink-0"
               aria-hidden
@@ -120,7 +127,6 @@ export default function Nav() {
         </div>
       </div>
 
-      {/* Portal keeps the drawer above page stacking (raised buttons, etc.) */}
       {portalReady &&
         drawerOpen &&
         createPortal(
@@ -181,61 +187,64 @@ export default function Nav() {
                   <ProDiamond />
                 </Link>
               </div>
-              <span
-                className="h-px bg-[var(--border-paper)] my-4"
-                aria-hidden
-              />
-              {isAuthEnabled && user ? (
-                <div className="flex flex-col gap-2 mb-4">
-                  <div className="flex items-center gap-3 px-1">
-                    <Avatar className="h-9 w-9 border-2 border-[var(--border-paper)] shrink-0">
-                      <AvatarFallback className="bg-coral-soft text-ink text-sm font-semibold">
-                        {user.email.slice(0, 1).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm text-brand-muted truncate">
-                      {user.email}
-                    </span>
-                  </div>
-                  <Link
-                    href="/progress"
-                    className={drawerLinkClass}
-                    onClick={closeDrawer}
-                  >
-                    Mi progreso
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      logout();
-                      closeDrawer();
-                    }}
-                    className="text-left py-3 text-base font-medium text-ink hover:text-ink-deep transition-colors"
-                  >
-                    Cerrar sesión
-                  </button>
-                </div>
+              {showAuth ? (
+                <>
+                  <span
+                    className="h-px bg-[var(--border-paper)] my-4"
+                    aria-hidden
+                  />
+                  {user ? (
+                    <div className="flex flex-col gap-2 mb-4">
+                      <div className="flex items-center gap-3 px-1">
+                        <Avatar className="h-9 w-9 border-2 border-[var(--border-paper)] shrink-0">
+                          <AvatarFallback className="bg-coral-soft text-ink text-sm font-semibold">
+                            {user.email.slice(0, 1).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-sm text-brand-muted truncate">
+                          {user.email}
+                        </span>
+                      </div>
+                      <Link
+                        href="/progress"
+                        className={drawerLinkClass}
+                        onClick={closeDrawer}
+                      >
+                        Mi progreso
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          logout();
+                          closeDrawer();
+                        }}
+                        className="text-left py-3 text-base font-medium text-ink hover:text-ink-deep transition-colors"
+                      >
+                        Cerrar sesión
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      <Link
+                        href="/login"
+                        onClick={closeDrawer}
+                        className="btn-tile text-sm w-full py-3 px-4 justify-center font-semibold"
+                        aria-label="Iniciar sesión"
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        href="/login"
+                        onClick={closeDrawer}
+                        className="btn-brand text-sm w-full py-3 px-4"
+                        aria-label="Registrarse"
+                      >
+                        Sign up
+                      </Link>
+                    </div>
+                  )}
+                </>
               ) : null}
-              {(!isAuthEnabled || !user) && (
-                <div className="flex flex-col gap-2">
-                  <Link
-                    href="/login"
-                    onClick={closeDrawer}
-                    className="btn-tile text-sm w-full py-3 px-4 justify-center font-semibold"
-                    aria-label="Iniciar sesión"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    href="/login"
-                    onClick={closeDrawer}
-                    className="btn-brand text-sm w-full py-3 px-4"
-                    aria-label="Registrarse"
-                  >
-                    Sign up
-                  </Link>
-                </div>
-              )}
             </div>
           </div>,
           document.body,

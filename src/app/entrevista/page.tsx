@@ -14,6 +14,7 @@ import EntrevistaLoadErrorIllustration from "../components/EntrevistaLoadErrorIl
 import PageHeadingWithIcon from "../components/PageHeadingWithIcon";
 import ProDiamond from "../components/ProDiamond";
 import { backendUrl } from "../lib/backend-url";
+import { ENTREVISTA_PRACTICE_LIVE } from "../lib/feature-flags";
 
 type InterviewQuestion = {
   id: string;
@@ -270,7 +271,6 @@ export default function InterviewPage() {
   const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
-  const [userName, setUserName] = useState("");
   const [recordingStream, setRecordingStream] = useState<MediaStream | null>(
     null,
   );
@@ -335,7 +335,7 @@ export default function InterviewPage() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(userName ? { userName } : {}),
+          body: JSON.stringify({}),
         },
         { retries: 3, timeoutMs: VOICE_START_TIMEOUT_MS },
       );
@@ -381,7 +381,7 @@ export default function InterviewPage() {
       setError(CONNECTION_ERROR_ES);
       setStatus("error");
     }
-  }, [userName, playBase64]);
+  }, [playBase64]);
 
   const startRecording = useCallback(() => {
     if (!navigator.mediaDevices?.getUserMedia) {
@@ -620,30 +620,32 @@ export default function InterviewPage() {
                       )}
                     </ol>
 
-                    <div>
-                      <label
-                        htmlFor="userName"
-                        className="block text-sm font-medium text-ink mb-1"
+                    {ENTREVISTA_PRACTICE_LIVE ? (
+                      <button
+                        type="button"
+                        onClick={startInterview}
+                        className="btn-brand inline-flex items-center justify-center gap-2 py-4 px-6"
                       >
-                        Tu nombre (opcional)
-                      </label>
-                      <input
-                        id="userName"
-                        type="text"
-                        value={userName}
-                        onChange={(e) => setUserName(e.target.value)}
-                        className="w-full rounded-xl border-2 border-[var(--border-paper)] px-4 py-2 text-ink"
-                        placeholder="Ej. María"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={startInterview}
-                      className="btn-brand inline-flex items-center justify-center gap-2 py-4 px-6"
-                    >
-                      Iniciar entrevista
-                      <ProDiamond className="h-4 w-4 translate-y-0 text-white" />
-                    </button>
+                        Iniciar entrevista
+                        <ProDiamond className="h-4 w-4 translate-y-0 text-white" />
+                      </button>
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <button
+                          type="button"
+                          disabled
+                          className="btn-brand inline-flex items-center justify-center gap-2 py-4 px-6 opacity-60 cursor-not-allowed"
+                          aria-disabled="true"
+                        >
+                          Iniciar entrevista
+                          <ProDiamond className="h-4 w-4 translate-y-0 text-white" />
+                        </button>
+                        <p className="text-sm text-brand-muted">
+                          La práctica oral Pro estará lista pronto. Mientras
+                          tanto, sigue con Preguntas, Repasar y Quiz.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
