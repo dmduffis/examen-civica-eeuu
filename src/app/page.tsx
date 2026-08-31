@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { ENTREVISTA_PRACTICE_LIVE } from "./lib/feature-flags";
+import ProDiamond from "./components/ProDiamond";
 
 export const metadata: Metadata = {
   title: "Inicio",
   description:
-    "Prepárate para tu examen de ciudadanía. Estudia las preguntas oficiales, practica simulacros y la entrevista oral de naturalización en Estados Unidos.",
+    "Prepárate para tu examen de ciudadanía. Estudia las preguntas oficiales y practica simulacros para la entrevista de naturalización en Estados Unidos.",
 };
 
 const steps = [
@@ -25,8 +27,7 @@ const steps = [
   {
     number: "03",
     title: "Llega preparado",
-    description:
-      "Practica la entrevista oral y responde como lo harás el día del examen.",
+    description: "Repasa con confianza y llega listo al día de tu entrevista.",
   },
 ] as const;
 
@@ -35,6 +36,8 @@ const actionCards: {
   title: string;
   description: string;
   iconSrc: string;
+  pro?: boolean;
+  comingSoon?: boolean;
 }[] = [
   {
     href: "/preguntas",
@@ -57,8 +60,12 @@ const actionCards: {
   {
     href: "/entrevista",
     title: "Entrevista",
-    description: "Practica la entrevista oral.",
+    description: ENTREVISTA_PRACTICE_LIVE
+      ? "Practica la entrevista oral."
+      : "Práctica oral en inglés — próximamente.",
     iconSrc: "/icon_quiz_interview.png",
+    pro: true,
+    comingSoon: !ENTREVISTA_PRACTICE_LIVE,
   },
 ];
 
@@ -159,37 +166,45 @@ export default function Home() {
               aria-label="Principales secciones"
               className="home-actions-band-grid"
             >
-              {actionCards.map(({ href, title, description, iconSrc }, i) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="home-action-card opacity-0 home-slide-up"
-                  style={{ animationDelay: `${0.45 + i * 0.08}s` }}
-                >
-                  <span className="home-nav-icon-well" aria-hidden>
-                    <Image
-                      src={iconSrc}
-                      width={1254}
-                      height={1254}
-                      alt=""
-                      className={`${customIconClass} object-contain`}
-                    />
-                  </span>
-                  <span className="flex min-w-0 flex-col gap-0.5">
-                    <span className="home-action-title block font-semibold">
-                      {title}
+              {actionCards.map(
+                ({ href, title, description, iconSrc, pro, comingSoon }, i) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className="home-action-card opacity-0 home-slide-up"
+                    style={{ animationDelay: `${0.45 + i * 0.08}s` }}
+                  >
+                    <span className="home-nav-icon-well" aria-hidden>
+                      <Image
+                        src={iconSrc}
+                        width={1254}
+                        height={1254}
+                        alt=""
+                        className={`${customIconClass} object-contain`}
+                      />
                     </span>
-                    <span className="flex items-center gap-2 min-w-0">
-                      <span className="home-action-desc min-w-0 flex-1 text-sm font-normal leading-snug">
-                        {description}
+                    <span className="flex min-w-0 flex-col gap-0.5">
+                      <span className="home-action-title flex flex-wrap items-center gap-1.5 font-semibold">
+                        {title}
+                        {pro ? <ProDiamond /> : null}
+                        {comingSoon ? (
+                          <span className="rounded-md bg-coral-soft px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--surface-coral)]">
+                            Próximamente
+                          </span>
+                        ) : null}
                       </span>
-                      <span className="home-action-arrow" aria-hidden>
-                        <ChevronRight className="size-4" strokeWidth={2.5} />
+                      <span className="flex items-center gap-2 min-w-0">
+                        <span className="home-action-desc min-w-0 flex-1 text-sm font-normal leading-snug">
+                          {description}
+                        </span>
+                        <span className="home-action-arrow" aria-hidden>
+                          <ChevronRight className="size-4" strokeWidth={2.5} />
+                        </span>
                       </span>
                     </span>
-                  </span>
-                </Link>
-              ))}
+                  </Link>
+                ),
+              )}
             </nav>
           </div>
         </section>
