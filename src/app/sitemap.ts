@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { ENTREVISTA_PRACTICE_LIVE, SHOW_AUTH_UI } from "./lib/feature-flags";
+import { SHOW_AUTH_UI } from "./lib/feature-flags";
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://examencivica.com";
 
@@ -12,7 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return routes.map((path) => ({
     url: `${baseUrl}${path}`,
     lastModified: new Date(),
-    changeFrequency: (path === "" ? "weekly" : "monthly") as const,
+    changeFrequency: path === "" ? "weekly" : "monthly",
     priority: path === "" ? 1 : 0.8,
   }));
 }
